@@ -26,7 +26,10 @@ trait JavaScriptContext
 
         // If it's empty - we failed
         if (empty($result)) {
-            throw new ExpectationException('The custom variable "' . $variable . '" is null or does not exist.', $this->getSession());
+            throw new ExpectationException(
+                'The custom variable "' . $variable . '" is null or does not exist.',
+                $this->getSession()
+            );
         }
 
         return true;

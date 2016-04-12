@@ -2,6 +2,8 @@
 
 namespace Behat\FlexibleMink\PseudoInterface;
 
+use Behat\Mink\Session;
+
 /**
  * Pseudo trait for tracking the methods of the FlexibleContext.
  */
@@ -14,4 +16,13 @@ trait FlexibleContextInterface
      * @param string $text Text to be searched in the page.
      */
     abstract public function assertPageContainsText($text);
+
+    /**
+     * Returns Mink session.
+     *
+     * @param string|null $name name of the session OR active session will be used
+     *
+     * @return Session
+     */
+    abstract public function getSession($name = null);
 }

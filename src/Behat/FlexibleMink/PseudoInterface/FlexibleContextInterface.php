@@ -20,8 +20,7 @@ trait FlexibleContextInterface
     /**
      * Returns Mink session.
      *
-     * @param string|null $name name of the session OR active session will be used
-     *
+     * @param  string|null $name name of the session OR active session will be used
      * @return Session
      */
     abstract public function getSession($name = null);

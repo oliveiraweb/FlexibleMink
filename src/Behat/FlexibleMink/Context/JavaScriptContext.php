@@ -6,6 +6,9 @@ use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
 use Behat\FlexibleMink\PseudoInterface\JavaScriptContextInterface;
 use Behat\Mink\Exception\ExpectationException;
 
+/**
+ * {@inheritdoc}
+ */
 trait JavaScriptContext
 {
     // Depends.

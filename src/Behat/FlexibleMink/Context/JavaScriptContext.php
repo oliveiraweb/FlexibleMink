@@ -34,8 +34,6 @@ trait JavaScriptContext
                 $this->getSession()
             );
         }
-
-        return true;
     }
 
     /**

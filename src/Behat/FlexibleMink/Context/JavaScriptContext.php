@@ -47,9 +47,8 @@ trait JavaScriptContext
 
         // If it doesn't match - we failed.
         if ($result != $type xor $not) {
-            $notnot = $not ? '' : ' not';
             throw new ExpectationException(
-                "The variable \"$variable\" should$not be type $type, but was$notnot",
+                "The variable \"$variable\" should$not be type $type, but is $result",
                 $this->getSession()
             );
         }

@@ -28,7 +28,7 @@ trait JavaScriptContext
         $result = $this->getSession()->evaluateScript('return ' . $variable . ';');
 
         // If it's null - we failed
-        if ($result == null) {
+        if ($result === null) {
             throw new ExpectationException(
                 'The custom variable "' . $variable . '" is null or does not exist.',
                 $this->getSession()

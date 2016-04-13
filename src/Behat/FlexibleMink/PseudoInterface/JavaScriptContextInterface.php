@@ -21,7 +21,7 @@ trait JavaScriptContextInterface
      * Determines if the type of a javascript variable matches a specific type.
      *
      * @param  string               $variable The variable to evaluate type for.
-     * @param  string               $not      Invert the check? Cast as a boolean based on PHP typecasting.
+     * @param  string|bool          $not      Invert the check? Cast as a boolean based on PHP typecasting.
      * @param  string               $type     The type to match against.
      * @throws ExpectationException if the type of the given variable does not match what's expected.
      */

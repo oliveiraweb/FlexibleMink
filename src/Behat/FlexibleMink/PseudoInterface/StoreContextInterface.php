@@ -3,7 +3,7 @@
 namespace Behat\FlexibleMink\PseudoInterface;
 
 /**
- * Trait for storing and retrieving things via keys.
+ * Pseudo interface for tracking the methods of the StoreContext.
  */
 trait StoreContextInterface
 {

@@ -5,7 +5,7 @@ namespace Behat\FlexibleMink\PseudoInterface;
 use Behat\Mink\Session;
 
 /**
- * Pseudo trait for tracking the methods of the FlexibleContext.
+ * Pseudo interface for tracking the methods of the FlexibleContext.
  */
 trait FlexibleContextInterface
 {

@@ -3,6 +3,9 @@
 namespace Behat\FlexibleMink\Context;
 
 use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\ExpectationException;
+use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
 
 /**
@@ -24,5 +27,47 @@ class FlexibleContext extends MinkContext
         $this->waitFor(function () use ($text) {
             parent::assertPageContainsText($text);
         });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function assertPageNotContainsText($text)
+    {
+        $this->waitFor(function () use ($text) {
+            parent::assertPageNotContainsText($text);
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clickLink($locator)
+    {
+        $locator = $this->fixStepArgument($locator);
+
+        $links = $this->getSession()->getPage()->findAll(
+            'named',
+            ['link', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)]
+        );
+
+        /** @var NodeElement $link */
+        foreach ($links as $link) {
+            try {
+                $visible = $link->isVisible();
+            } catch (UnsupportedDriverActionException $e) {
+                $link->click();
+
+                return;
+            }
+
+            if ($visible) {
+                $link->click();
+
+                return;
+            }
+        }
+
+        throw new ExpectationException("No visible link found for '$locator'", $this->getSession());
     }
 }

@@ -19,8 +19,6 @@ class FlexibleContext extends MinkContext
     use StoreContext;
     use JavaScriptContext;
 
-    const WARN_CANNOT_CHECK_VISIBLE = 'Could not determine element visibility. Driver does not support it.';
-
     /**
      * {@inheritdoc}
      */

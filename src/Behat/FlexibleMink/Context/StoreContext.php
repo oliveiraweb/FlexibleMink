@@ -47,9 +47,8 @@ trait StoreContext
 
         // Look for nested things using dot notation.
         foreach (explode('.', $key) as $segment) {
-            if ( ! is_array($array) || ! array_key_exists($segment, $array))
-            {
-                return null;
+            if (!is_array($array) || !array_key_exists($segment, $array)) {
+                return;
             }
 
             $array = $array[$segment];

@@ -5,7 +5,7 @@ namespace Behat\FlexibleMink\PseudoInterface;
 use Behat\Mink\Exception\ExpectationException;
 
 /**
- * Functionality for testing JavaScript variables.
+ * Pseudo interface for tracking the methods of the JavaScriptContext.
  */
 trait JavaScriptContextInterface
 {

@@ -5,7 +5,7 @@ namespace Behat\FlexibleMink\PseudoInterface;
 use Exception;
 
 /**
- * Functionality for waiting for a particular condition.
+ * Pseudo interface for tracking the methods of the SpinnerContext.
  */
 trait SpinnerContextInterface
 {

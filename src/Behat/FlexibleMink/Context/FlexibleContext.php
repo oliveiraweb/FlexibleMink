@@ -29,7 +29,6 @@ class FlexibleContext extends MinkContext
         });
     }
 
-
     /**
      * {@inheritdoc}
      */

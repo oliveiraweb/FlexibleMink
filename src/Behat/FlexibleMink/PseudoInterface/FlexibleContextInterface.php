@@ -19,6 +19,15 @@ trait FlexibleContextInterface
     abstract public function assertPageContainsText($text);
 
     /**
+     * Asserts that specified container has specified text.
+     *
+     * @param  string $text           Text to assert.
+     * @param  string $containerLabel Text of label for container.
+     * @throws ExpectationException   If the text is not found in the container.
+     */
+    abstract public function assertTextInContainer($text, $containerLabel);
+    
+    /**
      * Returns Mink session.
      *
      * @param  string|null $name name of the session OR active session will be used

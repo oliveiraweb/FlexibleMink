@@ -3,6 +3,7 @@
 namespace Behat\FlexibleMink\Context;
 
 use Behat\FlexibleMink\PseudoInterface\StoreContextInterface;
+use Exception;
 
 /**
  * {@inheritdoc}
@@ -30,30 +31,68 @@ trait StoreContext
      */
     protected function put($thing, $key)
     {
-        $this->registry[$key] = $thing;
+        $this->registry[$key][] = $thing;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    protected function assertIsStored($key, $nth = null) {
+        if (!$thing = $this->isStored($key, $nth)) {
+            throw new Exception("Entry $nth for $key was not found in the store.");
+        }
+        
+        return $thing;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    protected function get($key, $nth = null)
+    {
+        if (!$nth && preg_match('/^([1-9][0-9]*)(?:st|nd|rd|th) (.+)$/', $key, $matches)) {
+            $nth = $matches[1];
+            $key = $matches[2];
+        }
+
+        $this->assertIsStored($key, $nth);
+
+        return $nth ? $this->registry[$key][$nth - 1] : end($this->registry[$key]);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function get($key)
+    protected function getThingProperty($key, $property, $nth = null)
     {
-        $array = $this->registry;
+        $thing = $this->assertIsStored($key, $nth);
 
-        if (isset($array[$key])) {
-            // Just return the store thing directly.
-            return $array[$key];
+        if (property_exists($thing, $property)) {
+           return $thing->$property;
         }
 
-        // Look for nested things using dot notation.
-        foreach (explode('.', $key) as $segment) {
-            if (!is_array($array) || !array_key_exists($segment, $array)) {
-                return;
-            }
-
-            $array = $array[$segment];
-        }
-
-        return $array;
+        throw new Exception("'$thing' existed in the store but had no '$property' property.'");
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function injectStoredValues($string) {
+        preg_match_all('/\(the ((?:[^\)])+) of the ((?:[^\)])+)\)/', $string, $matches);
+        dd($matches);
+        foreach ($matches[0] as $i => $match) {
+            $string = str_replace(
+                $match, $this->retrieveValueOfThing($matches[2][$i], $matches[1][$i]), $string
+            );
+        }
+        return $string;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function isStored($key, $nth = null) {
+        return $nth ? isset($this->registry[$key][$nth - 1]) : isset($this->registry[$key]);
+    }
+
 }

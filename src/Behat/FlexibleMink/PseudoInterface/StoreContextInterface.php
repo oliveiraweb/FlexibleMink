@@ -10,6 +10,14 @@ use Exception;
 trait StoreContextInterface
 {
     /**
+     * Asserts that the thing under the specified key equals the specified value.
+     *
+     * @param string $key   the key to compare.
+     * @param mixed  $value the value to compare with.
+     */
+    abstract public function assertThingIs($key, $value = null);
+
+    /**
      * Asserts that the specified thing exists in the registry.
      *
      * @param  string $key The key to check.

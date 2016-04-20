@@ -28,6 +28,19 @@ trait StoreContext
 
     /**
      * {@inheritdoc}
+     *
+     * @Then /^the "(?P<key>[^"]+)" should be "(?P<value>[^"]*)"$/
+     * @Then /^the "(?P<key>[^"]+)" should be empty$/
+     */
+    public function assertThingIs($key, $value = null)
+    {
+        if ($this->get($key) != $value) {
+            throw new Exception("Expected $key to be " . var_export($value, true) . ', but it was not');
+        }
+    }
+
+    /**
+     * {@inheritdoc}
      */
     protected function put($thing, $key)
     {

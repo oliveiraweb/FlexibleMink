@@ -55,7 +55,9 @@ trait StoreContext
             $key = $matches[2];
         }
 
-        $this->assertIsStored($key, $nth);
+        if (!$this->isStored($key, $nth)) {
+            return null;
+        }
 
         return $nth ? $this->registry[$key][$nth - 1] : end($this->registry[$key]);
     }
@@ -67,7 +69,7 @@ trait StoreContext
     {
         $thing = $this->assertIsStored($key, $nth);
 
-        if (property_exists($thing, $property)) {
+        if (isset($thing, $property)) {
            return $thing->$property;
         }
 
@@ -78,12 +80,20 @@ trait StoreContext
      * {@inheritdoc}
      */
     protected function injectStoredValues($string) {
-        preg_match_all('/\(the ((?:[^\)])+) of the ((?:[^\)])+)\)/', $string, $matches);
-        dd($matches);
+        preg_match_all('/\(the ([^\)]+) of the ([^\)]+)\)/', $string, $matches);
         foreach ($matches[0] as $i => $match) {
-            $string = str_replace(
-                $match, $this->retrieveValueOfThing($matches[2][$i], $matches[1][$i]), $string
-            );
+            $thingName = $matches[2][$i];
+            $thingProperty = $matches[1][$i];
+
+            if (!$thing = $this->get($thingName)) {
+                throw new Exception("Did not find $thingName in the store");
+            }
+
+            if (!isset($thing, $thingProperty)) {
+                throw new Exception("$thingName does not have a $thingProperty property");
+            }
+
+            $string = str_replace($match, $thing->$thingProperty, $string);
         }
         return $string;
     }

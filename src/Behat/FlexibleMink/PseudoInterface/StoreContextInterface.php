@@ -39,6 +39,15 @@ trait StoreContextInterface
     abstract protected function getThingProperty($key, $property, $nth = null);
 
     /**
+     * Parses the string for references to stored items and replaces them with the value from the store.
+     *
+     * @param  string $string String to parse.
+     * @return string The parsed string.
+     * @throws Exception If the string references something that does not exist in the store.
+     */
+    abstract protected function injectStoredValues($string);
+
+    /**
      * Checks that the specified thing exists in the registry.
      *
      * @param  string $key The key to check.

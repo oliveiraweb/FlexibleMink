@@ -14,10 +14,14 @@ use Behat\MinkExtension\Context\MinkContext;
  */
 class FlexibleContext extends MinkContext
 {
+    // Implements.
     use FlexibleContextInterface;
+
+    // Depends.
+    use ContainerContext;
+    use JavaScriptContext;
     use SpinnerContext;
     use StoreContext;
-    use JavaScriptContext;
 
     /**
      * {@inheritdoc}
@@ -69,24 +73,5 @@ class FlexibleContext extends MinkContext
         }
 
         throw new ExpectationException("No visible link found for '$locator'", $this->getSession());
-    }
-
-    /**
-     * @Then /^I should see "([^"]*)" in the "([^"]*)" container$/
-     */
-    public function assertTextInContainer($text, $containerLabel)
-    {
-        $text = $this->injectStoredValues($text);
-        $containerLabel = $this->injectStoredValues($containerLabel);
-        $node = $this->getSession()->getPage()->find('xpath', "//*[contains(text(),'$containerLabel')]");
-        if (!$node) {
-            throw new ExpectationException("The $containerLabel container was not found", $this->getSession());
-        }
-        $containerId = $node->getAttribute('data-label-for');
-        $container = $this->getSession()->getPage()->findById($containerId);
-
-        if (!$container->find('xpath', "//*[contains(.,\"$text\")]")) {
-            throw new ExpectationException("The $text was not found in the $containerLabel container", $this->getSession());
-        }
     }
 }

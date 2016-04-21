@@ -78,7 +78,7 @@ class FlexibleContext extends MinkContext
     {
         $text = $this->injectStoredValues($text);
         $containerLabel = $this->injectStoredValues($containerLabel);
-        $node = $this->getSession()->getPage()->find('xpath', "//*[text()=\"$containerLabel\"]");
+        $node = $this->getSession()->getPage()->find('xpath', "//*[contains(text(),'$containerLabel')]");
         if (!$node) {
             throw new ExpectationException("The $containerLabel container was not found", $this->getSession());
         }

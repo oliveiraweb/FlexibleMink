@@ -17,7 +17,7 @@ trait FlexibleContextInterface
      * @param string $text Text to be searched in the page.
      */
     abstract public function assertPageContainsText($text);
-    
+
     /**
      * Returns Mink session.
      *

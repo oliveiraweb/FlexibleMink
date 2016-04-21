@@ -33,18 +33,19 @@ trait StoreContext
     {
         $this->registry[$key][] = $thing;
     }
-    
+
     /**
      * {@inheritdoc}
      */
-    protected function assertIsStored($key, $nth = null) {
+    protected function assertIsStored($key, $nth = null)
+    {
         if (!$thing = $this->isStored($key, $nth)) {
             throw new Exception("Entry $nth for $key was not found in the store.");
         }
-        
+
         return $thing;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -56,7 +57,7 @@ trait StoreContext
         }
 
         if (!$this->isStored($key, $nth)) {
-            return null;
+            return;
         }
 
         return $nth ? $this->registry[$key][$nth - 1] : end($this->registry[$key]);
@@ -70,7 +71,7 @@ trait StoreContext
         $thing = $this->assertIsStored($key, $nth);
 
         if (isset($thing, $property)) {
-           return $thing->$property;
+            return $thing->$property;
         }
 
         throw new Exception("'$thing' existed in the store but had no '$property' property.'");
@@ -79,7 +80,8 @@ trait StoreContext
     /**
      * {@inheritdoc}
      */
-    protected function injectStoredValues($string) {
+    protected function injectStoredValues($string)
+    {
         preg_match_all('/\(the ([^\)]+) of the ([^\)]+)\)/', $string, $matches);
         foreach ($matches[0] as $i => $match) {
             $thingName = $matches[2][$i];
@@ -95,14 +97,15 @@ trait StoreContext
 
             $string = str_replace($match, $thing->$thingProperty, $string);
         }
+
         return $string;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function isStored($key, $nth = null) {
+    protected function isStored($key, $nth = null)
+    {
         return $nth ? isset($this->registry[$key][$nth - 1]) : isset($this->registry[$key]);
     }
-
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace Behat\FlexibleMink\PseudoInterface;
+
 use Exception;
 
 /**
@@ -41,9 +42,9 @@ trait StoreContextInterface
     /**
      * Parses the string for references to stored items and replaces them with the value from the store.
      *
-     * @param  string $string String to parse.
-     * @return string The parsed string.
+     * @param  string    $string String to parse.
      * @throws Exception If the string references something that does not exist in the store.
+     * @return string    The parsed string.
      */
     abstract protected function injectStoredValues($string);
 

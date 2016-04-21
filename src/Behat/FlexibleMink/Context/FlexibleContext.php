@@ -14,10 +14,14 @@ use Behat\MinkExtension\Context\MinkContext;
  */
 class FlexibleContext extends MinkContext
 {
+    // Implements.
     use FlexibleContextInterface;
+
+    // Depends.
+    use ContainerContext;
+    use JavaScriptContext;
     use SpinnerContext;
     use StoreContext;
-    use JavaScriptContext;
 
     /**
      * {@inheritdoc}

@@ -36,13 +36,13 @@ trait TypeCaster
      *
      * Supports true and false only. e.g. will not cast 0 or 1.
      *
-     * @Transform /^(true|false)$/
+     * @Transform /^(true|false)$/i
      * @param  string $string the string to cast.
      * @return bool   The resulting bool.
      */
     public function castStringToBool($string)
     {
-        return $string === 'true';
+        return strtolower($string) === 'true';
     }
 
     /**

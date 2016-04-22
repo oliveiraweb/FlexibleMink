@@ -29,7 +29,7 @@ trait StoreContext
     /**
      * {@inheritdoc}
      *
-     * @Then /^the "(?P<key>[^"]+)" should be (?P<value>.*)$/
+     * @Then /^the "(?P<key>[^"]+)" should be (?P<value>true|false|(?:\d*[.])?\d+|'(?:[^']|\\')*'|"(?:[^"]|\\"|)*")$/
      */
     public function assertThingIs($key, $expected = null)
     {

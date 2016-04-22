@@ -108,4 +108,14 @@ trait StoreContext
     {
         return $nth ? isset($this->registry[$key][$nth - 1]) : isset($this->registry[$key]);
     }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @When /^(?:I |)refer to (?:the |)"(?P<current>[^"]*)" as "(?P<new>[^"]*)"$/
+     */
+    public function referToStoredAs($current, $new)
+    {
+        $this->put($this->get($current), $new);
+    }
 }

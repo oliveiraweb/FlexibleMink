@@ -10,6 +10,17 @@ use Exception;
 trait StoreContextInterface
 {
     /**
+     * Asserts that the thing under the specified key equals the specified value.
+     *
+     * This method uses strict type checking, and as such you will need to ensure
+     * your context is using the Behat\FlexibleMink\Context\TypeCaster trait.
+     *
+     * @param string $key      the key to compare.
+     * @param mixed  $expected the value to compare with.
+     */
+    abstract public function assertThingIs($key, $expected = null);
+
+    /**
      * Asserts that the specified thing exists in the registry.
      *
      * @param  string $key The key to check.

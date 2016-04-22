@@ -75,4 +75,12 @@ trait StoreContextInterface
      * @param string $key   The key to store the thing under.
      */
     abstract protected function put($thing, $key);
+
+    /**
+     * Adds a reference to a stored thing under the new specified key.
+     *
+     * @param string $current The current key of the thing.
+     * @param string $new     The new key under which to store the thing.
+     */
+    abstract public function referToStoredAs($current, $new);
 }

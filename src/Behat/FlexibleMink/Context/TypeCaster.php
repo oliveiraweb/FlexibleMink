@@ -22,7 +22,7 @@ trait TypeCaster
     /**
      * Casts a step argument from a string to a float.
      *
-     * @Transform /^(\d+)\.(\d+)$/
+     * @Transform /^(\d*)\.(\d+)$/
      * @param  string $string the string to cast.
      * @return float  The resulting float.
      */

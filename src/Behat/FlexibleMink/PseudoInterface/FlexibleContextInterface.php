@@ -2,6 +2,9 @@
 
 namespace Behat\FlexibleMink\PseudoInterface;
 
+use Behat\Gherkin\Node\TableNode;
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Session;
 
 /**
@@ -44,4 +47,37 @@ trait FlexibleContextInterface
      * @param string $locator The id|title|alt|text of the link to be clicked.
      */
     abstract public function clickLink($locator);
+
+    /**
+     * Checks that the page contains a visible input field and then returns it.
+     *
+     * @param $fieldName
+     * @throws ExpectationException If a visible input field is not found.
+     * @return NodeElement          The found input field.
+     */
+    abstract public function assertFieldExists($fieldName);
+
+    /**
+     * Checks that the page not contain a visible input field.
+     *
+     * @param  string               $fieldName The name of the input field.
+     * @throws ExpectationException If a visible input field is found.
+     */
+    abstract public function assertFieldNotExists($fieldName);
+
+    /**
+     * This method will check if all the fields exists and visible in the current page.
+     *
+     * @param  TableNode            $tableNode The id|name|title|alt|value of the input field
+     * @throws ExpectationException if any of the fields is not visible in the page
+     */
+    abstract public function assertPageContainsFields(TableNode $tableNode);
+
+    /**
+     * This method will check if all the fields not exists or not visible in the current page.
+     *
+     * @param  TableNode            $tableNode The id|name|title|alt|value of the input field
+     * @throws ExpectationException if any of the fields is visible in the page
+     */
+    abstract public function assertPageNotContainsFields(TableNode $tableNode);
 }

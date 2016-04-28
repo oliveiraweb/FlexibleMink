@@ -3,6 +3,7 @@
 namespace Behat\FlexibleMink\Context;
 
 use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
+use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
@@ -74,5 +75,84 @@ class FlexibleContext extends MinkContext
         }
 
         throw new ExpectationException("No visible link found for '$locator'", $this->getSession());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function assertFieldExists($fieldName)
+    {
+        /** @var NodeElement[] $fields */
+        $fields = $this->getSession()->getPage()->findAll('named', ['field', $fieldName]);
+        if (count($fields) == 0) {
+            // If the field was not found with the usual way above, attempt to find with label name as last resort
+            $label = $this->getSession()->getPage()->find('xpath', "//label[contains(text(), '$fieldName')]");
+            if (!$label) {
+                throw new ExpectationException("No input label '$fieldName' found", $this->getSession());
+            }
+            $name = $label->getAttribute('for');
+            $fields = [$this->getSession()->getPage()->findField($name)];
+        }
+        if (count($fields) > 0) {
+            foreach ($fields as $field) {
+                if ($field->isVisible()) {
+                    return $field;
+                }
+            }
+        }
+        throw new ExpectationException("No visible input found for '$fieldName'", $this->getSession());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function assertFieldNotExists($fieldName)
+    {
+        /** @var NodeElement[] $fields */
+        $fields = $this->getSession()->getPage()->findAll('named', ['field', $fieldName]);
+        if (count($fields) == 0) {
+            // If the field was not found with the usual way above, attempt to find with label name as last resort
+            /* @var NodeElement[] $label */
+            $labels = $this->getSession()->getPage()->findAll('xpath', "//label[contains(text(), '$fieldName')]");
+            if (count($labels) > 0) {
+                foreach ($labels as $item) {
+                    /** @var NodeElement $item */
+                    if ($item->isVisible()) {
+                        throw new ExpectationException("Input label '$fieldName' found", $this->getSession());
+                    }
+                }
+            }
+        } else {
+            foreach ($fields as $field) {
+                /** @var NodeElement $field */
+                if ($field->isVisible()) {
+                    throw new ExpectationException("Input label '$fieldName' found", $this->getSession());
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @Then /^I should see the following fields:$/
+     */
+    public function assertPageContainsFields(TableNode $tableNode)
+    {
+        foreach ($tableNode->getRowsHash() as $field => $value) {
+            $this->assertFieldExists($field);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @Then /^I should not see the following fields:$/
+     */
+    public function assertPageNotContainsFields(TableNode $tableNode)
+    {
+        foreach ($tableNode->getRowsHash() as $field => $value) {
+            $this->assertFieldNotExists($field);
+        }
     }
 }

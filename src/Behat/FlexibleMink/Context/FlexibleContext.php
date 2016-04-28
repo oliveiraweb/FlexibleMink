@@ -77,7 +77,6 @@ class FlexibleContext extends MinkContext
         throw new ExpectationException("No visible link found for '$locator'", $this->getSession());
     }
 
-
     /**
      * {@inheritdoc}
      */

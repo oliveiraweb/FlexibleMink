@@ -1,4 +1,4 @@
-<?php namespace features\contexts;
+<?php namespace Behat\FlexibleMink\PseudoInterface;
 
 use Behat\Mink\Session;
 

@@ -3,7 +3,7 @@
 use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\Testwork\Tester\Result\TestResult;
-use features\contexts\MinkContextInterface;
+use Behat\FlexibleMink\PseudoInterface\MinkContextInterface;
 
 /**
  * {@inheritdoc}

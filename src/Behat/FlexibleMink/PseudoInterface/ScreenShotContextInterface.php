@@ -3,7 +3,7 @@
 namespace Behat\FlexibleMink\PseudoInterface;
 
 use Behat\Behat\Hook\Scope\AfterStepScope;
-use features\contexts\MinkContextInterface;
+use Behat\FlexibleMink\PseudoInterface\MinkContextInterface;
 
 /**
  * Pseudo interface for tracking the methods of the ScreenShotContext.

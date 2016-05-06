@@ -50,6 +50,14 @@ class FlexibleContext extends MinkContext
      */
     public function clickLink($locator)
     {
+        $this->assertVisibleLink($locator)->click();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function assertVisibleLink($locator)
+    {
         $locator = $this->fixStepArgument($locator);
 
         $links = $this->getSession()->getPage()->findAll(
@@ -62,15 +70,11 @@ class FlexibleContext extends MinkContext
             try {
                 $visible = $link->isVisible();
             } catch (UnsupportedDriverActionException $e) {
-                $link->click();
-
-                return;
+                return $link;
             }
 
             if ($visible) {
-                $link->click();
-
-                return;
+                return $link;
             }
         }
 

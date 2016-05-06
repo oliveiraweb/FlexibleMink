@@ -49,6 +49,17 @@ trait FlexibleContextInterface
     abstract public function clickLink($locator);
 
     /**
+     * Finds the first matching visible link on the page.
+     *
+     * Warning: Will return the first link if the driver does not support visibility checks.
+     *
+     * @param  string               $locator The link name.
+     * @throws ExpectationException If a visible link was not found.
+     * @return NodeElement          The link.
+     */
+    abstract public function assertVisibleLink($locator);
+
+    /**
      * Checks that the page contains a visible input field and then returns it.
      *
      * @param $fieldName

@@ -50,6 +50,13 @@ trait CsvContext
 
             // iterate over each expected column
             foreach ($expectedHeaders as $name => $colNum) {
+                if (!isset($actualHeaders[$name])) {
+                    throw new ExpectationException(
+                        "Column $name does not exist, but was expected to",
+                        $this->getSession()
+                    );
+                }
+
                 $expectedValue = isset($expectedRow[$colNum]) ? $expectedRow[$colNum] : null;
                 $actualValue = isset($actualRow[$actualHeaders[$name]]) ? $actualRow[$actualHeaders[$name]] : null;
 

@@ -70,4 +70,26 @@ trait CsvContext
             }
         }
     }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @Then /^the "(?P<key>[^"]+)" should be CSV data with the following headers:$/
+     */
+    public function assertThingIsCSVWithRows($key, TableNode $table)
+    {
+        $expectedHeaders = $table->getColumn(0);
+
+        $actualHeaders = str_getcsv(str_getcsv($this->get($key), "\n")[0]);
+
+        if ($diff = array_diff($expectedHeaders, $actualHeaders)) {
+            $missing = implode("', '", $diff);
+            throw new ExpectationException("CSV '$key' is missing rows '$missing'", $this->getSession());
+        }
+
+        if ($diff = array_diff($actualHeaders, $expectedHeaders)) {
+            $extra = implode("', '", $diff);
+            throw new ExpectationException("CSV '$key' contains extra rows '$extra'", $this->getSession());
+        }
+    }
 }

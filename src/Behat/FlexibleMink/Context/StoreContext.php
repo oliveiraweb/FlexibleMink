@@ -57,7 +57,7 @@ trait StoreContext
             throw new Exception("Entry $nth for $key was not found in the store.");
         }
 
-        return $thing;
+        return $this->get($key, $nth);
     }
 
     /**

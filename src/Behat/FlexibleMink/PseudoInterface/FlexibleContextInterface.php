@@ -4,6 +4,7 @@ namespace Behat\FlexibleMink\PseudoInterface;
 
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Session;
 
@@ -91,4 +92,15 @@ trait FlexibleContextInterface
      * @throws ExpectationException if any of the fields is visible in the page
      */
     abstract public function assertPageNotContainsFields(TableNode $tableNode);
+
+    /**
+     * Assert if the option exist/not exist in the select.
+     *
+     * @param  string                   $select    The name of the select
+     * @param  string                   $existence The status of the option item
+     * @param  string                   $option    The name of the option item
+     * @throws ElementNotFoundException If the select is not found in the page
+     * @throws ExpectationException     If the option is exist/not exist as expected
+     */
+    abstract public function assertSelectContainsOption($select, $existence, $option);
 }

@@ -163,7 +163,7 @@ class FlexibleContext extends MinkContext
     /**
      * {@inheritdoc}
      *
-     * @Then /^the (?P<option>.*?) option(?P<existence>( | not)?) exists? in the (?P<select>.*?) select$/
+     * @Then /^the (?P<option>.*?) option(?:|(?P<existence> does not?)) exists? in the (?P<select>.*?) select$/
      */
     public function assertSelectContainsOption($select, $existence, $option)
     {
@@ -171,10 +171,10 @@ class FlexibleContext extends MinkContext
         $option = $this->fixStepArgument($option);
         $selectField = $this->assertFieldExists($select);
         $opt = $selectField->find('named', ['option', $option]);
-        if ($existence === 'not' && $opt) {
+        if ($existence && $opt) {
             throw new ExpectationException("The option '" . $option . "' exist in the select", $this->getSession());
         }
-        if ($existence === '' && !$opt) {
+        if (!$existence && !$opt) {
             throw new ExpectationException("The option '" . $option . "' not exist in the select", $this->getSession());
         }
     }

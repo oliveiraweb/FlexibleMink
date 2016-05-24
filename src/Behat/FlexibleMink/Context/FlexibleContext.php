@@ -181,8 +181,9 @@ class FlexibleContext extends MinkContext
 
     /**
      * Adds or replaces a cookie.
+     * Note that you must request a page before trying to set a cookie, in order to set the domain.
      *
-     * @When /^(?:|I )set the cookie "(?P<key>(?:[^"]|\\")*)" with value "(?P<value>(?:[^"]|\\")*)"$/
+     * @When /^(?:|I )set the cookie "(?P<key>(?:[^"]|\\")*)" with value (?P<value>.+)$/
      */
     public function addOrReplaceCookie($key, $value)
     {

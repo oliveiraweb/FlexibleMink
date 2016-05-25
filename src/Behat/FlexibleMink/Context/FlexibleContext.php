@@ -178,4 +178,27 @@ class FlexibleContext extends MinkContext
             throw new ExpectationException("The option '" . $option . "' not exist in the select", $this->getSession());
         }
     }
+
+    /**
+     * Adds or replaces a cookie.
+     * Note that you must request a page before trying to set a cookie, in order to set the domain.
+     *
+     * @When /^(?:|I )set the cookie "(?P<key>(?:[^"]|\\")*)" with value (?P<value>.+)$/
+     */
+    public function addOrReplaceCookie($key, $value)
+    {
+        // set cookie:
+        $this->getSession()->setCookie($key, $value);
+    }
+
+    /**
+     * Deletes a cookie.
+     *
+     * @When /^(?:|I )delete the cookie "(?P<key>(?:[^"]|\\")*)"$/
+     */
+    public function deleteCookie($key)
+    {
+        // set cookie:
+        $this->getSession()->setCookie($key, null);
+    }
 }

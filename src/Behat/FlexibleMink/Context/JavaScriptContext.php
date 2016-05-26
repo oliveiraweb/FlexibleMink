@@ -4,6 +4,7 @@ namespace Behat\FlexibleMink\Context;
 
 use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
 use Behat\FlexibleMink\PseudoInterface\JavaScriptContextInterface;
+use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
 
 /**
@@ -53,5 +54,43 @@ trait JavaScriptContext
                 $this->getSession()
             );
         }
+    }
+
+    /**
+     * Selectively compares two JSON objects.
+     *
+     * @Given /^the javascript variable "([^"]*)" should have the following contents:$/
+     */
+    public function assertJsonContentsOneByOne($variableName, TableNode $values, $count = null)
+    {
+        $returnedJsonData = $this->getSession()->evaluateScript('return JSON.stringify(' . $variableName . ');');
+        $response = json_decode($returnedJsonData, true);
+
+        foreach ($values->getHash() as $row) {
+            if (!isset($response[$row['key']])) {
+                throw new ExpectationException(
+                    sprintf('Expected key "%s" was not in the JS variable "%s"\nActual: %s', $row['key'], $variableName, $returnedJsonData),
+                    $this->getSession()
+                );
+            }
+            $expected = $this->getRawOrJson($row['value']);
+            $actual = $this->getRawOrJson($response[$row['key']]);
+
+            if ($actual != $expected) {
+                throw new ExpectationException(
+                    sprintf('Expected "%s" in %s position but got "%s"', $expected, $row['key'], $actual),
+                    $this->getSession()
+                );
+            }
+        }
+    }
+
+    protected function getRawOrJson($value)
+    {
+        if (is_array($value) || is_object($value)) {
+            return json_encode($value);
+        }
+
+        return $value;
     }
 }

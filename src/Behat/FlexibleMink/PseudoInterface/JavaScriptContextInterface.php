@@ -2,6 +2,7 @@
 
 namespace Behat\FlexibleMink\PseudoInterface;
 
+use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
 
 /**
@@ -26,4 +27,13 @@ trait JavaScriptContextInterface
      * @throws ExpectationException if the type of the given variable does not match what's expected.
      */
     abstract public function assertJavascriptVariableType($variable, $not, $type);
+
+    /**
+     * Selectively compares two JSON objects.
+     *
+     * @param  string               $variableName The name of the JS variable to look for.
+     * @param  TableNode            $values       JavaScript variable key-value pair.
+     * @throws ExpectationException if the Javascript variable isn't a match
+     */
+    abstract public function assertJsonContentsOneByOne($variableName, TableNode $values);
 }

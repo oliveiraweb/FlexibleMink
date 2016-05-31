@@ -208,12 +208,13 @@ class FlexibleContext extends MinkContext
      *
      * @When /^(?:|I )attach the local file "(?P<path>[^"]*)" to "(?P<field>(?:[^"]|\\")*)"$/
      */
-    public function addLocalFileToField($field, $path)
+    public function addLocalFileToField($path, $field)
     {
         $field = $this->fixStepArgument($field);
 
         if ($this->getMinkParameter('files_path')) {
-            $fullPath = rtrim(realpath($this->getMinkParameter('files_path')), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$path;
+            $fullPath = rtrim(realpath($this->getMinkParameter('files_path')),
+                    DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $path;
             if (is_file($fullPath)) {
                 $path = $fullPath;
             }

@@ -103,4 +103,13 @@ trait FlexibleContextInterface
      * @throws ExpectationException     If the option is exist/not exist as expected
      */
     abstract public function assertSelectContainsOption($select, $existence, $option);
+
+    /**
+     * Attaches a local file to field with specified id|name|label|value. This is used when running behat and
+     * browser session in different containers.
+     *
+     * @param string $field The file field to select the file with
+     * @param string $path  The local path of the file
+     */
+    abstract public function addLocalFileToField($field, $path);
 }

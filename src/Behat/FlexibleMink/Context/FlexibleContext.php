@@ -8,6 +8,7 @@ use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
+use ZipArchive;
 
 /**
  * Overwrites some MinkContext step definitions to make them more resilient to failures caused by browser/driver
@@ -200,5 +201,37 @@ class FlexibleContext extends MinkContext
     {
         // set cookie:
         $this->getSession()->setCookie($key, null);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @When /^(?:|I )attach the local file "(?P<path>[^"]*)" to "(?P<field>(?:[^"]|\\")*)"$/
+     */
+    public function addLocalFileToField($path, $field)
+    {
+        $field = $this->fixStepArgument($field);
+
+        if ($this->getMinkParameter('files_path')) {
+            $fullPath = rtrim(realpath($this->getMinkParameter('files_path')),
+                    DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $path;
+            if (is_file($fullPath)) {
+                $path = $fullPath;
+            }
+        }
+
+        $tempZip = tempnam('', 'WebDriverZip');
+        $zip = new ZipArchive();
+        $zip->open($tempZip, ZipArchive::CREATE);
+        $zip->addFile($path, basename($path));
+        $zip->close();
+
+        $remotePath = $this->getSession()->getDriver()->getWebDriverSession()->file([
+            'file' => base64_encode(file_get_contents($tempZip)),
+        ]);
+
+        $this->attachFileToField($field, $remotePath);
+
+        unlink($tempZip);
     }
 }

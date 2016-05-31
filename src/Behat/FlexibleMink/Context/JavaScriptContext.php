@@ -59,7 +59,7 @@ trait JavaScriptContext
     /**
      * {@inheritdoc}
      *
-     * @Given /^the javascript variable :variableName should have the following contents:$/
+     * @Given the javascript variable :variableName should have the following contents:
      */
     public function assertJsonContentsOneByOne($variableName, TableNode $values)
     {

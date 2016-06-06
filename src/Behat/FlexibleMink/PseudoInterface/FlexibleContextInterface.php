@@ -42,6 +42,16 @@ trait FlexibleContextInterface
     abstract public function assertPageNotContainsText($text);
 
     /**
+     * This method overrides the MinkContext::assertElementContainsText() default behavior for
+     * assertElementNotContainsText to ensure that it waits for the item to be available with a max time limit.
+     *
+     * @see MinkContext::assertElementContainsText
+     * @param string|array $element     css element selector
+     * @param string       $text         expected text
+     */
+    abstract public function assertElementContainsText($element, $text);
+
+    /**
      * Clicks a visible link with specified id|title|alt|text.
      *
      * This method overrides the MinkContext::clickLink() default behavior for clickLink to ensure that only visible

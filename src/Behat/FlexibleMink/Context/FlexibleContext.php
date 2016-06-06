@@ -49,6 +49,16 @@ class FlexibleContext extends MinkContext
     /**
      * {@inheritdoc}
      */
+    public function assertElementContainsText($element, $text)
+    {
+        $this->waitFor(function () use ($element, $text) {
+            parent::assertElementContainsText($element, $text);
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function clickLink($locator)
     {
         $this->assertVisibleLink($locator)->click();

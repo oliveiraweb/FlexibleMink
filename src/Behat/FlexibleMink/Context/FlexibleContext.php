@@ -234,4 +234,17 @@ class FlexibleContext extends MinkContext
 
         unlink($tempZip);
     }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @When /^(?:I |)scroll to the (?P<where>top|bottom) of the page$/
+     * @Given /^the page is scrolled to the (?P<where>top|bottom)$/
+     */
+    public function scrollBodyTo($where)
+    {
+        $alignToTop = ($where == 'top') ? 'true' : 'false';
+
+        $this->getSession()->executeScript("document.body.scrollIntoView($alignToTop)");
+    }
 }

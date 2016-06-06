@@ -4,8 +4,10 @@ namespace Behat\FlexibleMink\PseudoInterface;
 
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
+use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\Mink\Session;
 
 /**
@@ -112,4 +114,13 @@ trait FlexibleContextInterface
      * @param string $path  The local path of the file
      */
     abstract public function addLocalFileToField($field, $path);
+
+    /**
+     * Scrolls the viewport to the top or bottom of the page body.
+     *
+     * @param  string                           $where to scroll to. Must be either "top" or "bottom".
+     * @throws UnsupportedDriverActionException When operation not supported by the driver
+     * @throws DriverException                  When the operation cannot be done
+     */
+    abstract public function scrollBodyTo($where);
 }

@@ -43,7 +43,7 @@ trait FlexibleContextInterface
 
     /**
      * This method overrides the MinkContext::assertElementContainsText() default behavior for
-     * assertElementNotContainsText to ensure that it waits for the item to be available with a max time limit.
+     * assertElementContainsText to ensure that it waits for the item to be available with a max time limit.
      *
      * @see MinkContext::assertElementContainsText
      * @param string|array $element     css element selector

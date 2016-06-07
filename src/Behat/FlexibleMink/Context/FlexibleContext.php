@@ -241,10 +241,10 @@ class FlexibleContext extends MinkContext
      * @When /^(?:I |)scroll to the (?P<where>top|bottom) of the page$/
      * @Given /^the page is scrolled to the (?P<where>top|bottom)$/
      */
-    public function scrollBodyTo($where)
+    public function scrollWindowToBody($where)
     {
-        $alignToTop = ($where == 'top') ? 'true' : 'false';
+        $x = ($where == 'top') ? '0' : 'document.body.scrollHeight';
 
-        $this->getSession()->executeScript("document.body.scrollIntoView($alignToTop)");
+        $this->getSession()->executeScript("window.scrollTo(0, $x)");
     }
 }

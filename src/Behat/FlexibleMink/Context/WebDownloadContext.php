@@ -23,7 +23,14 @@ trait WebDownloadContext
      */
     public function downloadViaLink($locator, $key = 'Download', $headers = '')
     {
-        $this->download($this->assertVisibleLink($locator)->getAttribute('href'), $key, $headers);
+        $url = $this->assertVisibleLink($locator)->getAttribute('href');
+
+        // If the path does not contain a base_url, prepend the one specified in the configuration file.
+        if (!preg_match('/^(http(s|):[\/]{2}|)(www\.|)[a-zA-Z0-9]+\.[a-zA-Z]{3}/', $url)) {
+            $url = $this->getMinkParameter('base_url') . $url;
+        }
+
+        $this->download($url, $key, $headers);
     }
 
     /**

@@ -12,8 +12,9 @@ trait WebDownloadContextInterface
      *
      * @param string $locator The id|label of the link.
      * @param string $key     The key to store the content under, defaulting to "Download".
+     * @param string $headers These are headers that may be needed depending on the item being downloaded.
      */
-    abstract public function downloadViaLink($locator, $key = 'Download');
+    abstract public function downloadViaLink($locator, $key = 'Download', $headers = '');
 
     /**
      * Downloads the specified file and stores the content under the given key in the store.

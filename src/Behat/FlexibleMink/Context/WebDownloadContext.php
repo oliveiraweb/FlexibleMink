@@ -35,25 +35,25 @@ trait WebDownloadContext
      * @When I download the file :file
      * @When I download the file :file to :key
      */
-    public function download($file, $key = 'Download')
+    public function download($file, $key = 'Download', $headersString = '')
     {
-        $data = $this->getSession()->evaluateScript(
-<<<JS
-            (function() {
-                var out;
-                $.ajax({
-                    'async' : false,
-                    'url' : '$file',
-                    'success' : function(data, status, xhr) {
-                        out = data;
-                    }
-                });
+        $ch = curl_init($file);
+        $headers[] = $headersString;
 
-                return out;
-            })();
-JS
-        );
+        curl_setopt_array($ch, [
+            CURLOPT_HEADER         => 0,
+            CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_BINARYTRANSFER => 1,
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+        ]);
 
-        $this->put($data, $key);
+        $response = curl_exec($ch);
+
+        // Put response into object store.
+        $this->put($response, $key);
+
+        return $response;
     }
 }

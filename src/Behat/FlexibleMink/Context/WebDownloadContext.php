@@ -20,13 +20,10 @@ trait WebDownloadContext
 
     /**
      * {@inheritdoc}
-     *
-     * @When I download a file via the :locator link
-     * @When I download a file to :key via the :locator link
      */
-    public function downloadViaLink($locator, $key = 'Download')
+    public function downloadViaLink($locator, $key = 'Download', $headers = '')
     {
-        $this->download($this->assertVisibleLink($locator)->getAttribute('href'), $key);
+        $this->download($this->assertVisibleLink($locator)->getAttribute('href'), $key, $headers);
     }
 
     /**

@@ -116,11 +116,11 @@ trait FlexibleContextInterface
     abstract public function addLocalFileToField($field, $path);
 
     /**
-     * Scrolls the viewport to the top or bottom of the page body.
+     * Scrolls the window to the top or bottom of the page body.
      *
      * @param  string                           $where to scroll to. Must be either "top" or "bottom".
      * @throws UnsupportedDriverActionException When operation not supported by the driver
      * @throws DriverException                  When the operation cannot be done
      */
-    abstract public function scrollBodyTo($where);
+    abstract public function scrollWindowToBody($where);
 }

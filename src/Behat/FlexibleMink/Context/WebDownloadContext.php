@@ -18,31 +18,33 @@ trait WebDownloadContext
     use FlexibleContextInterface;
     use StoreContextInterface;
 
+    protected static $baseUrlRegExp = '/^((http(s|):[\/]{2}|)([a-zA-Z]+\.|)[a-zA-Z0-9]+\.[a-zA-Z]+(\:[\d]+|)|[a-zA-Z0-9]+)/';
+
     /**
      * {@inheritdoc}
      */
     public function downloadViaLink($locator, $key = 'Download', $headers = '')
     {
-        $url = $this->assertVisibleLink($locator)->getAttribute('href');
-        $baseUrlRegExp = '/^(http(s|):[\/]{2}|)(www\.|)[a-zA-Z0-9]+\.[a-zA-Z]+(\:[\d]+|)/';
+        $link = $this->assertVisibleLink($locator)->getAttribute('href');
 
-        if (!preg_match($baseUrlRegExp, $url)) {
+        if (!preg_match(self::$baseUrlRegExp, $link)) {
             $currentUrl = $this->getSession()->getCurrentUrl();
 
-            $baseFilter = preg_match(
-                $baseUrlRegExp,
-                $currentUrl,
-                $baseCurrentUrl
-            );
-
-            if ($baseFilter === 0) {
+            if (!preg_match(self::$baseUrlRegExp, $currentUrl, $linkParts)) {
                 throw new ExpectationException('Could not generate base url from "' . $currentUrl . '"');
             }
 
-            $url = $baseCurrentUrl[0] . $url;
+            // Checks if URL is relative.
+            if (strpos($link, '/' === 1)) {
+                // Append to base URL
+                $link = $linkParts[0] . $link;
+            } else {
+                // Resolve the relative URL to a fully qualified URL
+                $link = substr($currentUrl, 0, strpos($currentUrl, '/')) . $link;
+            }
         }
 
-        $this->download($url, $key, $headers);
+        $this->download($link, $key, $headers);
     }
 
     /**

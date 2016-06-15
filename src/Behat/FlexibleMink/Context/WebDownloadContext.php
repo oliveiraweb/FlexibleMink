@@ -35,7 +35,7 @@ trait WebDownloadContext
             }
 
             // Checks if URL is relative.
-            if (strpos($link, '/' === 1)) {
+            if (strpos($link, '/') === 0) {
                 // Append to base URL
                 $link = $linkParts[0] . $link;
             } else {

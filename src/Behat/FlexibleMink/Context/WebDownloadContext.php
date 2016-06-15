@@ -18,12 +18,33 @@ trait WebDownloadContext
     use FlexibleContextInterface;
     use StoreContextInterface;
 
+    protected static $baseUrlRegExp = '/^((http(s|):[\/]{2}|)([a-zA-Z]+\.|)[a-zA-Z0-9]+\.[a-zA-Z]+(\:[\d]+|)|[a-zA-Z0-9]+)/';
+
     /**
      * {@inheritdoc}
      */
     public function downloadViaLink($locator, $key = 'Download', $headers = '')
     {
-        $this->download($this->assertVisibleLink($locator)->getAttribute('href'), $key, $headers);
+        $link = $this->assertVisibleLink($locator)->getAttribute('href');
+
+        if (!preg_match(self::$baseUrlRegExp, $link)) {
+            $currentUrl = $this->getSession()->getCurrentUrl();
+
+            if (!preg_match(self::$baseUrlRegExp, $currentUrl, $linkParts)) {
+                throw new ExpectationException('Could not generate base url from "' . $currentUrl . '"');
+            }
+
+            // Checks if URL is relative.
+            if (strpos($link, '/' === 1)) {
+                // Append to base URL
+                $link = $linkParts[0] . $link;
+            } else {
+                // Resolve the relative URL to a fully qualified URL
+                $link = substr($currentUrl, 0, strpos($currentUrl, '/')) . $link;
+            }
+        }
+
+        $this->download($link, $key, $headers);
     }
 
     /**

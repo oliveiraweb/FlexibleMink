@@ -151,6 +151,34 @@ class FlexibleContext extends MinkContext
     /**
      * {@inheritdoc}
      *
+     * @Then I should see the following lines in order:
+     */
+    public function assertLinesInOrder(TableNode $table)
+    {
+        $session = $this->getSession();
+        $page = $session->getPage()->getText();
+
+        $lines = $table->getColumn(0);
+        $lastPosition = -1;
+
+        foreach ($lines as $line) {
+            $position = strpos($page, $line);
+
+            if ($position === false) {
+                throw new ExpectationException("Line '$line' was not found on the page", $session);
+            }
+
+            if ($position < $lastPosition) {
+                throw new ExpectationException("Line '$line' came before its expected predecessor", $session);
+            }
+
+            $lastPosition = $position;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
      * @Then /^I should see the following fields:$/
      */
     public function assertPageContainsFields(TableNode $tableNode)

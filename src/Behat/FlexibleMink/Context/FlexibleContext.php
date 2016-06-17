@@ -8,6 +8,7 @@ use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
+use InvalidArgumentException;
 use ZipArchive;
 
 /**
@@ -145,6 +146,38 @@ class FlexibleContext extends MinkContext
                     throw new ExpectationException("Input label '$fieldName' found", $this->getSession());
                 }
             }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @Then I should see the following lines in order:
+     */
+    public function assertLinesInOrder(TableNode $table)
+    {
+        if (count($table->getRow(0)) > 1) {
+            throw new InvalidArgumentException('Arguments must be a single-column list of items');
+        }
+
+        $session = $this->getSession();
+        $page = $session->getPage()->getText();
+
+        $lines = $table->getColumn(0);
+        $lastPosition = -1;
+
+        foreach ($lines as $line) {
+            $position = strpos($page, $line);
+
+            if ($position === false) {
+                throw new ExpectationException("Line '$line' was not found on the page", $session);
+            }
+
+            if ($position < $lastPosition) {
+                throw new ExpectationException("Line '$line' came before its expected predecessor", $session);
+            }
+
+            $lastPosition = $position;
         }
     }
 

@@ -9,6 +9,7 @@ use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\Mink\Session;
+use InvalidArgumentException;
 
 /**
  * Pseudo interface for tracking the methods of the FlexibleContext.
@@ -92,8 +93,9 @@ trait FlexibleContextInterface
     /**
      * Checks that the page contains the given lines of text in the order specified.
      *
-     * @param  TableNode            $table A list of text lines to look for.
-     * @throws ExpectationException if a line is not found, or is found out of order.
+     * @param  TableNode                $table A list of text lines to look for.
+     * @throws ExpectationException     if a line is not found, or is found out of order.
+     * @throws InvalidArgumentException if the list of lines has more than one column.
      */
     abstract public function assertLinesInOrder(TableNode $table);
 

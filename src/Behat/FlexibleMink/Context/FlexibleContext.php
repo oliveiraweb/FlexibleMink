@@ -8,6 +8,7 @@ use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
+use InvalidArgumentException;
 use ZipArchive;
 
 /**
@@ -155,6 +156,10 @@ class FlexibleContext extends MinkContext
      */
     public function assertLinesInOrder(TableNode $table)
     {
+        if (count($table->getRow(0)) > 1) {
+            throw new InvalidArgumentException('Arguments must be a single-column list of items');
+        }
+
         $session = $this->getSession();
         $page = $session->getPage()->getText();
 

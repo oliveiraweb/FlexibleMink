@@ -68,6 +68,14 @@ class FlexibleContext extends MinkContext
     /**
      * {@inheritdoc}
      */
+    public function checkOption($locator)
+    {
+        $this->assertVisibleOption($locator)->check();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function assertVisibleLink($locator)
     {
         $locator = $this->fixStepArgument($locator);
@@ -91,6 +99,34 @@ class FlexibleContext extends MinkContext
         }
 
         throw new ExpectationException("No visible link found for '$locator'", $this->getSession());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function assertVisibleOption($locator)
+    {
+        $locator = $this->fixStepArgument($locator);
+
+        $options = $this->getSession()->getPage()->findAll(
+            'named',
+            ['field', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)]
+        );
+
+        /** @var NodeElement $option */
+        foreach ($options as $option) {
+            try {
+                $visible = $option->isVisible();
+            } catch (UnsupportedDriverActionException $e) {
+                return $option;
+            }
+
+            if ($visible) {
+                return $option;
+            }
+        }
+
+        throw new ExpectationException("No visible option found for '$locator'", $this->getSession());
     }
 
     /**

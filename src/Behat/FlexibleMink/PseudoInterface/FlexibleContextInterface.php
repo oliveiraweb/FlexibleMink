@@ -62,6 +62,16 @@ trait FlexibleContextInterface
     abstract public function clickLink($locator);
 
     /**
+     * Clicks a visible checkbox with specified id|title|alt|text.
+     *
+     * This method overrides the MinkContext::checkOption() default behavior for checkOption to ensure that only visible
+     * options are checked.
+     * @see MinkContext::checkOption
+     * @param string $locator The id|title|alt|text of the option to be clicked.
+     */
+    abstract public function checkOption($locator);
+
+    /**
      * Finds the first matching visible link on the page.
      *
      * Warning: Will return the first link if the driver does not support visibility checks.
@@ -71,6 +81,17 @@ trait FlexibleContextInterface
      * @return NodeElement          The link.
      */
     abstract public function assertVisibleLink($locator);
+
+    /**
+     * Finds the first matching visible option on the page.
+     *
+     * Warning: Will return the first option if the driver does not support visibility checks.
+     *
+     * @param  string               $locator The option name.
+     * @throws ExpectationException If a visible option was not found.
+     * @return NodeElement          The option.
+     */
+    abstract public function assertVisibleOption($locator);
 
     /**
      * Checks that the page contains a visible input field and then returns it.

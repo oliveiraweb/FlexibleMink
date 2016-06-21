@@ -36,4 +36,13 @@ trait JavaScriptContextInterface
      * @throws ExpectationException if the Javascript variable isn't a match
      */
     abstract public function assertJsonContentsOneByOne($variableName, TableNode $values);
+
+    /**
+     * Asserts that a javascript variable has a specified value.
+     *
+     * @param  string               $variableName  This is the name of the variable to be checked.
+     * @param  string               $expectedValue This is the expected value.
+     * @throws ExpectationException If variable value does not match expected value.
+     */
+    abstract public function assertJavascriptVariable($variableName, $expectedValue);
 }

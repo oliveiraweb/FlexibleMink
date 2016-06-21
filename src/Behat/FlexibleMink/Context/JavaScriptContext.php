@@ -103,4 +103,23 @@ trait JavaScriptContext
 
         return $value;
     }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @Then the javascript variable :variableName should have the value of :expectedValue
+     */
+    public function assertJavascriptVariable($variableName, $expectedValue)
+    {
+        $returnedValue = $this->getSession()->evaluateScript(
+            'return ' . $variableName . ';'
+        );
+
+        if ($returnedValue != $expectedValue) {
+            throw new ExpectationException(
+                "Expected \"$expectedValue\" but got \"$returnedValue\"",
+                $this->getSession()
+            );
+        }
+    }
 }

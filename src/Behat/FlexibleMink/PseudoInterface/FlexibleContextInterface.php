@@ -73,6 +73,17 @@ trait FlexibleContextInterface
     abstract public function checkOption($locator);
 
     /**
+     * Finds the first matching visible button on the page.
+     *
+     * Warning: Will return the first button if the driver does not support visibility checks.
+     *
+     * @param  string               $locator The button name.
+     * @throws ExpectationException If a visible button was not found.
+     * @return NodeElement          The button.
+     */
+    abstract public function assertVisibleButton($locator);
+
+    /**
      * Finds the first matching visible link on the page.
      *
      * Warning: Will return the first link if the driver does not support visibility checks.
@@ -155,6 +166,18 @@ trait FlexibleContextInterface
      * @param string $path  The local path of the file
      */
     abstract public function addLocalFileToField($field, $path);
+
+    /**
+     * Presses the visible button with specified id|name|title|alt|value.
+     *
+     * This method overrides the MinkContext::pressButton() default behavior for pressButton to ensure that only visible
+     * buttons are pressed.
+     * @see MinkContext::pressButton
+     * @param string $button button id, inner text, value or alt
+     * @throws ExpectationException If a visible button field is not found.
+
+     */
+    abstract public function pressButton($button);
 
     /**
      * Scrolls the window to the top or bottom of the page body.

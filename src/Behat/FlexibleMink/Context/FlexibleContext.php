@@ -77,6 +77,34 @@ class FlexibleContext extends MinkContext
     /**
      * {@inheritdoc}
      */
+    public function assertVisibleButton($locator)
+    {
+        $locator = $this->fixStepArgument($locator);
+
+        $buttons = $this->getSession()->getPage()->findAll(
+            'named',
+            ['button', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)]
+        );
+
+        /** @var NodeElement $button */
+        foreach ($buttons as $button) {
+            try {
+                $visible = $button->isVisible();
+            } catch (UnsupportedDriverActionException $e) {
+                return $button;
+            }
+
+            if ($visible) {
+                return $button;
+            }
+        }
+
+        throw new ExpectationException("No visible button found for '$locator'", $this->getSession());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function assertVisibleLink($locator)
     {
         $locator = $this->fixStepArgument($locator);
@@ -313,6 +341,14 @@ class FlexibleContext extends MinkContext
         $this->attachFileToField($field, $remotePath);
 
         unlink($tempZip);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function pressButton($locator)
+    {
+        $this->assertVisibleButton($locator);
     }
 
     /**

@@ -89,12 +89,10 @@ class FlexibleContext extends MinkContext
         /** @var NodeElement $button */
         foreach ($buttons as $button) {
             try {
-                $visible = $button->isVisible();
+                if ($button->isVisible()) {
+                    return $button;
+                }
             } catch (UnsupportedDriverActionException $e) {
-                return $button;
-            }
-
-            if ($visible) {
                 return $button;
             }
         }
@@ -348,7 +346,7 @@ class FlexibleContext extends MinkContext
      */
     public function pressButton($locator)
     {
-        $this->assertVisibleButton($locator);
+        $this->assertVisibleButton($locator)->press();
     }
 
     /**

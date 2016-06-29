@@ -172,10 +172,10 @@ trait FlexibleContextInterface
      *
      * This method overrides the MinkContext::pressButton() default behavior for pressButton to ensure that only visible
      * buttons are pressed.
+     *
      * @see MinkContext::pressButton
-     * @param string $button button id, inner text, value or alt
+     * @param  string               $button button id, inner text, value or alt
      * @throws ExpectationException If a visible button field is not found.
-
      */
     abstract public function pressButton($button);
 

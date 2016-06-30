@@ -99,7 +99,7 @@ trait StoreContext
         preg_match_all('/\(the ([^\)]+) of the ([^\)]+)\)/', $string, $matches);
         foreach ($matches[0] as $i => $match) {
             $thingName = $matches[2][$i];
-            $thingProperty = $matches[1][$i];
+            $thingProperty = str_replace(' ', '_', strtolower($matches[1][$i]));
 
             if (!$thing = $this->get($thingName)) {
                 throw new Exception("Did not find $thingName in the store");

@@ -24,6 +24,10 @@ trait StoreContext
     public function clearRegistry()
     {
         $this->registry = [];
+
+        if (method_exists($this, 'onStoreInitialized')) {
+            $this->onStoreInitialized();
+        }
     }
 
     /**

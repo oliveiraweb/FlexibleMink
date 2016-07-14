@@ -81,10 +81,7 @@ class FlexibleContext extends MinkContext
     {
         $locator = $this->fixStepArgument($locator);
 
-        $buttons = $this->getSession()->getPage()->findAll(
-            'named',
-            ['button', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)]
-        );
+        $buttons = $this->getSession()->getPage()->findAll('named', ['button', $locator]);
 
         /** @var NodeElement $button */
         foreach ($buttons as $button) {

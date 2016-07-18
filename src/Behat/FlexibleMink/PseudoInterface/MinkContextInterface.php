@@ -52,4 +52,11 @@ trait MinkContextInterface
      * @param string $page The URL to visit.
      */
     abstract public function visit($page);
+
+    /**
+     * Checks, that current page PATH is equal to specified.
+     *
+     * @param string $page.
+     */
+    abstract public function assertPageAddress($page);
 }

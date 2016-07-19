@@ -56,7 +56,7 @@ trait MinkContextInterface
     /**
      * Checks, that current page PATH is equal to specified.
      *
-     * @param string $page.
+     * @param string $page The path of the path to get asserted.
      */
     abstract public function assertPageAddress($page);
 }

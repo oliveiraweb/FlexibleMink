@@ -168,6 +168,29 @@ trait FlexibleContextInterface
     abstract public function addLocalFileToField($field, $path);
 
     /**
+     * Blurs (unfocuses) selected field.
+     *
+     * @param  string               $locator The field to blur
+     * @throws ExpectationException If the selected field is not found
+     */
+    abstract public function blurField($locator);
+
+    /**
+     * Focuses and blurs (unfocuses) the selected field.
+     *
+     * @param string $locator The field to focus and blur
+     */
+    abstract public function focusBlurField($locator);
+
+    /**
+     * Focuses the selected field.
+     *
+     * @param  string               $locator The the field to focus
+     * @throws ExpectationException If the selected field is not found
+     */
+    abstract public function focusField($locator);
+
+    /**
      * Presses the visible button with specified id|name|title|alt|value.
      *
      * This method overrides the MinkContext::pressButton() default behavior for pressButton to ensure that only visible

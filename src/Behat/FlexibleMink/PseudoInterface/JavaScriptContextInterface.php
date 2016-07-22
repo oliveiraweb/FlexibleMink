@@ -45,4 +45,11 @@ trait JavaScriptContextInterface
      * @throws ExpectationException If variable value does not match expected value.
      */
     abstract public function assertJavascriptVariable($variableName, $expectedValue);
+
+    /**
+     * Simulates hitting a keyboard key.
+     *
+     * @param string $key The key on the keyboard
+     */
+    abstract public function hitKey($key);
 }

@@ -1,3 +1,6 @@
-/.idea/*
+.idea/*
+bin/composer.phar
+bin/phpspec
 /composer.lock
 /vendor/*
+/node_modules/*

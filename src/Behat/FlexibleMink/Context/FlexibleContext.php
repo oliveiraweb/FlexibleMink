@@ -26,6 +26,7 @@ class FlexibleContext extends MinkContext
     use JavaScriptContext;
     use SpinnerContext;
     use StoreContext;
+    use TableContext;
     use TypeCaster;
 
     /**

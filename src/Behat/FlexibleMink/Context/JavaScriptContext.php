@@ -125,7 +125,8 @@ trait JavaScriptContext
 
     /**
      * {@inheritdoc}
-     * @When /^(?:I |)hit (?:the |)"(?P<tag>[^"]+)" key$/
+     *
+     * @When /^(?:I |)hit (?:the |)"(?P<key>[^"]+)" key$/
      */
     public function hitKey($key)
     {

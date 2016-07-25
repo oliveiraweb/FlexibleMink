@@ -146,6 +146,10 @@ trait JavaScriptContext
                 $key = 40;
                 break;
             default:
+                throw new ExpectationException(
+                    'The key "' . $key . '" is does not exist in the function.',
+                    $this->getSession()
+                );
                 break;
         }
         $script = "jQuery.event.trigger({ type : 'keypress', which : '" . $key . "' });";

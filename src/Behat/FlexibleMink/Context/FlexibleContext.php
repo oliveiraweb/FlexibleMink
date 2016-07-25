@@ -340,6 +340,7 @@ class FlexibleContext extends MinkContext
 
     /**
      * {@inheritdoc}
+     *
      * @When /^(?:I |)(?:blur|unfocus) (?:the |)"(?P<locator>[^"]+)"(?: field|)$/
      */
     public function blurField($locator)
@@ -353,6 +354,7 @@ class FlexibleContext extends MinkContext
 
     /**
      * {@inheritdoc}
+     *
      * @When /^(?:I |)focus and (?:blur|unfocus) (?:the |)"(?P<locator>[^"]+)"(?: field|)$/
      * @When /^(?:I |)toggle focus (?:on|of) (?:the |)"(?P<locator>[^"]+)"(?: field|)$/
      */
@@ -364,6 +366,7 @@ class FlexibleContext extends MinkContext
 
     /**
      * {@inheritdoc}
+     *
      * @When /^(?:I |)focus (?:the |)"(?P<locator>[^"]+)"(?: field|)$/
      */
     public function focusField($locator)

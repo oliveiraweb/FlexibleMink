@@ -122,38 +122,4 @@ trait JavaScriptContext
             );
         }
     }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @When /^(?:I |)hit (?:the |)"(?P<key>[^"]+)" key$/
-     */
-    public function hitKey($key)
-    {
-        switch ($key) {
-            case 'tab':
-                $key = 13;
-                break;
-            case 'shift tab':
-                $key = 2228233;
-                break;
-            case 'enter':
-                $key = 13;
-                break;
-            case 'return':
-                $key = 13;
-                break;
-            case 'down arrow':
-                $key = 40;
-                break;
-            default:
-                throw new ExpectationException(
-                    'The key "' . $key . '" is not defined.',
-                    $this->getSession()
-                );
-                break;
-        }
-        $script = "jQuery.event.trigger({ type : 'keypress', which : '" . $key . "' });";
-        $this->getSession()->evaluateScript($script);
-    }
 }

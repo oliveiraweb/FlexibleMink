@@ -191,6 +191,13 @@ trait FlexibleContextInterface
     abstract public function focusField($locator);
 
     /**
+     * Simulates hitting a keyboard key.
+     *
+     * @param string $key The key on the keyboard
+     */
+    abstract public function hitKey($key);
+
+    /**
      * Presses the visible button with specified id|name|title|alt|value.
      *
      * This method overrides the MinkContext::pressButton() default behavior for pressButton to ensure that only visible

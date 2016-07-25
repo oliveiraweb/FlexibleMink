@@ -148,7 +148,7 @@ trait JavaScriptContext
                 break;
             default:
                 throw new ExpectationException(
-                    'The key "' . $key . '" is does not exist in the function.',
+                    'The key "' . $key . '" is not defined.',
                     $this->getSession()
                 );
                 break;

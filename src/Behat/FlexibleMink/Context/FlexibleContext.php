@@ -28,6 +28,15 @@ class FlexibleContext extends MinkContext
     use StoreContext;
     use TypeCaster;
 
+    /** @var array map of common key names to key codes */
+    protected static $keyCodes = [
+        'down arrow' => 40,
+        'enter'      => 13,
+        'return'     => 13,
+        'shift tab'  => 2228233,
+        'tab'        => 9,
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -345,11 +354,7 @@ class FlexibleContext extends MinkContext
      */
     public function blurField($locator)
     {
-        $field = $this->getSession()->getPage()->findField($locator);
-        if (!$field) {
-            throw new ExpectationException('Could not find field for ' . $locator, $this->getSession());
-        }
-        $field->blur();
+        $this->assertFieldExists($locator)->blur();
     }
 
     /**
@@ -371,46 +376,23 @@ class FlexibleContext extends MinkContext
      */
     public function focusField($locator)
     {
-        $field = $this->getSession()->getPage()->findField($locator);
-        if (!$field) {
-            throw new ExpectationException('Could not find field for ' . $locator, $this->getSession());
-        }
-        $field->focus();
+        $this->assertFieldExists($locator)->focus();
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @When /^(?:I |)hit (?:the |)"(?P<key>[^"]+)" key$/
-     */
-    public function hitKey($key)
-    {
-        switch ($key) {
-            case 'tab':
-                $key = 13;
-                break;
-            case 'shift tab':
-                $key = 2228233;
-                break;
-            case 'enter':
-                $key = 13;
-                break;
-            case 'return':
-                $key = 13;
-                break;
-            case 'down arrow':
-                $key = 40;
-                break;
-            default:
-                throw new ExpectationException(
-                    'The key "' . $key . '" is not defined.',
-                    $this->getSession()
-                );
-                break;
-        }
-        $script = "jQuery.event.trigger({ type : 'keypress', which : '" . $key . "' });";
-        $this->getSession()->evaluateScript($script);
-    }
+     /**
+      * {@inheritdoc}
+      *
+      * @When /^(?:I |)(?:hit|press) (?:the |)"(?P<key>[^"]+)" key$/
+      */
+     public function hitKey($key)
+     {
+         if (!array_key_exists($key, self::$keyCodes)) {
+             throw new ExpectationException("The key '$key' is not defined.", $this->getSession());
+         }
+
+         $script = "jQuery.event.trigger({ type : 'keypress', which : '" . self::$keyCodes[$key] . "' });";
+         $this->getSession()->evaluateScript($script);
+     }
 
     /**
      * {@inheritdoc}

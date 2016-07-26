@@ -170,8 +170,7 @@ trait FlexibleContextInterface
     /**
      * Blurs (unfocuses) selected field.
      *
-     * @param  string               $locator The field to blur
-     * @throws ExpectationException If the selected field is not found
+     * @param string $locator The field to blur
      */
     abstract public function blurField($locator);
 
@@ -185,8 +184,7 @@ trait FlexibleContextInterface
     /**
      * Focuses the selected field.
      *
-     * @param  string               $locator The the field to focus
-     * @throws ExpectationException If the selected field is not found
+     * @param string $locator The the field to focus
      */
     abstract public function focusField($locator);
 

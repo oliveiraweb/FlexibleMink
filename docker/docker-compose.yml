@@ -17,6 +17,7 @@ services:
       - no_proxy:localhost
     links:
       - web
+      - web:dockermachine.local
     volumes:
       - /dev/shm:/dev/shm
       - ..:/data

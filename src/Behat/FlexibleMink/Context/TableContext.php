@@ -7,6 +7,7 @@ use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * Class TableContext.
@@ -20,10 +21,12 @@ trait TableContext
     use TableContextInterface;
 
     /**
-     * Finds a table with a given name or id using partial matching.
+     * Finds a table with a given data-qa-id, name, or id. data-qa-id is given preference and matched exactly, while
+     * name and id are matched partially.
      *
      * @param  string                   $name The name of the table. Will be matched against id or name properties.
      * @throws ElementNotFoundException If not table is found with id or name {@paramref $name}
+     * @throws RuntimeException         If a table is found, but is not visible
      * @return NodeElement              The matched table
      */
     private function findNamedTable($name)
@@ -32,10 +35,16 @@ trait TableContext
         $namePiece = "contains(normalize-space(@name), '$name')";
 
         /** @var NodeElement $table */
-        $table = $this->assertSession()->elementExists('xpath', "//table[$idPiece or $namePiece]");
+        $table = $this->waitFor(function () use ($idPiece, $namePiece) {
+            return $this->assertSession()->elementExists('xpath', "//table[$idPiece or $namePiece]");
+        });
 
         if (!$table) {
             throw new ElementNotFoundException($this->getSession()->getDriver(), 'table', 'xpath', 'id, name');
+        }
+
+        if (!$table->isVisible()) {
+            throw new RuntimeException("Found table '$name', but it is not visible!");
         }
 
         return $table;
@@ -120,13 +129,15 @@ trait TableContext
     }
 
     /**
-     * @param  NodeElement $table The HTML table to parse
-     * @param  string      $name  The name of the table, for storing in the key store
+     * This method parses an HTML table to build a two-dimensional array indexed by [row][column] for each cell.
+     *
+     * @param  NodeElement $table   The HTML table to parse
+     * @param  string      $keyName The name of the table, for storing in the key store
      * @return array       Returns an array with the following form:
-     *                           colHeaders => the best "guess" for column titles
-     *                           head => [row][column] Cells parsed from the thead section of the table
-     *                           body => [row][column] Cells parsed from the tbody section of the table
-     *                           foot => [row][column] Cells parsed from the tfoot section of the table
+     *                             colHeaders => the best "guess" for column titles
+     *                             head => [row][column] Cells parsed from the thead section of the table
+     *                             body => [row][column] Cells parsed from the tbody section of the table
+     *                             foot => [row][column] Cells parsed from the tfoot section of the table
      */
     private function buildTableFromHtml($table, $keyName = '')
     {
@@ -185,15 +196,27 @@ trait TableContext
     /**
      * This method returns the value of a particular cell from a parsed table.
      *
-     * @param array  $table A table array as returned by $this->buildTableFromHtml
-     * @param int    $rIdx  The row index of the cell to retrieve
-     * @param int    $cIdx  The col index of the cell to retrieve
-     * @param string $piece Must be one of (head, body, foot). Specifies which section of the table to look in
+     * @param  array                    $table A table array as returned by $this->buildTableFromHtml
+     * @param  int                      $rIdx  The row index of the cell to retrieve
+     * @param  int                      $cIdx  The col index of the cell to retrieve
+     * @param  string                   $piece Must be one of (head, body, foot). Specifies which section of the table to look in
+     * @throws InvalidArgumentException If $piece is not one of head/body/foot
+     * @throws InvalidArgumentException If $rIdx is less than 1
+     * @throws InvalidArgumentException If $cIdx is less than 1
+     * @return string                   The value of the cell
      */
     private function getCellFromTable($table, $rIdx, $cIdx, $piece = 'body')
     {
         if (!in_array($piece, ['head', 'body', 'foot'])) {
             throw new InvalidArgumentException('$piece must be one of (head, body, foot)!');
+        }
+
+        if ($rIdx < 1) {
+            throw new InvalidArgumentException('$rIdx must be greater than or equal to 1.');
+        }
+
+        if ($cIdx < 1) {
+            throw new InvalidArgumentException('$cIdx must be greater than or equal to 1.');
         }
 
         if (count($table[$piece]) < $rIdx) {
@@ -235,11 +258,7 @@ trait TableContext
             throw new ExpectationException("Could not find table with name '$name'.", $this->getSession());
         }
 
-        if (is_array($table) && count($table) != 1) {
-            throw new ExpectationException("Found multiple tables with name '$name'.", $this->getSession());
-        }
-
-        return true;
+        return $table;
     }
 
     /**
@@ -265,7 +284,7 @@ trait TableContext
         }
 
         if ($rowCount != $num) {
-            throw new ExpectationException("Expected $num rows for table '$name'. Instead got $rowCount.", $this->getSession());
+            throw new ExpectationException("Expected $num row(s) for table '$name'. Instead got $rowCount.", $this->getSession());
         }
 
         return true;
@@ -289,7 +308,7 @@ trait TableContext
         $colCount = count($table['body'][0]);
 
         if ($colCount != $num) {
-            throw new ExpectationException("Expected $num columns for table '$name'. Instead got $colCount.", $this->getSession());
+            throw new ExpectationException("Expected $num column(s) for table '$name'. Instead got $colCount.", $this->getSession());
         }
 
         return true;
@@ -329,52 +348,29 @@ trait TableContext
     /**
      * {@inheritdoc}
      *
-     * @Given /^the table (?P<name>"[^"]+") has (?P<val>"[^"]+") at \((?P<rIdx>\d+),(?P<cIdx>\d+)\) in the header$/
-     * @Then /^the table (?P<name>"[^"]+") should have (?P<val>"[^"]+") at \((?P<rIdx>\d+),(?P<cIdx>\d+)\) in the header$/
+     * @Given /^the table (?P<name>"[^"]+") has (?P<val>"[^"]+") at \((?P<rIdx>\d+),(?P<cIdx>\d+)\) in the (?<piece>header|body|footer)$/
+     * @Then /^the table (?P<name>"[^"]+") should have (?P<val>"[^"]+") at \((?P<rIdx>\d+),(?P<cIdx>\d+)\) in the (?<piece>header|body|footer)$/
      */
-    public function assertCellValueHead($name, $val, $rIdx, $cIdx)
+    public function assertCellValue($name, $val, $rIdx, $cIdx, $piece)
     {
-        $table = $this->getTableFromName($name);
-        $cellVal = $this->getCellFromTable($table, $rIdx, $cIdx, 'head');
+        $section = 'body';
 
-        if ($cellVal != $val) {
-            throw new ExpectationException("Expected $val at ($rIdx, $cIdx). Instead got $cellVal!", $this->getSession());
+        if ($piece == 'header') {
+            $section = 'head';
+        } elseif ($piece == 'footer') {
+            $section = 'foot';
+        } elseif ($piece != 'body') {
+            throw new InvalidArgumentException("\$piece must be on of header/footer/body. Got '$piece'!");
         }
 
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @Given /^the table (?P<name>"[^"]+") has (?P<val>"[^"]+") at \((?P<rIdx>\d+),(?P<cIdx>\d+)\) in the body$/
-     * @Then /^the table (?P<name>"[^"]+") should have (?P<val>"[^"]+") at \((?P<rIdx>\d+),(?P<cIdx>\d+)\) in the body$/
-     */
-    public function assertCellValueBody($name, $val, $rIdx, $cIdx)
-    {
         $table = $this->getTableFromName($name);
-        $cellVal = $this->getCellFromTable($table, $rIdx, $cIdx);
+        $cellVal = $this->getCellFromTable($table, $rIdx, $cIdx, $section);
 
         if ($cellVal != $val) {
-            throw new ExpectationException("Expected $val at ($rIdx, $cIdx). Instead got $cellVal!", $this->getSession());
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @Given /^the table (?P<name>"[^"]+") has (?P<val>"[^"]+") at \((?P<rIdx>\d+),(?P<cIdx>\d+)\) in the footer$/
-     * @Then /^the table (?P<name>"[^"]+") should have (?P<val>"[^"]+") at \((?P<rIdx>\d+),(?P<cIdx>\d+)\) in the footer$/
-     */
-    public function assertCellValueFoot($name, $val, $rIdx, $cIdx)
-    {
-        $table = $this->getTableFromName($name);
-        $cellVal = $this->getCellFromTable($table, $rIdx, $cIdx, 'foot');
-
-        if ($cellVal != $val) {
-            throw new ExpectationException("Expected $val at ($rIdx, $cIdx). Instead got $cellVal!", $this->getSession());
+            throw new ExpectationException(
+                "Expected $val at ($rIdx, $cIdx) in table $piece. Instead got $cellVal!",
+                $this->getSession()
+            );
         }
 
         return true;

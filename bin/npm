@@ -1,8 +1,0 @@
-#!/bin/bash +x
-
-ARGS=''
-for i in "$@"; do
-  ARGS="$ARGS ${i}"
-done
-
-docker run -it -v $(pwd):/data -w /data --net flexiblemink_default --rm node npm $ARGS

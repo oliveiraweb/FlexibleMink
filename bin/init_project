@@ -2,10 +2,4 @@
 
 # install composer dependancies
 echo "Installing composer dependancies..."
-./bin/composer install
-
-# install node dependancies
-echo "Installing node dependancies..."
-./bin/npm install
-
-exit
+bin/composer install

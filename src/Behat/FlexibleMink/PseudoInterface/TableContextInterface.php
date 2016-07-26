@@ -1,6 +1,7 @@
 <?php namespace Behat\FlexibleMink\PseudoInterface;
 
 use Behat\Gherkin\Node\TableNode;
+use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
 use InvalidArgumentException;
 
@@ -13,22 +14,48 @@ trait TableContextInterface
     use StoreContextInterface;
 
     /**
-     * Reparses the table give by {@paramref $name} ensuring the key store is up to date.
+     * This method asserts if a particular value exists in a cell in the table's BODY.
      *
-     * @param  string $name The name of the table
-     * @return array  An array of the parsed table as returned by $this->buildTableFromHtml
+     * @param  string               $name  The name of the table
+     * @param  string               $val   The expected value of the cell
+     * @param  int                  $rIdx  The row index of the cell to check (1-indexed)
+     * @param  int                  $cIdx  The column index of the cell to check (1-indexed)
+     * @param  string               $piece The section of the table (one of header/footer/body)
+     * @throws ExpectationException if {@paramref $val} does not match the value in the cell
+     * @return true
      */
-    abstract public function refreshTable($name);
+    abstract public function assertCellValue($name, $val, $rIdx, $cIdx, $piece);
+
+    /**
+     * This method asserts a set of titles exists in cells in the table header (thead).
+     *
+     * @param  TableNode            $attributes A list of titles to search for in the header (ignoring blanks)
+     * @param  string               $name       The name of the table
+     * @throws ExpectationException if a column was found that was not listed in {@paramref $attributes}
+     * @throws ExpectationException if any {@paramref $attributes} was not matched to a column
+     * @return true
+     */
+    abstract public function assertTableColumnTitles(TableNode $attributes, $name);
 
     /**
      * Asserts that a table with the given name exists.
      *
      * @param  string               $name The name of the table to find
      * @throws ExpectationException If no table is found with id or name matching {@paramref $name}
-     * @throws ExpectationException If multiple tables are found with id or name matching {@paramref $name}
-     * @return true
+     * @return NodeElement          The matching table with name {@paramref $name}
      */
     abstract public function assertTableExists($name);
+
+    /**
+     * Asserts that a table has a certain number of columns.
+     *
+     * @param string $name The name of the table
+     * @param int    $num  The number of columns the table should have
+     * @returns true
+     * @throws InvalidArgumentException If {@paramref $num} is not an integer
+     * @throws ExpectationException     If the number of found columns was not {@paramref $num}
+     */
+    abstract public function assertTableHasColumns($name, $num = 1);
 
     /**
      * Asserts that a table has a certain number of BODY (tbody) rows or total rows (including HEAD and FOOT).
@@ -43,60 +70,10 @@ trait TableContextInterface
     abstract public function assertTableHasRows($name, $num = 1, $fullTable = false);
 
     /**
-     * Asserts that a table has a certain number of columns.
+     * Reparses the table give by {@paramref $name} ensuring the key store is up to date.
      *
-     * @param string $name The name of the table
-     * @param int    $num  The number of columns the table should have
-     * @returns true
-     * @throws InvalidArgumentException If {@paramref $num} is not an integer
-     * @throws ExpectationException     If the number of found columns was not {@paramref $num}
+     * @param  string $name The name of the table
+     * @return array  An array of the parsed table as returned by $this->buildTableFromHtml
      */
-    abstract public function assertTableHasColumns($name, $num = 1);
-
-    /**
-     * This method asserts a set of titles exists in cells in the table header (thead).
-     *
-     * @param  TableNode            $attributes A list of titles to search for in the header (ignoring blanks)
-     * @param  string               $name       The name of the table
-     * @throws ExpectationException if a column was found that was not listed in {@paramref $attributes}
-     * @throws ExpectationException if any {@paramref $attributes} was not matched to a column
-     * @return true
-     */
-    abstract public function assertTableColumnTitles(TableNode $attributes, $name);
-
-    /**
-     * This method asserts if a particular value exists in a cell in the table's HEADER.
-     *
-     * @param  string               $name The name of the table
-     * @param  string               $val  The expected value of the cell
-     * @param  int                  $rIdx The row index of the cell to check (1-indexed)
-     * @param  int                  $cIdx The column index of the cell to check (1-indexed)
-     * @throws ExpectationException if {@paramref $val} does not match the value in the cell
-     * @return true
-     */
-    abstract public function assertCellValueHead($name, $val, $rIdx, $cIdx);
-
-    /**
-     * This method asserts if a particular value exists in a cell in the table's BODY.
-     *
-     * @param  string               $name The name of the table
-     * @param  string               $val  The expected value of the cell
-     * @param  int                  $rIdx The row index of the cell to check (1-indexed)
-     * @param  int                  $cIdx The column index of the cell to check (1-indexed)
-     * @throws ExpectationException if {@paramref $val} does not match the value in the cell
-     * @return true
-     */
-    abstract public function assertCellValueBody($name, $val, $rIdx, $cIdx);
-
-    /**
-     * This method asserts if a particular value exists in a cell in the table's FOOTER.
-     *
-     * @param  string               $name The name of the table
-     * @param  string               $val  The expected value of the cell
-     * @param  int                  $rIdx The row index of the cell to check (1-indexed)
-     * @param  int                  $cIdx The column index of the cell to check (1-indexed)
-     * @throws ExpectationException if {@paramref $val} does not match the value in the cell
-     * @return true
-     */
-    abstract public function assertCellValueFoot($name, $val, $rIdx, $cIdx);
+    abstract public function refreshTable($name);
 }

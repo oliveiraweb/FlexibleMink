@@ -1,8 +1,0 @@
-{
-  "private": true,
-  "devDependencies": {},
-  "dependencies": {
-    "selenium-standalone": "^5.5.0",
-    "wd": "^0.4.0"
-  }
-}

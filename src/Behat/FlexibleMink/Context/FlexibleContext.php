@@ -28,6 +28,15 @@ class FlexibleContext extends MinkContext
     use StoreContext;
     use TypeCaster;
 
+    /** @var array map of common key names to key codes */
+    protected static $keyCodes = [
+        'down arrow' => 40,
+        'enter'      => 13,
+        'return'     => 13,
+        'shift tab'  => 2228233,
+        'tab'        => 9,
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -339,6 +348,53 @@ class FlexibleContext extends MinkContext
 
         unlink($tempZip);
     }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @When /^(?:I |)(?:blur|unfocus) (?:the |)"(?P<locator>[^"]+)"(?: field|)$/
+     */
+    public function blurField($locator)
+    {
+        $this->assertFieldExists($locator)->blur();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @When /^(?:I |)focus and (?:blur|unfocus) (?:the |)"(?P<locator>[^"]+)"(?: field|)$/
+     * @When /^(?:I |)toggle focus (?:on|of) (?:the |)"(?P<locator>[^"]+)"(?: field|)$/
+     */
+    public function focusBlurField($locator)
+    {
+        $this->focusField($locator);
+        $this->blurField($locator);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @When /^(?:I |)focus (?:the |)"(?P<locator>[^"]+)"(?: field|)$/
+     */
+    public function focusField($locator)
+    {
+        $this->assertFieldExists($locator)->focus();
+    }
+
+     /**
+      * {@inheritdoc}
+      *
+      * @When /^(?:I |)(?:hit|press) (?:the |)"(?P<key>[^"]+)" key$/
+      */
+     public function hitKey($key)
+     {
+         if (!array_key_exists($key, self::$keyCodes)) {
+             throw new ExpectationException("The key '$key' is not defined.", $this->getSession());
+         }
+
+         $script = "jQuery.event.trigger({ type : 'keypress', which : '" . self::$keyCodes[$key] . "' });";
+         $this->getSession()->evaluateScript($script);
+     }
 
     /**
      * {@inheritdoc}

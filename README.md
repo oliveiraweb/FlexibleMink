@@ -1,27 +1,38 @@
 # FlexibleMink
 Mink Extensions for Commonly Used Assertions and Object Storage
 
+## Dependancies
+This project is built with docker and uses Behat for testing. You will need to install the following:
+- [Docker Engine](https://docs.docker.com/engine/installation/)
+- [PHP](http://php.net/manual/en/install.php)
+- (Optional)[Kitematic](https://kitematic.com/)(a GUI for managing docker containers)
+
+The Behat configuration is set up to run against a host named `dockermachine.local`. You can use the the following command to add it to your hosts file.
+```
+> echo -e "\n$(docker-machine ip $DOCKER_MACHINE_NAME) dockermachine.local\n" | sudo tee -a /etc/hosts
+```
+
+If you don't want to modify the hosts file, you can edit the `/behat.yml` file in the project root and change the IP addresses there to point directly to the docker machine. You can retrieve the IP of your docker machine with the following command.
+```
+> docker-machine ip $DOCKER_MACHINE_NAME
+```
+
 ## Setup
-FlexibleMink comes packaged with some basic tests which double as exampels and tests of the various contexts implemented.
+FlexibleMink comes packaged with some basic tests which double as exampels and tests of the various contexts implemented. The tests are run on Google Chrome through Selenium against an Apache web server.
 
-You will need npm and node installed on your machine to run the `init` script. You will also need a local webserver (we recommend python's SimpleHTTPServer, but you'll need to install python for that). The simplest way to do get these dependancies is to use Homebrew (osX).
-
-To get up and running, simply run the following in the root directory of the project.
+To setup the test environment, run the following commands in the project root directory.
 ```
-bin/init_project
+> bin/containers up
+> bin/init_project
 ```
 
-This will download and install composer dependancies as well as node dependancies and the selenium server.
+This will spin up the Selenium and Apache docker containers and the install the node and composer dependancies into the project directory.
 
 ## Usage
-Usage is quite simple:
-* start the selenium server
-* start a local web server
-* run the behat tests
-
-This can be accomplished with the following. The web server and selenium output to console, so you may want to do these in separate terminal sessions.
+Once the setup is complete, usage is quite simple. Run the following in the project root diretory.
 ```
-> bin/start-selenium
-> cd web/ && python -m SimpleHTTPServer 8080
 > bin/behat
 ```
+
+## Debugging
+Selenium is configured for VNC on the default port (5900). If you have a VNC client, simply point it to ```http://dockermachine.local``` (or the ```docker-machine ip```) on port 5900. The password is the default password provided by Selenium, which is `secret` (as documented on [Selenium](https://github.com/SeleniumHQ/docker-selenium)).

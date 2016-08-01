@@ -1,20 +1,11 @@
-#!/usr/bin/env bash
-
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+#!/bin/bash +x
 
 # install composer dependancies
 echo "Installing composer dependancies..."
-if [ ! -f ${DIR}/bin/composer.phar ]; then
-    (cd ${DIR}/bin && curl http://getcomposer.org/installer | php)
-fi
-php bin/composer.phar install
+./bin/composer install
 
 # install node dependancies
 echo "Installing node dependancies..."
-npm install
-
-# install selenium server
-echo "Installing selenium dependancies..."
-node_modules/selenium-standalone/bin/selenium-standalone install
+./bin/npm install
 
 exit

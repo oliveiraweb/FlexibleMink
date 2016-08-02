@@ -11,3 +11,13 @@ Feature: Assert Lines in Order
          | Line one   |
          | Line two   |
          | Line three |
+
+    Scenario: Step injects values properly
+      Given the following is stored as "list":
+          | first_entry  | Line one   |
+          | second_entry | Line two   |
+          | third_entry  | Line three |
+       Then I should see the following lines in order:
+          | (the first entry of the list)  |
+          | (the second entry of the list) |
+          | (the third entry of the list)  |

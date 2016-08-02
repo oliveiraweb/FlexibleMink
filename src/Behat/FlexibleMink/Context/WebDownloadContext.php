@@ -5,6 +5,8 @@ namespace Behat\FlexibleMink\Context;
 use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
 use Behat\FlexibleMink\PseudoInterface\StoreContextInterface;
 use Behat\FlexibleMink\PseudoInterface\WebDownloadContextInterface;
+use Behat\Mink\Exception\ElementNotFoundException;
+use Behat\Mink\Exception\ExpectationException;
 
 /**
  * {@inheritdoc}
@@ -37,7 +39,7 @@ trait WebDownloadContext
             $currentUrl = $this->getSession()->getCurrentUrl();
 
             if (!preg_match(self::$baseUrlRegExp, $currentUrl, $linkParts)) {
-                throw new ExpectationException('Could not generate base url from "' . $currentUrl . '"');
+                throw new ExpectationException('Could not generate base url from "' . $currentUrl . '"', $this->getSession());
             }
 
             // Checks if URL is relative.
@@ -79,5 +81,35 @@ trait WebDownloadContext
         $this->put($response, $key);
 
         return $response;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function checkImageLoaded($xpath)
+    {
+        $driver = $this->getSession()->getDriver();
+        $xpath = str_replace('"', "'", $xpath);
+
+        if (!$driver->find($xpath)) {
+            throw new ElementNotFoundException($driver, 'img', 'xpath', $xpath);
+        }
+
+        $script = <<<JS
+return {
+  complete: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.complete,
+  height: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.naturalHeight,
+  width: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.naturalWidth
+}
+JS;
+
+        $imgProperties = $driver->evaluateScript($script);
+
+        $isLoaded = true;
+        if (!$imgProperties['complete'] || $imgProperties['width'] === 0 || $imgProperties['height'] === 0) {
+            $isLoaded = false;
+        }
+
+        return $isLoaded;
     }
 }

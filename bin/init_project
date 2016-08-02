@@ -1,0 +1,5 @@
+#!/bin/bash +x
+
+# install composer dependancies
+echo "Installing composer dependancies..."
+bin/composer install

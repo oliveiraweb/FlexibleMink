@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+  web:
+    image: httpd:latest
+    volumes:
+      - ..:/data
+      - ../web:/usr/local/apache2/htdocs:ro
+    ports:
+      - 80:80
+
+  chrome:
+    image: selenium/standalone-chrome-debug:2.53.0
+    depends_on:
+      - web
+    environment:
+      - no_proxy:localhost
+    links:
+      - web
+      - web:dockermachine.local
+    volumes:
+      - /dev/shm:/dev/shm
+      - ..:/data
+    ports:
+      - 4444:4444
+      - 5900:5900

@@ -238,6 +238,8 @@ class FlexibleContext extends MinkContext
         $lastPosition = -1;
 
         foreach ($lines as $line) {
+            $line = $this->injectStoredValues($line);
+
             $position = strpos($page, $line);
 
             if ($position === false) {

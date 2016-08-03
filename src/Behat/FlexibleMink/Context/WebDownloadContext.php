@@ -25,8 +25,14 @@ trait WebDownloadContext
      */
     public function downloadViaLink($locator, $key = 'Download', $headers = '')
     {
-        $link = $this->assertVisibleLink($locator)->getAttribute('href');
+        $this->download($this->getFullUrl($this->assertVisibleLink($locator)->getAttribute('href')), $key, $headers);
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getFullUrl($link)
+    {
         if (!preg_match(self::$baseUrlRegExp, $link)) {
             $currentUrl = $this->getSession()->getCurrentUrl();
 
@@ -44,7 +50,7 @@ trait WebDownloadContext
             }
         }
 
-        $this->download($link, $key, $headers);
+        return $link;
     }
 
     /**

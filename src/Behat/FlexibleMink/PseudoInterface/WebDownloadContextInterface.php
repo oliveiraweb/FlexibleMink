@@ -24,4 +24,13 @@ trait WebDownloadContextInterface
      * @param string $headersString Headers to pass with the curl request.
      */
     abstract public function download($file, $key = 'Download', $headersString = '');
+
+    /**
+     * Generates a url with a base url.  If none is specified, current url is used.
+     *
+     * @param  string               $link url string to determine url with base for.
+     * @throws ExpectationException If Base url could not be generated.
+     * @return string
+     */
+    abstract public function getBaseUrl($link);
 }

@@ -26,11 +26,11 @@ trait WebDownloadContextInterface
     abstract public function download($file, $key = 'Download', $headersString = '');
 
     /**
-     * Generates a url with a base url.  If none is specified, current url is used.
+     * Generates a url with a full url.  If none is specified, current url is used.
      *
-     * @param  string               $link url string to determine url with base for.
+     * @param  string               $link url string to determine full url for.
      * @throws ExpectationException If Base url could not be generated.
      * @return string
      */
-    abstract public function getBaseUrl($link);
+    abstract public function getFullUrl($link);
 }

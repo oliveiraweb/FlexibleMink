@@ -59,7 +59,7 @@ trait TableContext
      * @param  bool   $forceFresh Setting to true will rebuild the table from HTML and not use the store
      * @return array  An array containing parsed rows and cells as returned form $this->buildTableFromHtml
      */
-    private function getTableFromName($name, $forceFresh = false)
+    protected function getTableFromName($name, $forceFresh = false)
     {
         // retrieve table from the store if it exists there
         if ($this->isStored($name) && !$forceFresh) {
@@ -205,7 +205,7 @@ trait TableContext
      * @throws InvalidArgumentException If $cIdx is less than 1
      * @return string                   The value of the cell
      */
-    private function getCellFromTable($table, $rIdx, $cIdx, $piece = 'body')
+    protected function getCellFromTable($table, $rIdx, $cIdx, $piece = 'body')
     {
         if (!in_array($piece, ['head', 'body', 'foot'])) {
             throw new InvalidArgumentException('$piece must be one of (head, body, foot)!');

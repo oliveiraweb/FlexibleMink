@@ -47,7 +47,7 @@ class FeatureContext extends FlexibleContext
         }
 
         if (!$this->checkImageLoaded($image->getXpath())) {
-            throw new ExpectationException("Expected img '$locator' to no load. Instead it did load!", $session);
+            throw new ExpectationException("Expected img '$locator' to load. Instead it did not!", $session);
         }
 
         return true;
@@ -72,7 +72,7 @@ class FeatureContext extends FlexibleContext
         }
 
         if ($this->checkImageLoaded($image->getXpath())) {
-            throw new ExpectationException("Expected img '$locator' to no load. Instead it did load!", $this->getSession());
+            throw new ExpectationException("Expected img '$locator' to not load. Instead it did load!", $this->getSession());
         }
 
         return true;

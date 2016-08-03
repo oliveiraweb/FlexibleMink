@@ -7,6 +7,7 @@ use Behat\FlexibleMink\PseudoInterface\StoreContextInterface;
 use Behat\FlexibleMink\PseudoInterface\WebDownloadContextInterface;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
+use Exception;
 
 /**
  * {@inheritdoc}
@@ -91,25 +92,28 @@ trait WebDownloadContext
         $driver = $this->getSession()->getDriver();
         $xpath = str_replace('"', "'", $xpath);
 
-        if (!$driver->find($xpath)) {
-            throw new ElementNotFoundException($driver, 'img', 'xpath', $xpath);
-        }
+        $result = $this->waitFor(function () use ($driver, $xpath) {
+            if (!$driver->find($xpath)) {
+                throw new ElementNotFoundException($driver, 'img', 'xpath', $xpath);
+            }
 
-        $script = <<<JS
+            $script = <<<JS
 return {
-  complete: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.complete,
-  height: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.naturalHeight,
-  width: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.naturalWidth
+    complete: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.complete,
+    height: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.naturalHeight,
+    width: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.naturalWidth
 }
 JS;
 
-        $imgProperties = $driver->evaluateScript($script);
+            $imgProperties = $driver->evaluateScript($script);
 
-        $isLoaded = true;
-        if (!$imgProperties['complete'] || $imgProperties['width'] === 0 || $imgProperties['height'] === 0) {
-            $isLoaded = false;
-        }
+            if (!$imgProperties['complete']) {
+                throw new Exception('Image did not finish loading.');
+            }
 
-        return $isLoaded;
+            return $imgProperties;
+        });
+
+        return $result['width'] !== 0 && $result['height'] !== 0;
     }
 }

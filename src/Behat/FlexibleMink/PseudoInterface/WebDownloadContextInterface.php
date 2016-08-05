@@ -2,6 +2,9 @@
 
 namespace Behat\FlexibleMink\PseudoInterface;
 
+use Behat\Mink\Exception\ElementNotFoundException;
+use Behat\Mink\Exception\ExpectationException;
+
 /**
  * Provides functionality for working with downloaded files via a web browser.
  */
@@ -33,4 +36,13 @@ trait WebDownloadContextInterface
      * @return string
      */
     abstract public function getFullUrl($link);
+
+    /**
+     * This method checks if the image for an <img> tag actually loaded.
+     *
+     * @param  string                   $xpath The xpath of the <img> tag to check
+     * @throws ElementNotFoundException If an <img> tag was not found at {@paramref $xpath}
+     * @return bool                     True if image loaded, false otherwise
+     */
+    abstract public function checkImageLoaded($xpath);
 }

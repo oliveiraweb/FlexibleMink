@@ -5,6 +5,9 @@ namespace Behat\FlexibleMink\Context;
 use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
 use Behat\FlexibleMink\PseudoInterface\StoreContextInterface;
 use Behat\FlexibleMink\PseudoInterface\WebDownloadContextInterface;
+use Behat\Mink\Exception\ElementNotFoundException;
+use Behat\Mink\Exception\ExpectationException;
+use Exception;
 
 /**
  * {@inheritdoc}
@@ -37,7 +40,7 @@ trait WebDownloadContext
             $currentUrl = $this->getSession()->getCurrentUrl();
 
             if (!preg_match(self::$baseUrlRegExp, $currentUrl, $linkParts)) {
-                throw new ExpectationException('Could not generate base url from "' . $currentUrl . '"');
+                throw new ExpectationException('Could not generate base url from "' . $currentUrl . '"', $this->getSession());
             }
 
             // Checks if URL is relative.
@@ -79,5 +82,38 @@ trait WebDownloadContext
         $this->put($response, $key);
 
         return $response;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function checkImageLoaded($xpath)
+    {
+        $driver = $this->getSession()->getDriver();
+        $xpath = str_replace('"', "'", $xpath);
+
+        $result = $this->waitFor(function () use ($driver, $xpath) {
+            if (!$driver->find($xpath)) {
+                throw new ElementNotFoundException($driver, 'img', 'xpath', $xpath);
+            }
+
+            $script = <<<JS
+return {
+    complete: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.complete,
+    height: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.naturalHeight,
+    width: document.evaluate("{$xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.naturalWidth
+}
+JS;
+
+            $imgProperties = $driver->evaluateScript($script);
+
+            if (!$imgProperties['complete']) {
+                throw new Exception('Image did not finish loading.');
+            }
+
+            return $imgProperties;
+        });
+
+        return $result['width'] !== 0 && $result['height'] !== 0;
     }
 }

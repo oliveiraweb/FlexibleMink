@@ -13,4 +13,5 @@ default:
           selenium2:
             browser: chrome
             wd_host: http://dockermachine.local:4444/wd/hub
+    Behat\ParallelWorker\ServiceContainer\ParallelWorkerExtension: ~
     features\Extensions\Assertion\AssertionExtension: ~

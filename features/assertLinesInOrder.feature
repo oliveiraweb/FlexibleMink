@@ -22,14 +22,14 @@ Feature: Assert Lines in Order
           | (the second entry of the list) |
           | (the third entry of the list)  |
 
-    Scenario: Step fails if lines are out of the expected order
+    Scenario: Assertion fails reliably if lines are out of the expected order
       When I assert that I should see the following lines in order:
          | Line two |
          | Line one |
       Then the assertion should throw an ExpectationException
        And the assertion should fail with the message "Line 'Line one' came before its expected predecessor"
 
-    Scenario: Step fails if a given line is not present
+    Scenario: Assertion fails reliably if a given line is not present
       When I assert that I should see the following lines in order:
          | Line two |
          | Megatron |

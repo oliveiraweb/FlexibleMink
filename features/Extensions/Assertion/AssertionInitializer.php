@@ -1,6 +1,6 @@
 <?php
 
-namespace Behat\FlexibleMink\Extension\Assertion;
+namespace features\Extensions\Assertion;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Initializer\ContextInitializer;

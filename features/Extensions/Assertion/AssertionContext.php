@@ -1,6 +1,6 @@
 <?php
 
-namespace Behat\FlexibleMink\Context;
+namespace features\Extensions\Assertion;
 
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Result\ExecutedStepResult;

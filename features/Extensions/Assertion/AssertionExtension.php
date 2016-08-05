@@ -1,6 +1,6 @@
 <?php
 
-namespace Behat\FlexibleMink\Extension\Assertion;
+namespace features\Extensions\Assertion;
 
 use Behat\Behat\Context\ServiceContainer\ContextExtension;
 use Behat\Behat\Tester\ServiceContainer\TesterExtension;
@@ -56,7 +56,7 @@ class AssertionExtension implements Extension
     public function load(ContainerBuilder $container, array $config)
     {
         $definition = new Definition(
-            'Behat\FlexibleMink\Extension\Assertion\AssertionInitializer',
+            'features\Extensions\Assertion\AssertionInitializer',
             [new Reference(TesterExtension::STEP_TESTER_ID)]
         );
 

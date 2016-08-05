@@ -1,10 +1,10 @@
 <?php
 
-use Behat\FlexibleMink\Context\AssertionContext;
 use Behat\FlexibleMink\Context\FlexibleContext;
 use Behat\FlexibleMink\Context\WebDownloadContext;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
+use features\Extensions\Assertion\AssertionContext;
 
 class FeatureContext extends FlexibleContext
 {

@@ -60,11 +60,11 @@ trait AssertionContext
         $this->result = $this->stepTester->test($this->env, $this->feature, $step, false);
 
         if ($this->result instanceof UndefinedStepResult) {
-            throw $this->result->getException() ?: new Exception('The given step is not defined');
+            throw new Exception('The given step is not defined');
         }
 
         if (!$this->result instanceof ExecutedStepResult) {
-            throw $this->result->getException() ?: new Exception('The step was not properly executed');
+            throw new Exception('The step was not properly executed');
         }
 
         if ($this->result->getResultCode() == TestResult::PENDING) {

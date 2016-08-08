@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Reference;
 /**
  * Loads the ParallelRunner filter for Geherkin.
  *
- * Based on the behat-partial-runner (http://github.com/m00t/behat-partial-runner) by Anton Serdyuk (moot).
+ * Based on the behat-partial-runner (http://github.com/m00t/behat-partial-runner) by Anton Serdyuk (m00t).
  *
  * @author Taysir Tayyab
  */
@@ -27,7 +27,7 @@ class ParallelWorkerExtension implements ExtensionInterface
             new Reference(GherkinExtension::MANAGER_ID),
         ]);
         $definition->addTag(CliExtension::CONTROLLER_TAG);
-        $container->setDefinition(CliExtension::CONTROLLER_TAG . '.parallel_runner', $definition);
+        $container->setDefinition(CliExtension::CONTROLLER_TAG . '.parallel_worker', $definition);
     }
 
     /**
@@ -35,7 +35,6 @@ class ParallelWorkerExtension implements ExtensionInterface
      */
     public function configure(ArrayNodeDefinition $builder)
     {
-
     }
 
     /**

@@ -3,9 +3,14 @@
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-abstract class FilterTest extends PHPUnit_Framework_TestCase
+/**
+ * Class FilterTest.
+ *
+ * Base class for filter testing which sets up a Gherking Feature with several scenarios and a parser.
+ */
+abstract class FilterTest extends TestCase
 {
     /**
      * @return Parser
@@ -14,8 +19,8 @@ abstract class FilterTest extends PHPUnit_Framework_TestCase
     {
         return new Parser(
             new Lexer(
-                new ArrayKeywords(array(
-                    'en' => array(
+                new ArrayKeywords([
+                    'en' => [
                         'feature'          => 'Feature',
                         'background'       => 'Background',
                         'scenario'         => 'Scenario',
@@ -25,9 +30,9 @@ abstract class FilterTest extends PHPUnit_Framework_TestCase
                         'when'             => 'When',
                         'then'             => 'Then',
                         'and'              => 'And',
-                        'but'              => 'But'
-                    )
-                ))
+                        'but'              => 'But',
+                    ],
+                ])
             )
         );
     }
@@ -37,7 +42,7 @@ abstract class FilterTest extends PHPUnit_Framework_TestCase
      */
     protected function getGherkinFeature()
     {
-        return <<<GHERKIN
+        return <<<'GHERKIN'
 Feature: Long feature with outline
   In order to accomplish objective
   As a someone

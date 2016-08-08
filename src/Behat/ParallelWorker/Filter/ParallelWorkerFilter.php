@@ -12,7 +12,7 @@ use RuntimeException;
  * A scenario filter which filters on individual scenarios and outlines. Usefull for separating tests onto multiple
  * worker nodes.
  *
- * Based on the behat-partial-runner (http://github.com/m00t/behat-partial-runner) by Anton Serdyuk (moot).
+ * Based on the behat-partial-runner (http://github.com/m00t/behat-partial-runner) by Anton Serdyuk (m00t).
  *
  * @author Taysir Tayyab
  */
@@ -26,11 +26,12 @@ class ParallelWorkerFilter extends SimpleFilter
      * This method takes an example table for a scenario and filters it according to the total number of nodes. Each
      * example is treated like it's own scenario as far as counting goes for the workers.
      *
-     * @param ExampleTableNode  $examples The examples of the Scenario Outline
-     * @return ExampleTableNode A filtered table leaving only examples that should run on this node
+     * @param  ExampleTableNode $examples The examples of the Scenario Outline
      * @throws RuntimeException If there are no examples in this outline which will run on this node
+     * @return ExampleTableNode A filtered table leaving only examples that should run on this node
      */
-    private function filterExampleNode(ExampleTableNode $examples) {
+    private function filterExampleNode(ExampleTableNode $examples)
+    {
         // $offset represents the index of the first element in the table we would collect for this node
         $curr = $this->curScenario % $this->totalNodes;
         $offset = ($this->totalNodes - $curr) % $this->totalNodes;
@@ -40,7 +41,7 @@ class ParallelWorkerFilter extends SimpleFilter
         $filteredTable = [array_shift($table)];
 
         // if the table is long enough, then grab an example
-        if($offset < count($table)) {
+        if ($offset < count($table)) {
             for ($i = $offset; $i < count($table); $i += $this->totalNodes) {
                 $filteredTable[] = $table[$i];
             }
@@ -60,11 +61,11 @@ class ParallelWorkerFilter extends SimpleFilter
      */
     public function __construct($curNode = 0, $totalNodes = 1)
     {
-        if($totalNodes <= 0 || $curNode < 0 || $curNode >= $totalNodes) {
+        if ($totalNodes <= 0 || $curNode < 0 || $curNode >= $totalNodes) {
             throw new InvalidArgumentException("Received bad arguments for (\$curNode, \$totalNodes): ($curNode, $totalNodes).");
         }
 
-        $this->totalNodes= $totalNodes;
+        $this->totalNodes = $totalNodes;
         $this->curNode = $curNode;
         $this->curScenario = $this->totalNodes - $this->curNode;
     }
@@ -77,8 +78,7 @@ class ParallelWorkerFilter extends SimpleFilter
         $scenarios = [];
 
         // loop through each scenario in this feature file
-        foreach ($feature->getScenarios() as $scenario)
-        {
+        foreach ($feature->getScenarios() as $scenario) {
             // if this is a scenario outline, we need to look at each example
             if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
                 try {
@@ -102,7 +102,7 @@ class ParallelWorkerFilter extends SimpleFilter
                     // if there were no examples to run, skip this scenario
                     continue;
                 }
-            } elseif($this->curScenario++ % $this->totalNodes != 0) {
+            } elseif ($this->curScenario++ % $this->totalNodes != 0) {
                 // for regular scenarios, if its not our turn yet, then skip and increment the counter
                 continue;
             }
@@ -140,5 +140,4 @@ class ParallelWorkerFilter extends SimpleFilter
         // we do the filtering up in filterFeature, so always return true
         return true;
     }
-
 }

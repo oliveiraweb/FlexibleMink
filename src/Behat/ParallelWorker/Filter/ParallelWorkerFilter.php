@@ -5,6 +5,8 @@ use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
+use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * A scenario filter which filters on individual scenarios and outlines. Usefull for separating tests onto multiple
@@ -21,13 +23,50 @@ class ParallelWorkerFilter extends SimpleFilter
     private $curScenario;
 
     /**
+     * This method takes an example table for a scenario and filters it according to the total number of nodes. Each
+     * example is treated like it's own scenario as far as counting goes for the workers.
+     *
+     * @param ExampleTableNode  $examples The examples of the Scenario Outline
+     * @return ExampleTableNode A filtered table leaving only examples that should run on this node
+     * @throws RuntimeException If there are no examples in this outline which will run on this node
+     */
+    private function filterExampleNode(ExampleTableNode $examples) {
+        // $offset represents the index of the first element in the table we would collect for this node
+        $curr = $this->curScenario % $this->totalNodes;
+        $offset = ($this->totalNodes - $curr) % $this->totalNodes;
+
+        // get the examples as array and pull off the first row (which are the headers)
+        $table = array_values($examples->getTable());
+        $filteredTable = [array_shift($table)];
+
+        // if the table is long enough, then grab an example
+        if($offset < count($table)) {
+            for ($i = $offset; $i < count($table); $i += $this->totalNodes) {
+                $filteredTable[] = $table[$i];
+            }
+        } else {
+            // technically we don't HAVE to throw an exception here, because this is to a certain extent expected
+            // but its nice because now @return can just be ExampleTableNode
+            throw new RuntimeException('No examples will run on this node!');
+        }
+
+        $this->curScenario += count($table);
+
+        return new ExampleTableNode($filteredTable, $examples->getKeyword());
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function __construct($totalNodes = 1, $curNode = 0)
+    public function __construct($curNode = 0, $totalNodes = 1)
     {
+        if($totalNodes <= 0 || $curNode < 0 || $curNode >= $totalNodes) {
+            throw new InvalidArgumentException("Received bad arguments for (\$curNode, \$totalNodes): ($curNode, $totalNodes).");
+        }
+
         $this->totalNodes= $totalNodes;
         $this->curNode = $curNode;
-        $this->curScenario = -1;
+        $this->curScenario = $this->totalNodes - $this->curNode;
     }
 
     /**
@@ -42,25 +81,20 @@ class ParallelWorkerFilter extends SimpleFilter
         {
             // if this is a scenario outline, we need to look at each example
             if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-                $table = $scenario->getExampleTable()->getTable();
-                $lines = array_keys($table);
-
-                // filtered table will hold the the examples which will run on this node
-                $filteredTable = [];
-
-                // okay so each outline example is treated like its own scenario, meaning we start at the offset of the
-                // current scenario counter and incrementing by the node total
-                for($i = ($this->curScenario++ % $this->totalNodes); $i < count($lines); $i += $this->totalNodes) {
-                    $filteredTable[] = [$lines[$i], $table[$lines[$i]]];
+                try {
+                    // filter to just the ones that will run on this node
+                    $filteredExampleTable = $this->filterExampleNode($scenario->getExampleTable());
+                } catch (RuntimeException $e) {
+                    $filteredExampleTable = [];
                 }
 
-                // create a new scenario with just the filtered examples (if any were left)
-                if(count($filteredTable)) {
+                if ($filteredExampleTable) {
+                    // if there are examples this node can run, recreate the scenario with just the filtered examples
                     $scenario = new OutlineNode(
                         $scenario->getTitle(),
                         $scenario->getTags(),
                         $scenario->getSteps(),
-                        new ExampleTableNode($filteredTable, $scenario->getExampleTable()->getKeyword()),
+                        $filteredExampleTable,
                         $scenario->getKeyword(),
                         $scenario->getLine()
                     );

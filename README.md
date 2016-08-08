@@ -2,10 +2,10 @@
 Mink Extensions for Commonly Used Assertions and Object Storage
 
 ## Dependancies
-This project is built with docker and uses Behat for testing. You will need to install the following:
+This project is built with docker and uses Behat and PHPUnit for testing. You will need to install the following:
 - [Docker Engine](https://docs.docker.com/engine/installation/)
 - [PHP](http://php.net/manual/en/install.php)
-- (Optional)[Kitematic](https://kitematic.com/)(a GUI for managing docker containers)
+- [Kitematic](https://kitematic.com/) (Optional) 
 
 The Behat configuration is set up to run against a host named `dockermachine.local`. You can use the the following command to add it to your hosts file.
 ```
@@ -31,6 +31,7 @@ This will spin up the Selenium and Apache docker containers and the install the 
 ## Usage
 Once the setup is complete, usage is quite simple. Run the following in the project root diretory.
 ```
+> bin/phpunit
 > bin/behat
 ```
 

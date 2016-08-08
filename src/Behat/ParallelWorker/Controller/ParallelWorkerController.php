@@ -3,6 +3,7 @@
 use Behat\Gherkin\Gherkin;
 use Behat\Testwork\Cli\Controller;
 use Behat\ParallelWorker\Filter\ParallelWorkerFilter;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -53,11 +54,17 @@ class ParallelWorkerController implements Controller
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->gherkin->addFilter(
-            new ParallelWorkerFilter(
-                $input->getOption('total-workers'),
-                $input->getOption('current-worker')
-            )
-        );
+        $total = $input->getOption('total-workers');
+        $curr = $input->getOption('current-worker');
+
+        if($total < 0 || $curr < 0) {
+            throw new InvalidArgumentException("--current-worker ($curr) and --total-workers($total) must be greater than 0. ");
+        }
+
+        if($curr >= $total) {
+            throw new InvalidArgumentException("--current-worker ($curr) must be less than --total-workers($total). ");
+        }
+
+        $this->gherkin->addFilter(new ParallelWorkerFilter($curr, $total));
     }
 }

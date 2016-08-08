@@ -1,0 +1,8 @@
+#!/bin/bash +x
+
+ARGS=''
+for i in "$@"; do
+  ARGS="$ARGS ${i}"
+done
+
+docker run -it -v $(pwd):/app -w /app php:cli php $ARGS

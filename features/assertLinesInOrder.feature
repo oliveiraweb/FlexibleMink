@@ -21,3 +21,17 @@ Feature: Assert Lines in Order
           | (the first entry of the list)  |
           | (the second entry of the list) |
           | (the third entry of the list)  |
+
+    Scenario: Assertion fails reliably if lines are out of the expected order
+      When I assert that I should see the following lines in order:
+         | Line two |
+         | Line one |
+      Then the assertion should throw an ExpectationException
+       And the assertion should fail with the message "Line 'Line one' came before its expected predecessor"
+
+    Scenario: Assertion fails reliably if a given line is not present
+      When I assert that I should see the following lines in order:
+         | Line two |
+         | Megatron |
+      Then the assertion should throw an ExpectationException
+       And the assertion should fail with the message "Line 'Megatron' was not found on the page"

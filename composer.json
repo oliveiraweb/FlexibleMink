@@ -15,6 +15,7 @@
   "autoload": {
     "psr-0": {
       "Behat\\FlexibleMink\\": "src/",
+      "Behat\\ParallelWorker\\": "src/",
       "features\\": ""
     }
   }

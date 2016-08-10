@@ -7,15 +7,20 @@ This project is built with docker and uses Behat and PHPUnit for testing. You wi
 - [PHP](http://php.net/manual/en/install.php)
 - [Kitematic](https://kitematic.com/) (Optional) 
 
-The Behat configuration is set up to run against a host named `dockermachine.local`. You can use the the following command to add it to your hosts file.
-```
-> echo -e "\n$(docker-machine ip $DOCKER_MACHINE_NAME) dockermachine.local\n" | sudo tee -a /etc/hosts
-```
+The Behat configuration is set up to run against a host named `dockermachine.local`. You can either create an entry in your `/etc/hosts` file for this, or you can directly edit the `behat.yml` file in the project root and change the `wd_host` property from `dockermachine.local` to the IP.
 
-If you don't want to modify the hosts file, you can edit the `/behat.yml` file in the project root and change the IP addresses there to point directly to the docker machine. You can retrieve the IP of your docker machine with the following command.
+Refer to the appropriate section below to retrieve your container's IP.
+
+### Docker Toolbox
 ```
 > docker-machine ip $DOCKER_MACHINE_NAME
 ```
+
+### Docker for Mac
+```
+> docker ps | grep httpd
+```
+You'll be able to see the IP under ports (it's usually 0.0.0.0).
 
 ## Setup
 FlexibleMink comes packaged with some basic tests which double as exampels and tests of the various contexts implemented. The tests are run on Google Chrome through Selenium against an Apache web server.
@@ -36,4 +41,4 @@ Once the setup is complete, usage is quite simple. Run the following in the proj
 ```
 
 ## Debugging
-Selenium is configured for VNC on the default port (5900). If you have a VNC client, simply point it to ```http://dockermachine.local``` (or the ```docker-machine ip```) on port 5900. The password is the default password provided by Selenium, which is `secret` (as documented on [Selenium](https://github.com/SeleniumHQ/docker-selenium)).
+Selenium is configured for VNC on the default port (5900). If you have a VNC client, simply point it to ```vnc://dockermachine.local``` (or the container's ip) on port 5900. The password is the default password provided by Selenium, which is `secret` (as documented on [Selenium](https://github.com/SeleniumHQ/docker-selenium)).

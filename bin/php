@@ -1,8 +1,7 @@
 #!/bin/bash +x
 
-ARGS=''
-for i in "$@"; do
-  ARGS="$ARGS ${i}"
-done
-
-docker run -it -v $(pwd):/app --net flexiblemink_default --rm -w /app php:cli php $ARGS
+docker run --rm -it \
+  -v $(pwd):/app -w /data \
+  --link web:dockermachine.local \
+  --net flexiblemink_default \
+  php:7-cli php $@

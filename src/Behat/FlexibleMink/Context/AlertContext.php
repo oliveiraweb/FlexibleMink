@@ -5,6 +5,7 @@ namespace Behat\FlexibleMink\Context;
 use Behat\FlexibleMink\PseudoInterface\AlertContextInterface;
 use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
 use Behat\Mink\Exception\ExpectationException;
+use WebDriver\Exception\NoAlertOpenError;
 
 /**
  * {@inheritdoc}
@@ -44,7 +45,11 @@ trait AlertContext
      */
     public function assertAlertMessage($expected)
     {
-        $actual = $this->getSession()->getDriver()->getWebDriverSession()->getAlert_text();
+        try {
+            $actual = $this->getSession()->getDriver()->getWebDriverSession()->getAlert_text();
+        } catch (NoAlertOpenError $e) {
+            throw new ExpectationException('No alert is open', $this->getSession());
+        }
 
         if (strpos($actual, $expected) === false) {
             throw new ExpectationException("Text '$expected' not found in alert", $this->getSession());
@@ -58,6 +63,6 @@ trait AlertContext
      */
     public function setAlertText($message)
     {
-        $this->getSession()->getDriver()->getWebDriverSession()->postAlert_text($message);
+        $this->getSession()->getDriver()->getWebDriverSession()->postAlert_text(['text' => $message]);
     }
 }

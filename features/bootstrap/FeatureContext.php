@@ -25,6 +25,27 @@ class FeatureContext extends FlexibleContext
     }
 
     /**
+     * Waits a specific amount of time, and then visits the specified path.
+     *
+     * @Given I will be on :path in :timeout seconds
+     * @param string $path    The path to visit.
+     * @param int    $timeout The time to wait before visiting the path.
+     */
+    public function visitPathDelayed($path, $timeout)
+    {
+        $path = json_encode($path); // Quick and painless quotation wrapping + escaping.
+        $timeout *= 1000;
+
+        $this->getSession()->executeScript(
+<<<JS
+            window.setTimeout(function() {
+                window.location = $path;
+            }, $timeout);
+JS
+        );
+    }
+
+    /**
      * Asserts that an image finished loading.
      *
      * @Then I should see :imgSrc image in :locator

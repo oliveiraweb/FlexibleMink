@@ -1,6 +1,7 @@
 <?php
 
 use Behat\FlexibleMink\Context\FlexibleContext;
+use Behat\FlexibleMink\Context\TypeCaster;
 use Behat\FlexibleMink\Context\WebDownloadContext;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
@@ -10,6 +11,7 @@ class FeatureContext extends FlexibleContext
 {
     // Depends
     use AssertionContext;
+    use TypeCaster;
     use WebDownloadContext;
 
     /**
@@ -22,6 +24,18 @@ class FeatureContext extends FlexibleContext
     public function putStoreStep($key, TableNode $attributes)
     {
         $this->put((object) ($attributes->getRowsHash()), $key);
+    }
+
+    /**
+     * Places the given arbitrary value into the store.
+     *
+     * @Given /^the value (?P<value>.+) is stored as (?P<key>".+")$/
+     * @param mixed  $value The value to put into the store.
+     * @param string $key   The key to put the value into the store under.
+     */
+    public function putSingleStoreStep($value, $key)
+    {
+        $this->put($value, $key);
     }
 
     /**

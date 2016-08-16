@@ -10,7 +10,7 @@ Feature: CSV Context
           Grass,Snivy,Gogoat
           Fire,Fennekin,Charizard
           Water,Swampert,Froakie
-          Electric,Shinx,Emolga
+          Electric,Ampharos,Emolga
           """
 
     Scenario: Can assert data order-independently for columns
@@ -19,7 +19,7 @@ Feature: CSV Context
          | Gogoat         | Grass    | Snivy    |
          | Charizard      | Fire     | Fennekin |
          | Froakie        | Water    | Swampert |
-         | Emolga         | Electric | Shinx    |
+         | Emolga         | Electric | Ampharos |
 
     Scenario: Data assertion does not need to contain all columns in the CSV
       Then the "spreadsheet" should be CSV data as follows:
@@ -35,7 +35,7 @@ Feature: CSV Context
          | Froakie        | Water    | Swampert |
          | Charizard      | Fire     | Fennekin |
          | Gogoat         | Grass    | Snivy    |
-         | Emolga         | Electric | Shinx    |
+         | Emolga         | Electric | Ampharos |
       Then the assertion should throw an Exception
        And the assertion should fail with the message "Expected 'Froakie' for 'Least Favorite' in row 1, but found 'Gogoat'"
 
@@ -45,7 +45,7 @@ Feature: CSV Context
          | Gogoat         | Grass    | Snivy    | Bulbasaur        |
          | Charizard      | Fire     | Fennekin | Ninetales        |
          | Froakie        | Water    | Swampert | Tentacool        |
-         | Emolga         | Electric | Shinx    | Raichu           |
+         | Emolga         | Electric | Ampharos | Raichu           |
       Then the assertion should throw an Exception
        And the assertion should fail with the message "Column 1st-gen Favorite does not exist, but was expected to"
 

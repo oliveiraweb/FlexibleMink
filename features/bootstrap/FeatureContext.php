@@ -39,6 +39,16 @@ class FeatureContext extends FlexibleContext
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * Decreases the default timeout for the sake of testing failing assertions more quickly.
+     */
+    public function waitFor(callable $lambda, $timeout = 5)
+    {
+        return parent::waitFor($lambda, $timeout);
+    }
+
+    /**
      * Waits a specific amount of time, and then visits the specified path.
      *
      * @Given I will be on :path in :timeout seconds

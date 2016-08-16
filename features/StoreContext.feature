@@ -40,3 +40,8 @@ Feature: Store Context
       | 1st Starter | Rowlett |
       | 2nd Starter | Litten  |
       | 3rd Starter | Popplio |
+
+  Scenario: Latest stored thing is retrieved
+    Given the value "Old" is stored as "Idea"
+      And the value "New" is stored as "Idea"
+     Then the "Idea" should be "New"

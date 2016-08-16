@@ -14,3 +14,15 @@ Feature: Overridden Functions Using Spinners
       | I should see "some content"                               |
       | I should not see "Don't check for this text!"             |
       | I should see ".a-class content" in the ".a-class" element |
+
+  Scenario Outline: Spun functions eventually fail if the condition remains unmet
+    # My favorite part about this is the test can't fail if the above passes; it can only freeze
+    Given I am on "index.html"
+     When I assert that <Assertion>
+     Then the assertion should throw a <Exception>
+
+    Examples:
+      | Assertion                                                 | Exception                |
+      | I should see "some content"                               | ResponseTextException    |
+      | I should not see "Don't check for this text!"             | ResponseTextException    |
+      | I should see ".a-class content" in the ".a-class" element | ElementNotFoundException |

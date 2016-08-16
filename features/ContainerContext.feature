@@ -14,6 +14,16 @@ Feature: Container Context
         | Red pond  | A few red fish    |
         | Blue pond | Lots of blue fish |
 
+    Scenario Outline: Function is spun
+      Given I am on "index.html"
+        And I will be on "containers.html" in 2 seconds
+       Then I should see "<Text>" in the "<Label>" container
+
+      Examples:
+        | Label     | Text              |
+        | Red pond  | A few red fish    |
+        | Blue pond | Lots of blue fish |
+
     Scenario Outline: Assertion fails if the container does not contain the given text
       When I assert that I should see "<Text>" in the "<Label>" container
       Then the assertion should throw an ExpectationException

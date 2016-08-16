@@ -6,7 +6,6 @@ use Behat\FlexibleMink\PseudoInterface\CsvContextInterface;
 use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
 use Behat\FlexibleMink\PseudoInterface\StoreContextInterface;
 use Behat\Gherkin\Node\TableNode;
-use Behat\Mink\Exception\ExpectationException;
 use Exception;
 
 /**
@@ -51,10 +50,7 @@ trait CsvContext
             // iterate over each expected column
             foreach ($expectedHeaders as $name => $colNum) {
                 if (!isset($actualHeaders[$name])) {
-                    throw new ExpectationException(
-                        "Column $name does not exist, but was expected to",
-                        $this->getSession()
-                    );
+                    throw new Exception("Column $name does not exist, but was expected to");
                 }
 
                 $expectedValue = isset($expectedRow[$colNum]) ? $expectedRow[$colNum] : null;
@@ -62,9 +58,8 @@ trait CsvContext
 
                 // check values match
                 if ($expectedValue != $actualValue) {
-                    throw new ExpectationException(
-                        "Expected '$expectedValue' for '$name' in row $rowNum, but found '$actualValue'",
-                        $this->getSession()
+                    throw new Exception(
+                        "Expected '$expectedValue' for '$name' in row $rowNum, but found '$actualValue'"
                     );
                 }
             }
@@ -84,12 +79,12 @@ trait CsvContext
 
         if ($diff = array_diff($expectedHeaders, $actualHeaders)) {
             $missing = implode("', '", $diff);
-            throw new ExpectationException("CSV '$key' is missing rows '$missing'", $this->getSession());
+            throw new Exception("CSV '$key' is missing headers '$missing'");
         }
 
         if ($diff = array_diff($actualHeaders, $expectedHeaders)) {
             $extra = implode("', '", $diff);
-            throw new ExpectationException("CSV '$key' contains extra rows '$extra'", $this->getSession());
+            throw new Exception("CSV '$key' contains extra headers '$extra'");
         }
     }
 }

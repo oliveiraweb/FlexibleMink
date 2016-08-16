@@ -1,8 +1,10 @@
 <?php
 
+use Behat\FlexibleMink\Context\CsvContext;
 use Behat\FlexibleMink\Context\FlexibleContext;
 use Behat\FlexibleMink\Context\TypeCaster;
 use Behat\FlexibleMink\Context\WebDownloadContext;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
 use features\Extensions\Assertion\AssertionContext;
@@ -11,6 +13,7 @@ class FeatureContext extends FlexibleContext
 {
     // Depends
     use AssertionContext;
+    use CsvContext;
     use TypeCaster;
     use WebDownloadContext;
 
@@ -30,11 +33,16 @@ class FeatureContext extends FlexibleContext
      * Places the given arbitrary value into the store.
      *
      * @Given /^the value (?P<value>.+) is stored as (?P<key>".+")$/
+     * @Given the following string is stored as :key:
      * @param mixed  $value The value to put into the store.
      * @param string $key   The key to put the value into the store under.
      */
     public function putSingleStoreStep($value, $key)
     {
+        if ($value instanceof PyStringNode) {
+            $value = $value->getRaw();
+        }
+
         $this->put($value, $key);
     }
 

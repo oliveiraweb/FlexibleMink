@@ -68,6 +68,10 @@ Feature: Long feature with outline
       | act#1  | out#1   |
       | act#2  | out#2   |
       | act#3  | out#3   |
+
+  Scenario: Scenario#3 HD Remix
+    When HDAction occurs
+    Then HDOutcome should be visible
 GHERKIN;
     }
 

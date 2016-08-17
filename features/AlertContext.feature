@@ -3,38 +3,39 @@ Feature: Alert context
   As a developer
   I need to be able to assert various states of alerts
 
-  Scenario Outline: Developer can test when alerts appear
-    Given I am on "alert.html"
+  Scenario: Developer can test when alerts appear
+    Given there is a confirm containing "alert text"
      When I assert that I should see an alert containing "alert text"
      Then the assertion should pass
+
+  Scenario Outline: Developer can confirm and cancel alerts
+    Given there is a confirm containing "do you confirm??"
      When I <Action> the alert
-     Then I should see "<Action> selected"
+     Then the confirm should return <Result>
 
     Examples:
-      | Action  |
-      | confirm |
-      | cancel  |
+      | Action  | Result |
+      | confirm | true   |
+      | cancel  | false  |
 
   Scenario: Alert assertion fails properly when no alert exists
-    Given I am on "index.html"
+    Given there are no alerts on the page
      When I assert that I should see an alert containing "alert text"
      Then the assertion should throw an ExpectationException
       And the assertion should fail with the message "No alert is open"
 
-  Scenario: Alert assertion fails properly when no alert exists
-    Given I am on "alert.html"
-     When I assert that I should see an alert containing "alert butt"
+  Scenario: Alert assertion fails properly when the alert text does not match
+    Given there is an alert containing "actual text"
+     When I assert that I should see an alert containing "something else"
      Then the assertion should throw an ExpectationException
-      And the assertion should fail with the message "Text 'alert butt' not found in alert"
-          # Selenium bombs out if we leave an alert up at the end of a test
-     When I confirm the alert
+      And the assertion should fail with the message "Text 'something else' not found in alert"
 
   Scenario Outline: Developer can test the results of filling in prompts
-    Given I am on "prompt.html"
+    Given there is a prompt containing "prompt?"
      Then I should see an alert containing "prompt?"
      When I fill "<Text>" into the prompt
       And I confirm the alert
-     Then I should see "entered <Text> in prompt"
+     Then the prompt should return "<Text>"
 
     Examples:
       | Text                                                                                    |

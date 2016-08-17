@@ -78,6 +78,39 @@ JS
     }
 
     /**
+     * Causes a prompt/alert to pop up in the browser, and stores its return value in the store.
+     *
+     * @Given /^there is an? (?P<type>alert|confirm|prompt) containing (?P<text>".+")$/
+     * @param string $type Whether to create an alert, confirmation dialog, or prompt.
+     * @param string $text The text to show in the popup.
+     */
+    public function ensureAlertExists($type, $text)
+    {
+        $text = json_encode($text); // Free character escaping, quoting, etc.
+
+        $this->getSession()->executeScript("{$type}_result = $type($text)");
+    }
+
+    /**
+     * Asserts that the prompt from ensureAlertExists returns the correct value.
+     *
+     * @Then /^the (?P<type>alert|confirm|prompt) should return (?P<value>.+)$/
+     * @param string $type   The type of popup to check results for.
+     * @param mixed  $result The expected result.
+     */
+    public function assertAlertResult($type, $result)
+    {
+        $actual = $this->getSession()->evaluateScript("{$type}_result");
+
+        if ($actual !== $result) {
+            $expected = json_encode($result);
+            $actual = json_encode($actual);
+
+            throw new ExpectationException("Expected $expected, got $actual", $this->getSession());
+        }
+    }
+
+    /**
      * Asserts that an image finished loading.
      *
      * @Then I should see :imgSrc image in :locator

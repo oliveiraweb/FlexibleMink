@@ -19,6 +19,21 @@ trait AlertContext
     use FlexibleContextInterface;
 
     /**
+     * Clears out any alerts or prompts that may be open.
+     *
+     * @AfterScenario
+     * @Given there are no alerts on the page
+     */
+    public function clearAlerts()
+    {
+        try {
+            $this->cancelAlert();
+        } catch (NoAlertOpenError $e) {
+            // Ok, no alert was open anyway.
+        }
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @When /^(?:|I )confirm the alert$/

@@ -1,7 +1,6 @@
 #!/bin/bash +x
 
-docker run --rm -it \
-  -v $(pwd):/app -w /data \
-  --link web:dockermachine.local \
-  --net flexiblemink_default \
-  php:7-cli php $@
+docker run --rm -it -v $(pwd):/app -w /app \
+	--link web:dockermachine.local \
+	--net flexiblemink_default \
+	php:7-cli php $@

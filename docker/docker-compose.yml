@@ -2,7 +2,7 @@ version: '2'
 
 services:
   web:
-    image: httpd:latest
+    image: httpd:2
     volumes:
       - ..:/data
       - ../web:/usr/local/apache2/htdocs:ro

@@ -88,7 +88,7 @@ class FlexibleContext extends MinkContext
 
     /**
      * {@inheritdoc}
-     * @Then The :locator button should be :disabled
+     * @Then the :locator button should be :disabled
      */
     public function assertButtonDisabled($locator, $disabled = true)
     {

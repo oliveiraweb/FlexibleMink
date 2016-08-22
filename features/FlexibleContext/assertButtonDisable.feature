@@ -14,12 +14,12 @@ Feature: Assert disabled button can be checked
 
   Scenario: Assert the enabled button can be disabled
       Then the "Enabled Button" button should be enabled
-       And I press "Disable Enabled Button"
+      When I press "Disable Enabled Button"
       Then the "Enabled Button" button should be disabled
 
   Scenario: Assert the disabled button can be enabled
       Then the "Disabled Button" button should be disabled
-       And I press "Enable Disabled Button"
+      When I press "Enable Disabled Button"
       Then the "Disabled Button" button should be Enabled
 
   Scenario: Throw exception if the button is enabled but should be disabled

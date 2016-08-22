@@ -3,10 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Disabled Button</title>
+  <script>
+   function enableDisabledButton() {
+       document.getElementById("disabled-button").removeAttribute("disabled");
+   }
+   function disableEnabledButton() {
+       document.getElementById("enabled-button").setAttribute("disabled", null);
+   }
+  </script>
 </head>
 <body>
-    <button disabled>Disabled Button</button>
-    <button>Enabled Button</button>
+    <button type="button" id="disabled-button" disabled>Disabled Button</button>
+    <button type="button" id="enabled-button">Enabled Button</button>
+    <br>
+    <br>
+    <button type="button" onclick="enableDisabledButton()">Enable Disabled Button</button>
+    <button type="button" onclick="disableEnabledButton()">Disable Enabled Button</button>
 </body>
 </html>
 

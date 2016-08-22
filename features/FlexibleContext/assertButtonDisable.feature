@@ -12,6 +12,16 @@ Feature: Assert disabled button can be checked
   Scenario: Assert the button is enabled
      Then the "Enabled Button" button should be enabled
 
+  Scenario: Assert the enabled button can be disabled
+      When the "Enabled Button" button should be enabled
+       And I press "Disable Enabled Button"
+      Then the "Enabled Button" button should be disabled
+
+  Scenario: Assert the disabled button can be enabled
+      When the "Disabled Button" button should be disabled
+       And I press "Enable Disabled Button"
+      Then the "Disabled Button" button should be Enabled
+
   Scenario: Throw exception if the button is enabled but should be disabled
      When I assert that the "Disabled Button" button should be enabled
      Then the assertion should throw an ExpectationException

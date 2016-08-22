@@ -14,6 +14,9 @@ dependencies:
     - docker-compose -p flexiblemink -f docker/docker-compose.yml up -d
     - sleep 5
     - bin/init_project
+    # ssh-hackery, because I have no idea
+    - chmod 600 ~/.ssh/config
+    - sed -i 's:/home/ubuntu:~:g' ~/.ssh/config
 
 test:
   override:

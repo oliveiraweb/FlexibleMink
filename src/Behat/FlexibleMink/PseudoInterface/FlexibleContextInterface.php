@@ -79,6 +79,7 @@ trait FlexibleContextInterface
      * @param  bool                 $disabled The state of the button
      * @throws ExpectationException If button is disabled but shouldn't be.
      * @throws ExpectationException If button isn't disabled but should be.
+     * @throws ExpectationException If the button can't be found.
      */
     abstract public function assertButtonDisabled($locator, $disabled = true);
 

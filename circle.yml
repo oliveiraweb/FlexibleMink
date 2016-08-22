@@ -14,9 +14,6 @@ dependencies:
     - docker-compose -p flexiblemink -f docker/docker-compose.yml up -d
     - sleep 5
     - bin/init_project
-    # ssh-hackery, because I have no idea
-    - chmod 600 ~/.ssh/config
-    - sed -i 's:/home/ubuntu:~:g' ~/.ssh/config
 
 test:
   override:
@@ -24,5 +21,5 @@ test:
     - phpunit --log-junit artifacts/phpunit.junit.xml --report-useless-tests --strict-coverage
 
   post:
-    - mv artifacts/default.xml ${CIRCLE_TEST_REPORTS}/behat.junit.xml
-    - mv artifacts/phpunit.junit.xml ${CIRCLE_TEST_REPORTS}/phpunit.junit.xml
+    - cp artifacts/default.xml ${CIRCLE_TEST_REPORTS}/behat.junit.xml
+    - cp artifacts/phpunit.junit.xml ${CIRCLE_TEST_REPORTS}/phpunit.junit.xml

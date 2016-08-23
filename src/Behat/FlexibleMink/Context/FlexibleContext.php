@@ -422,9 +422,6 @@ class FlexibleContext extends MinkContext
 
     /**
      * {@inheritdoc}
-     *
-     * @Given /^(?:|I )am on "(?P<page>[^"]+)"$/
-     * @When /^(?:|I )go to "(?P<page>[^"]+)"$/
      */
     public function visit($page)
     {

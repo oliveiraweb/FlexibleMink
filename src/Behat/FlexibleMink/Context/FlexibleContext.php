@@ -88,6 +88,37 @@ class FlexibleContext extends MinkContext
 
     /**
      * {@inheritdoc}
+     * @Then the :locator button should be :disabled
+     */
+    public function assertButtonDisabled($locator, $disabled = true)
+    {
+        if (is_string($disabled)) {
+            $disabled = 'disabled' == $disabled;
+        }
+
+        $button = $this->getSession()->getPage()->findButton($locator);
+
+        if (!$button) {
+            throw new ExpectationException("Could not find button for $locator", $this->getSession());
+        }
+
+        if ($button->hasAttribute('disabled')) {
+            if (!$disabled) {
+                throw new ExpectationException(
+                    "The button, $locator, was disabled, but it should not have been disabled.",
+                    $this->getSession()
+                );
+            }
+        } elseif ($disabled) {
+            throw new ExpectationException(
+                "The button, $locator, was not disabled, but it should have been disabled.",
+                $this->getSession()
+            );
+        }
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function assertVisibleButton($locator)
     {

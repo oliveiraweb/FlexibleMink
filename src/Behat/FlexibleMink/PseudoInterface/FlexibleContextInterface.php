@@ -73,6 +73,17 @@ trait FlexibleContextInterface
     abstract public function checkOption($locator);
 
     /**
+     * Checks if the selected button is disabled.
+     *
+     * @param  string               $locator  The button
+     * @param  bool                 $disabled The state of the button
+     * @throws ExpectationException If button is disabled but shouldn't be.
+     * @throws ExpectationException If button isn't disabled but should be.
+     * @throws ExpectationException If the button can't be found.
+     */
+    abstract public function assertButtonDisabled($locator, $disabled = true);
+
+    /**
      * Finds the first matching visible button on the page.
      *
      * Warning: Will return the first button if the driver does not support visibility checks.

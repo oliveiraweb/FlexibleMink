@@ -1,5 +1,6 @@
 <?php namespace Behat\FlexibleMink\PseudoInterface;
 
+use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Session;
 
 /**
@@ -30,6 +31,14 @@ trait MinkContextInterface
      * @param string $value the value to fill
      */
     abstract public function fillField($field, $value);
+
+    /**
+     * Finds a button on the page.
+     *
+     * @param  string      $locator the name|id|alt of the button
+     * @return NodeElement The button, or null if no button is found
+     */
+    abstract public function findButton($locator);
 
     /**
      * Returns the Mink session.

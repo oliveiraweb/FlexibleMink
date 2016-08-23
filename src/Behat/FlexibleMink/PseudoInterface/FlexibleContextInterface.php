@@ -26,6 +26,14 @@ trait FlexibleContextInterface
     abstract public function assertPageContainsText($text);
 
     /**
+     * This method overrides the MinkContext::assertPageContainsText() default behavior for assertFieldContains to
+     * ensure that it waits for the text to be available with a max time limit.
+     *
+     * @see MinkContext::assertFieldContains
+     */
+    abstract public function assertFieldContains($field, $value);
+
+    /**
      * Returns Mink session.
      *
      * @param  string|null $name name of the session OR active session will be used

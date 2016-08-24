@@ -30,6 +30,8 @@ trait FlexibleContextInterface
      * ensure that it waits for the text to be available with a max time limit.
      *
      * @see MinkContext::assertFieldContains
+     * @throws ExpectationException If the field can't be found
+     * @throws ExpectationException If the field doesn't match the value
      */
     abstract public function assertFieldContains($field, $value);
 

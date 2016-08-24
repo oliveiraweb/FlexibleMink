@@ -33,14 +33,6 @@ trait MinkContextInterface
     abstract public function fillField($field, $value);
 
     /**
-     * Finds a button on the page.
-     *
-     * @param  string      $locator the name|id|alt of the button
-     * @return NodeElement The button, or null if no button is found
-     */
-    abstract public function findButton($locator);
-
-    /**
      * Returns the Mink session.
      *
      * @param  string|null $name name of the session OR active session will be used

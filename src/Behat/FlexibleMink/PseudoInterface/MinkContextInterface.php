@@ -1,6 +1,5 @@
 <?php namespace Behat\FlexibleMink\PseudoInterface;
 
-use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Session;
 
 /**

@@ -451,4 +451,12 @@ class FlexibleContext extends MinkContext
 
         $this->getSession()->executeScript("window.scrollTo(0, $x)");
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function visit($page)
+    {
+        parent::visit($this->injectStoredValues($page));
+    }
 }

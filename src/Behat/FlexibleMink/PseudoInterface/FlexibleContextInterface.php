@@ -226,4 +226,11 @@ trait FlexibleContextInterface
      * @throws DriverException                  When the operation cannot be done
      */
     abstract public function scrollWindowToBody($where);
+
+    /**
+     * This overrides MinkContext::visit() to inject stored values into the URL.
+     *
+     * @see MinkContext::visit
+     */
+    abstract public function visit($page);
 }

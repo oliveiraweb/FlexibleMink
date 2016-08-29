@@ -375,4 +375,62 @@ trait TableContext
 
         return true;
     }
+
+    /**
+     * Ensures there is a table on this page that matches the given table. Cells with * match anything.
+     *
+     * @Then  there should be a table on the page with the following information:
+     * @param TableNode $tableNode The table to compare.
+     */
+    public function assertTableWithStructureExists(TableNode $tableNode)
+    {
+        $table = $tableNode->getRows();
+
+        $this->waitFor(function () use ($table) {
+            $page = $this->getSession()->getPage();
+
+            /** @var NodeElement[] $domTables */
+            $domTables = $page->findAll('css', 'table');
+            foreach ($domTables as $domTable) {
+                /** @var NodeElement[] $domRows */
+                $domRows = $domTable->findAll('css', 'tr');
+
+                if (count($domRows) != count($table)) {
+                    // This table doesn't have enough rows to match us.
+                    continue 1;
+                }
+
+                foreach ($table as $rowNum => $row) {
+                    $domRow = $domRows[$rowNum];
+
+                    /** @var NodeElement[] $domCells */
+                    $domCells = $domRow->findAll('css', 'th, td');
+
+                    if (count($domCells) != count($row)) {
+                        // This table doesn't have enough columns to match us.
+                        continue 2;
+                    }
+
+                    foreach ($row as $cellNum => $cell) {
+                        $domCell = $domCells[$cellNum];
+
+                        // Time to finally compare!
+                        if ($cell != '*' && $cell != $domCell->getText()) {
+                            // Whelp, this cell doesn't match. Onward!
+                            continue 3;
+                        }
+                    }
+                }
+
+                // We found a match! Return.
+                return true;
+            }
+
+            // Oh no! No matches.
+            throw new ExpectationException(
+                'A table matching the supplied structure could not be found.',
+                $this->getSession()
+            );
+        });
+    }
 }

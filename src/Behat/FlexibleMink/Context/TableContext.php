@@ -386,7 +386,7 @@ trait TableContext
     {
         $table = $tableNode->getRows();
 
-        $this->waitFor(function() use ($table) {
+        $this->waitFor(function () use ($table) {
             $page = $this->getSession()->getPage();
 
             /** @var NodeElement[] $domTables */
@@ -400,7 +400,7 @@ trait TableContext
                     continue 1;
                 }
 
-                foreach($table as $rowNum => $row) {
+                foreach ($table as $rowNum => $row) {
                     $domRow = $domRows[$rowNum];
 
                     /** @var NodeElement[] $domCells */
@@ -411,7 +411,7 @@ trait TableContext
                         continue 2;
                     }
 
-                    foreach($row as $cellNum => $cell) {
+                    foreach ($row as $cellNum => $cell) {
                         $domCell = $domCells[$cellNum];
 
                         // Time to finally compare!

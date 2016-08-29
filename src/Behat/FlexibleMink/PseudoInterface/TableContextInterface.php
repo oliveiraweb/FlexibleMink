@@ -76,4 +76,11 @@ trait TableContextInterface
      * @return array  An array of the parsed table as returned by $this->buildTableFromHtml
      */
     abstract public function refreshTable($name);
+
+    /**
+     * Ensures there is a table on this page that matches the given table. Cells with * match anything
+     * @param TableNode $tableNode
+     * @return mixed
+     */
+    abstract public function assertTableWithStructureExists(TableNode $tableNode);
 }

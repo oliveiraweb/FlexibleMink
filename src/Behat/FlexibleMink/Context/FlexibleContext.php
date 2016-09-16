@@ -163,6 +163,9 @@ class FlexibleContext extends MinkContext
 
     /**
      * {@inheritdoc}
+     *
+     * @Given the :locator link is visible
+     * @Then the :locator link should be visible
      */
     public function assertVisibleLink($locator)
     {
@@ -170,11 +173,14 @@ class FlexibleContext extends MinkContext
 
         $links = $this->getSession()->getPage()->findAll(
             'named',
-            ['link', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)]
+            ['content', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)]
         );
 
         /** @var NodeElement $link */
         foreach ($links as $link) {
+            if ($link->getTagName() != 'a') {
+                continue;
+            }
             try {
                 $visible = $link->isVisible();
             } catch (UnsupportedDriverActionException $e) {

@@ -241,6 +241,91 @@ class StoreContextTest extends TestCase
             'overwritten',
             $this->injectStoredValues('(the test_property_1 of the testObj)', $goodFn)
         );
+
+        /******************************
+         * Validate $hasValue argument
+         *****************************/
+
+        // Null $hasValue should default to using isset
+        $this->assertEmpty($this->injectStoredValues('', null, null));
+
+        // Non-callable $hasValue throws appropriate error
+        foreach (['', 0, $testObj] as $nonCallable) {
+            try {
+                $this->injectStoredValues('', null, $nonCallable);
+                $this->expectException(TypeError::class);
+            } catch (TypeError $e) {
+                $this->assertNotEquals(-1, strpos($e->getMessage(), 'injectStoredValues() must be callable'));
+            }
+        }
+
+        // Lambda without two args throws appropriate error
+        $wrongArgCount = [
+            function () {
+            },
+            function ($a) {
+            },
+            function ($a, $b, $c) {
+            },
+        ];
+        foreach ($wrongArgCount as $wrongArgCount) {
+            try {
+                $this->injectStoredValues('(the test_property_1 of the testObj)', null, $wrongArgCount);
+                $this->expectException(Exception::class);
+            } catch (Exception $e) {
+                $this->assertInstanceOf(Exception::class, $e);
+                $this->assertEquals('Lambda $hasValue must take two arguments!', $e->getMessage());
+            }
+        }
+
+        // Lambda with wrong return type throws appropriate error
+        $wrongReturnTypes = [
+            function ($a, $b) {
+            },
+            function ($a, $b) {
+                return '';
+            },
+            function ($a, $b) {
+                return function () {
+                };
+            },
+        ];
+        foreach ($wrongReturnTypes as $wrongReturnType) {
+            try {
+                $this->injectStoredValues('(the test_property_1 of the testObj)', null, $wrongReturnType);
+                $this->expectException(Exception::class);
+            } catch (Exception $e) {
+                $this->assertInstanceOf(Exception::class, $e);
+                $this->assertEquals('$hasValue lambda must return a boolean!', $e->getMessage());
+            }
+        }
+
+        // Correct error is thrown when property does not exist
+        try {
+            $this->injectStoredValues(
+                '(the test_property_1 of the testObj)',
+                null,
+                function ($a, $b) {
+                    return false;
+                }
+            );
+            $this->expectException(Exception::class);
+        } catch (Exception $e) {
+            $this->assertInstanceOf(Exception::class, $e);
+            $this->assertEquals('testObj does not have a test_property_1 property', $e->getMessage());
+        }
+
+        // Property is injected correctly when property exists
+        $this->assertEquals(
+            'overwritten',
+            $this->injectStoredValues(
+                '(the test_property_1 of the testObj)',
+                null,
+                function ($thing, $property) {
+                    return isset($thing->$property);
+                }
+            )
+        );
     }
 
     /**

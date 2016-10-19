@@ -116,10 +116,21 @@ trait StoreContext
     /**
      * {@inheritdoc}
      */
-    protected function injectStoredValues($string, callable $onGetFn = null)
+    protected function injectStoredValues($string, callable $onGetFn = null, callable $hasValue = null)
     {
         if ($onGetFn && (new ReflectionFunction($onGetFn))->getNumberOfParameters() != 1) {
             throw new Exception('Method $onGetFn must take one argument!');
+        }
+
+        if ($hasValue) {
+            if ((new ReflectionFunction($hasValue))->getNumberOfParameters() != 2) {
+                throw new Exception('Lambda $hasValue must take two arguments!');
+            }
+        } else {
+            $hasValue = function ($thing, $property) {
+                return !(is_object($thing) && !isset($thing->$property)) ||
+                    (is_array($thing) && !isset($thing[$property]));
+            };
         }
 
         preg_match_all('/\(the ([^\)]+) of the ([^\)]+)\)/', $string, $matches);
@@ -139,10 +150,12 @@ trait StoreContext
                 throw new Exception('The $onGetFn method must return an object or an array!');
             }
 
-            if (
-                (is_object($thing) && !isset($thing->$thingProperty)) ||
-                (is_array($thing) && !isset($thing[$thingProperty]))
-            ) {
+            $hasValueResult = $hasValue($thing, $thingProperty);
+            if (!is_bool($hasValueResult)) {
+                throw new Exception('$hasValue lambda must return a boolean!');
+            }
+
+            if (!$hasValueResult) {
                 throw new Exception("$thingName does not have a $thingProperty property");
             }
 

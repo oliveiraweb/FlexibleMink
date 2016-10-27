@@ -6,6 +6,7 @@ use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
+use Behat\Mink\Exception\ResponseTextException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
 use InvalidArgumentException;
@@ -94,6 +95,28 @@ class FlexibleContext extends MinkContext
         $this->waitFor(function () use ($text) {
             parent::assertPageNotContainsText($text);
         });
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @When I wait until I see and then do not see :text
+     */
+    public function waitForPageNotContainsText($text)
+    {
+        $this->waitFor(function () use ($text) {
+            parent::assertPageContainsText($text);
+        }, 15);
+
+        try {
+            $this->waitFor(function () use ($text) {
+                parent::assertPageContainsText($text);
+            }, 15);
+        } catch (ExpectationException $e) {
+            throw new ResponseTextException(
+                "Timed out waiting for '$text' to no longer appear.", $this->getSession()
+            );
+        }
     }
 
     /**

@@ -76,14 +76,14 @@ trait TableContext
     }
 
     /**
-     * Retrieves a row from the table HEAD (thead) that has no cells with a colspan property. This row is assumed to be
-     * the column "titles".
+     * Retrieves a row from the table HEAD (thead) that has no cells with a colspan property that has a value of greater
+     * than 1. This row is assumed to be the column "titles".
      *
      * @param  NodeElement              $table The table to find the columns for
      * @throws InvalidArgumentException If {@paramref $table} is not an instance of NodeElement
      * @throws ElementNotFoundException If no HEAD (thead) rows are found in {@paramref $table}
-     * @throws ElementNotFoundException If all head rows have a td/th with colspan property
-     * @throws ElementNotFoundException If the row with no colspann'd td/th tags has no td/th at all
+     * @throws ElementNotFoundException If all head rows have a td/th with colspan property with a value greater than 1
+     * @throws ElementNotFoundException If the row has no td/th at all
      * @return NodeElement[]            The columns for {@paramref $table}
      */
     private function findHeadColumns($table)
@@ -101,10 +101,10 @@ trait TableContext
 
         $colRow = null;
         foreach ($rows as $row) {
-            // finds all td|th elements that have a colspan tag. We do this because we don't want any HEAD rows
-            // when some of the cells span multiple columns
+            // finds all td|th elements that have a colspan tag with a value greater than 1. We do this because we don't
+            // want any HEAD rows when some of the cells span multiple columns
             /** @var NodeElement[] $splitCell */
-            $splitCell = $row->findAll('xpath', '/*[@colspan and (self::td or self::th)]');
+            $splitCell = $row->findAll('xpath', '/*[@colspan>\'1\' and (self::td or self::th)]');
 
             if (!$splitCell) {
                 $colRow = $row;
@@ -114,7 +114,12 @@ trait TableContext
 
         // we couldn't find a HEAD row that didn't have split columns
         if (!$colRow) {
-            throw new ElementNotFoundException($this->getSession()->getDriver(), 'tr/(td or th)', 'xpath', 'not(@colspan)');
+            throw new ElementNotFoundException(
+                $this->getSession()->getDriver(),
+                'tr/(td or th)',
+                'xpath',
+                'not(@colspan>\'1\')'
+            );
         }
 
         // get all the cells in the selected row
@@ -199,10 +204,13 @@ trait TableContext
      * @param  array                    $table A table array as returned by $this->buildTableFromHtml
      * @param  int                      $rIdx  The row index of the cell to retrieve
      * @param  int                      $cIdx  The col index of the cell to retrieve
-     * @param  string                   $piece Must be one of (head, body, foot). Specifies which section of the table to look in
+     * @param  string                   $piece Must be one of (head, body, foot). Specifies which section of the table
+     *                                         to look in
      * @throws InvalidArgumentException If $piece is not one of head/body/foot
      * @throws InvalidArgumentException If $rIdx is less than 1
      * @throws InvalidArgumentException If $cIdx is less than 1
+     * @throws ExpectationException     If $rIdx is out of bounds
+     * @throws ExpectationException     If $cIdx is out of bounds
      * @return string                   The value of the cell
      */
     protected function getCellFromTable($table, $rIdx, $cIdx, $piece = 'body')

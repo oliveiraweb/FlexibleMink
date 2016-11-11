@@ -4,6 +4,7 @@ namespace Behat\FlexibleMink\PseudoInterface;
 
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Element\TraversableElement;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
@@ -105,7 +106,7 @@ trait FlexibleContextInterface
      * Clicks a visible checkbox with specified id|title|alt|text.
      *
      * This method overrides the MinkContext::checkOption() default behavior for checkOption to ensure that only visible
-     * options are checked.
+     * options are checked and that it waits for the option to be available with a max time limit.
      * @see MinkContext::checkOption
      * @param string $locator The id|title|alt|text of the option to be clicked.
      */
@@ -158,11 +159,12 @@ trait FlexibleContextInterface
     /**
      * Checks that the page contains a visible input field and then returns it.
      *
-     * @param $fieldName
-     * @throws ExpectationException If a visible input field is not found.
-     * @return NodeElement          The found input field.
+     * @param  string                  $fieldName The input name.
+     * @param  TraversableElement|null $context   The context to search in, if not provided defaults to page.
+     * @throws ExpectationException    If a visible input field is not found.
+     * @return NodeElement             The found input field.
      */
-    abstract public function assertFieldExists($fieldName);
+    abstract public function assertFieldExists($fieldName, TraversableElement $context = null);
 
     /**
      * Checks that the page not contain a visible input field.
@@ -249,7 +251,7 @@ trait FlexibleContextInterface
      * Presses the visible button with specified id|name|title|alt|value.
      *
      * This method overrides the MinkContext::pressButton() default behavior for pressButton to ensure that only visible
-     * buttons are pressed.
+     * buttons are pressed and that it waits for the button to be available with a max time limit.
      *
      * @see MinkContext::pressButton
      * @param  string               $button button id, inner text, value or alt

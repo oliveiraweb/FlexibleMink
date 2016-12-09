@@ -21,7 +21,6 @@ class FlexibleContext extends MinkContext
 {
     // Implements.
     use FlexibleContextInterface;
-
     // Depends.
     use AlertContext;
     use ContainerContext;
@@ -537,5 +536,23 @@ class FlexibleContext extends MinkContext
     public function visit($page)
     {
         parent::visit($this->injectStoredValues($page));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function assertCheckboxChecked($checkbox)
+    {
+        $checkbox = $this->injectStoredValues($checkbox);
+        parent::assertCheckboxChecked($checkbox);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function assertCheckboxNotChecked($checkbox)
+    {
+        $checkbox = $this->injectStoredValues($checkbox);
+        parent::assertCheckboxNotChecked($checkbox);
     }
 }

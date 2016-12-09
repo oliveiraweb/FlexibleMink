@@ -274,4 +274,18 @@ trait FlexibleContextInterface
      * @see MinkContext::visit
      */
     abstract public function visit($page);
+
+    /**
+     * This overrides MinkContext::assertCheckboxChecked() to inject stored values into the locator.
+     *
+     * @param string $checkbox The the locator of the checkbox
+     */
+    abstract public function assertCheckboxChecked($checkbox);
+
+    /**
+     * This overrides MinkContext::assertCheckboxNotChecked() to inject stored values into the locator.
+     *
+     * @param string $checkbox The the locator of the checkbox
+     */
+    abstract public function assertCheckboxNotChecked($checkbox);
 }

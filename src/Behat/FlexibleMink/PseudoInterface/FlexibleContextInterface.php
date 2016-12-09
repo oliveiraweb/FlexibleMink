@@ -113,6 +113,14 @@ trait FlexibleContextInterface
     abstract public function checkOption($locator);
 
     /**
+     * Unchecks checkbox with specified id|name|label|value.
+     *
+     * @see MinkContext::uncheckOption
+     * @param string $locator The id|title|alt|text of the option to be unchecked.
+     */
+    abstract public function uncheckOption($locator);
+
+    /**
      * Checks if the selected button is disabled.
      *
      * @param  string               $locator  The button

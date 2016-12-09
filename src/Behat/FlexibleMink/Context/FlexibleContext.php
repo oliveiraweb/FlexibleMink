@@ -144,11 +144,25 @@ class FlexibleContext extends MinkContext
      */
     public function checkOption($locator)
     {
+        $locator = $this->injectStoredValues($locator);
         $element = $this->waitFor(function () use ($locator) {
             return $this->assertVisibleOption($locator);
         });
 
         $element->check();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function uncheckOption($locator)
+    {
+        $locator = $this->injectStoredValues($locator);
+        $element = $this->waitFor(function () use ($locator) {
+            return $this->assertVisibleOption($locator);
+        });
+
+        $element->uncheck();
     }
 
     /**

@@ -93,6 +93,15 @@ trait FlexibleContextInterface
     abstract public function assertElementContainsText($element, $text);
 
     /**
+     * Checks, that element with specified CSS doesn't contain specified text.
+     *
+     * @see MinkContext::assertElementNotContainsText
+     * @param string|array $element css element selector.
+     * @param string       $text    expected text that should not being found.
+     */
+    abstract public function assertElementNotContainsText($element, $text);
+
+    /**
      * Clicks a visible link with specified id|title|alt|text.
      *
      * This method overrides the MinkContext::clickLink() default behavior for clickLink to ensure that only visible

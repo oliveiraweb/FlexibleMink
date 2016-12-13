@@ -126,8 +126,24 @@ class FlexibleContext extends MinkContext
      */
     public function assertElementContainsText($element, $text)
     {
+        $element = $this->injectStoredValues($element);
+        $text = $this->injectStoredValues($text);
+
         $this->waitFor(function () use ($element, $text) {
             parent::assertElementContainsText($element, $text);
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function assertElementNotContainsText($element, $text)
+    {
+        $element = $this->injectStoredValues($element);
+        $text = $this->injectStoredValues($text);
+
+        $this->waitFor(function () use ($element, $text) {
+            parent::assertElementNotContainsText($element, $text);
         });
     }
 

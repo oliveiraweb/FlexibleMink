@@ -94,4 +94,14 @@ trait StoreContextInterface
      * @param string $new     The new key under which to store the thing.
      */
     abstract public function referToStoredAs($current, $new);
+
+    /**
+     * Assert if the property of thing contains value.
+     *
+     * @param  string    $thing    The thing to be inspected.
+     * @param  string    $property The property to be inspected.
+     * @param  string    $expected The string keyword to be searched.
+     * @throws Exception When the value is not found in the property
+     */
+    abstract public function assertThingPropertyContains($thing, $property, $expected);
 }

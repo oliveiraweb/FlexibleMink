@@ -45,3 +45,15 @@ Feature: Store Context
     Given the value "Old" is stored as "Idea"
       And the value "New" is stored as "Idea"
      Then the "Idea" should be "New"
+
+  Scenario: Can Assert The Property of Thing Contains Value
+    Given the following is stored as "Slogan":
+      | body | Eat more cake|
+     Then the "body" of the "Slogan" should contain "cake"
+
+  Scenario: Assertion fails if the property of stored thing does not contain expected value
+    Given the following is stored as "Slogan":
+      | body | Eat more cake|
+     When I assert that the "body" of the "Slogan" should contain "candy"
+     Then the assertion should throw an Exception
+      And the assertion should fail with the message "Expected the 'body' of the 'Slogan' to contain 'candy', but found 'Eat more cake' instead"

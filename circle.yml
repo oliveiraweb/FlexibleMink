@@ -10,8 +10,9 @@ machine:
 
 dependencies:
   override:
+    - git config --global user.email "ci@medology.com" && git config --global user.name "Circle CI" && git rebase origin master
     - cp ./docker/.env.example ./docker/.env
-    - sudo pip install docker-compose
+    - sudo pip install 'docker-compose==1.9.0'
     - sudo pip install 'six==1.10.0'
     - docker login -e ${DOCKER_EMAIL} -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
     - docker-compose -p flexiblemink -f docker/docker-compose.yml up -d

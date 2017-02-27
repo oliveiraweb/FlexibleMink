@@ -4,6 +4,7 @@ namespace Behat\FlexibleMink\Context;
 
 use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
 use Behat\Gherkin\Node\TableNode;
+use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Element\TraversableElement;
 use Behat\Mink\Exception\ExpectationException;
@@ -591,5 +592,103 @@ class FlexibleContext extends MinkContext
     {
         $checkbox = $this->injectStoredValues($checkbox);
         parent::assertCheckboxNotChecked($checkbox);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @When I check radio button :label
+     */
+    public function ensureRadioButtonChecked($label)
+    {
+        $this->findRadioButton($label)->click();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @Then /^the "(?P<label>(?:[^"]|\\")*)" radio button should be checked$/
+     */
+    public function assertRadioButtonChecked($label)
+    {
+        if (!$this->findRadioButton($label)->isChecked()) {
+            throw new ExpectationException("Radio button \"$label\" is not checked, but it should be.", $this->getSession());
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @Then /^the "(?P<label>(?:[^"]|\\")*)" radio button should not be checked$/
+     */
+    public function assertRadioButtonNotChecked($label)
+    {
+        if ($this->findRadioButton($label)->isChecked()) {
+            throw new ExpectationException("Radio button \"$label\" is checked, but it should not be.", $this->getSession());
+        }
+    }
+
+    /**
+     * Locate the radio button by label.
+     *
+     * @param  string      $label The Label of the radio button.
+     * @return NodeElement
+     */
+    protected function findRadioButton($label)
+    {
+        $label = $this->injectStoredValues($label);
+        $this->fixStepArgument($label);
+
+        $radioButton = $this->waitFor(function () use ($label) {
+            /** @var NodeElement[] $radioButtons */
+            $radioButtons = $this->getSession()->getPage()->findAll('named', ['radio', $label]);
+
+            if (!$radioButtons) {
+                throw new ExpectationException('Radio Button was not found on the page', $this->getSession());
+            }
+
+            $radioButtons = array_filter($radioButtons, function (NodeElement $radio) {
+                return $radio->isVisible();
+            });
+
+            if (!$radioButtons) {
+                throw new ExpectationException('No Visible Radio Button was found on the page', $this->getSession());
+            }
+
+            usort($radioButtons, [$this, 'compareElementsByCoords']);
+
+            return $radioButtons[0];
+        });
+
+        return $radioButton;
+    }
+
+    /**
+     * Compares two Elements and determines which is "first".
+     *
+     * This is for use with usort (and similar) functions, for sorting a list of
+     * NodeElements by their coordinates. The typical use case is to determine
+     * the order of elements on a page as a viewer would perceive them.
+     *
+     * @param  NodeElement                      $a one of the two NodeElements to compare.
+     * @param  NodeElement                      $b the other NodeElement to compare.
+     * @throws UnsupportedDriverActionException If the current driver does not support getXpathBoundingClientRect.
+     * @return int
+     */
+    protected function compareElementsByCoords(NodeElement $a, NodeElement $b)
+    {
+        /** @var Selenium2Driver $driver */
+        $driver = $this->getSession()->getDriver();
+        if (!($driver instanceof Selenium2Driver) || !method_exists($driver, 'getXpathBoundingClientRect')) {
+            // If not supported by driver, just return true so the keep the original sort.
+            return -1;
+        }
+
+        /* @noinspection PhpUndefinedMethodInspection */
+        $aRect = $driver->getXpathBoundingClientRect($a->getXpath());
+        /* @noinspection PhpUndefinedMethodInspection */
+        $bRect = $driver->getXpathBoundingClientRect($b->getXpath());
+
+        return $aRect['top'] - $bRect['top'];
     }
 }

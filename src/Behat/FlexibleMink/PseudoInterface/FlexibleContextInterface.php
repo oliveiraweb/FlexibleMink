@@ -305,4 +305,27 @@ trait FlexibleContextInterface
      * @param string $checkbox The the locator of the checkbox
      */
     abstract public function assertCheckboxNotChecked($checkbox);
+
+    /**
+     * Check the radio button.
+     *
+     * @param string $label The label of the radio button.
+     */
+    abstract public function ensureRadioButtonChecked($label);
+
+    /**
+     * Assert the radio button is checked.
+     *
+     * @param  string               $label The label of the radio button.
+     * @throws ExpectationException When the radio button is not checked.
+     */
+    abstract public function assertRadioButtonChecked($label);
+
+    /**
+     * Assert the radio button is not checked.
+     *
+     * @param  string               $label The label of the radio button.
+     * @throws ExpectationException When the radio button is checked.
+     */
+    abstract public function assertRadioButtonNotChecked($label);
 }

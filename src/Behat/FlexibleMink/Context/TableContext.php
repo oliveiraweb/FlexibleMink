@@ -173,7 +173,22 @@ trait TableContext
                 $cells = $row->findAll('xpath', '/td|/th');
 
                 for ($j = 0; $j < count($cells); $j++) {
+                    /** @var NodeElement $cell */
                     $cell = $cells[$j];
+
+                    //Handle select
+                    if (($options = $cell->findAll('xpath', '//option'))) {
+                        /** @var NodeElement $option */
+                        foreach ($options as $option) {
+                            if ($option->isSelected()) {
+                                $data[$i][$j] = trim($option->getText());
+
+                                break;
+                            }
+                        }
+
+                        continue;
+                    }
                     $data[$i][$j] = trim($cell->getText());
                 }
             }

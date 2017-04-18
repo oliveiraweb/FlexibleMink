@@ -51,3 +51,11 @@ Feature: Table Context
       | Female Population | 412,064,436 |
     Then the assertion should throw an ExpectationException
      And the assertion should fail with the message "A row matching the supplied values could not be found."
+
+  Scenario: Developer Can Test for Row Contain HTML Select Input with Selected Option Parsed Correctly
+    Then the table "table-with-select" should have the following values:
+      | Name    | John |
+      | Country | US   |
+     And the table "table-with-select" should have the following values:
+      | Name    | Zhang |
+      | Country | China |

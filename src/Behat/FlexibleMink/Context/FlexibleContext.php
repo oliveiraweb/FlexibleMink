@@ -447,6 +447,58 @@ class FlexibleContext extends MinkContext
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * @Then /^the "(?P<select>[^"]*)" select should only have the following option(?:|s):$/
+     */
+    public function assertSelectContainsExactOptions($select, TableNode $tableNode)
+    {
+        if (count($tableNode->getRow(0)) > 1) {
+            throw new InvalidArgumentException('Arguments must be a single-column list of items');
+        }
+
+        $expectedOptTexts = array_map([$this, 'injectStoredValues'], $tableNode->getColumn(0));
+
+        $select = $this->fixStepArgument($select);
+        $select = $this->injectStoredValues($select);
+        $selectField = $this->assertFieldExists($select);
+        $actualOpts = $selectField->findAll('xpath', '//option');
+
+        if (count($actualOpts) == 0) {
+            throw new ExpectationException('No option found in the select', $this->getSession());
+        }
+
+        $actualOptTexts = array_map(function ($actualOpt) {
+            /* @var NodeElement $actualOpt */
+            return $actualOpt->getText();
+        }, $actualOpts);
+
+        if (count($actualOptTexts) > count($expectedOptTexts)) {
+            throw new ExpectationException('Select has more option then expected', $this->getSession());
+        }
+
+        if (count($actualOptTexts) < count($expectedOptTexts)) {
+            throw new ExpectationException('Select has less option then expected', $this->getSession());
+        }
+
+        if ($actualOptTexts != $expectedOptTexts) {
+            $intersect = array_intersect($actualOptTexts, $expectedOptTexts);
+
+            if (count($intersect) < count($expectedOptTexts)) {
+                throw new ExpectationException(
+                    'Expecting ' . count($expectedOptTexts) . ' matching option(s), found ' . count($intersect),
+                    $this->getSession()
+                );
+            }
+
+            throw new ExpectationException(
+                'Options in select match expected but not in expected order',
+                $this->getSession()
+            );
+        }
+    }
+
+    /**
      * Adds or replaces a cookie.
      * Note that you must request a page before trying to set a cookie, in order to set the domain.
      *

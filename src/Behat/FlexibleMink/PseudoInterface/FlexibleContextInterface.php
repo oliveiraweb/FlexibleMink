@@ -229,6 +229,18 @@ trait FlexibleContextInterface
     abstract public function assertSelectContainsOption($select, $existence, $option);
 
     /**
+     * Assert if the options in the select match given options.
+     *
+     * @param string    $select    The name of the select
+     * @param TableNode $tableNode The text of the options.
+     *
+     * @throws ExpectationException     When there is no option in the select.
+     * @throws ExpectationException     When the option(s) in the select not match the option(s) listed.
+     * @throws InvalidArgumentException When no expected options listed in the test step.
+     */
+    abstract public function assertSelectContainsExactOptions($select, TableNode $tableNode);
+
+    /**
      * Attaches a local file to field with specified id|name|label|value. This is used when running behat and
      * browser session in different containers.
      *

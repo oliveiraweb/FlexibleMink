@@ -25,6 +25,10 @@ trait AlertContext
      */
     public function clearAlerts()
     {
+        if (!$this->getSession()->getDriver()->isStarted()) {
+            return;
+        }
+
         try {
             $this->cancelAlert();
         } catch (NoAlertOpenError $e) {

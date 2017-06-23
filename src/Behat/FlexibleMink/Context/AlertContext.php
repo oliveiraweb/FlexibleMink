@@ -20,7 +20,7 @@ trait AlertContext
     /**
      * Clears out any alerts or prompts that may be open.
      *
-     * @AfterScenario
+     * @AfterScenario @clearAlertsWhenFinished
      * @Given there are no alerts on the page
      */
     public function clearAlerts()

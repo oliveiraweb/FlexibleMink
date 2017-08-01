@@ -63,15 +63,17 @@ trait AlertContext
      */
     public function assertAlertMessage($expected)
     {
-        try {
-            $actual = $this->getSession()->getDriver()->getWebDriverSession()->getAlert_text();
-        } catch (NoAlertOpenError $e) {
-            throw new ExpectationException('No alert is open', $this->getSession());
-        }
+        $this->waitFor(function () use ($expected) {
+            try {
+                $actual = $this->getSession()->getDriver()->getWebDriverSession()->getAlert_text();
+            } catch (NoAlertOpenError $e) {
+                throw new ExpectationException('No alert is open', $this->getSession());
+            }
 
-        if (strpos($actual, $expected) === false) {
-            throw new ExpectationException("Text '$expected' not found in alert", $this->getSession());
-        }
+            if (strpos($actual, $expected) === false) {
+                throw new ExpectationException("Text '$expected' not found in alert", $this->getSession());
+            }
+        });
     }
 
     /**

@@ -2,7 +2,16 @@ default:
   suites:
     default:
       path: %paths.base%/features
-      contexts: [FeatureContext]
+      contexts:
+        - FeatureContext
+        - Medology\Behat\CsvContext
+        - Medology\Behat\StoreContext
+        - Medology\Behat\Mink\AlertContext
+        - Medology\Behat\Mink\FlexibleContext
+        - Medology\Behat\Mink\JavaScriptContext
+        - Medology\Behat\Mink\ScreenShotContext
+        - Medology\Behat\Mink\TableContext
+        - Medology\Behat\Mink\WebDownloadContext
   extensions:
     Behat\MinkExtension:
       base_url: http://web/
@@ -13,5 +22,5 @@ default:
           selenium2:
             browser: chrome
             wd_host: http://chrome:4444/wd/hub
-    Behat\ParallelWorker\ServiceContainer\ParallelWorkerExtension: ~
+    Medology\Behat\ParallelWorker\Extension: ~
     features\Extensions\Assertion\AssertionExtension: ~

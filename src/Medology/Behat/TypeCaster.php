@@ -1,4 +1,6 @@
-<?php namespace Medology\Behat;
+<?php
+
+namespace Medology\Behat;
 
 /**
  * Adds type casting for step arguments.

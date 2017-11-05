@@ -1,4 +1,6 @@
-<?php namespace Medology\Behat\ParallelWorker;
+<?php
+
+namespace Medology\Behat\ParallelWorker;
 
 use Behat\Gherkin\Gherkin;
 use Behat\Testwork\Cli\Controller as BaseController;

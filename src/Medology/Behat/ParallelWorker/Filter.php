@@ -1,4 +1,6 @@
-<?php namespace Medology\Behat\ParallelWorker;
+<?php
+
+namespace Medology\Behat\ParallelWorker;
 
 use Behat\Gherkin\Filter\SimpleFilter;
 use Behat\Gherkin\Node\ExampleTableNode;

@@ -1,4 +1,6 @@
-<?php namespace Medology\Behat;
+<?php
+
+namespace Medology\Behat;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Environment\InitializedContextEnvironment;

@@ -1,4 +1,6 @@
-<?php namespace Medology;
+<?php
+
+namespace Medology;
 
 use Exception;
 

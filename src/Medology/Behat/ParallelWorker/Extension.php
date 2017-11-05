@@ -1,4 +1,6 @@
-<?php namespace Medology\Behat\ParallelWorker;
+<?php
+
+namespace Medology\Behat\ParallelWorker;
 
 use Behat\Behat\Gherkin\ServiceContainer\GherkinExtension;
 use Behat\Testwork\Cli\ServiceContainer\CliExtension;

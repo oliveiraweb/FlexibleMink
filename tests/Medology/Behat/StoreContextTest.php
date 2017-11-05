@@ -1,4 +1,6 @@
-<?php namespace Tests\Medology\Behat;
+<?php
+
+namespace Tests\Medology\Behat;
 
 use Exception;
 use Medology\Behat\StoreContext;

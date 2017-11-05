@@ -1,4 +1,6 @@
-<?php namespace Tests\Medology\Behat\ParallelWorker;
+<?php
+
+namespace Tests\Medology\Behat\ParallelWorker;
 
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;

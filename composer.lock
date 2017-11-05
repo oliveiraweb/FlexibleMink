@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1710859f97607e75edaf619fce61670b",
-    "content-hash": "e14c3e5a5e4957c5ef3831acaefb5945",
+    "hash": "129a8ece0fa88f9e3357371c7ecb4d0a",
+    "content-hash": "27b250394c638bb4a0129c143883c490",
     "packages": [
         {
             "name": "behat/behat",
@@ -303,6 +303,49 @@
                 "transliterator"
             ],
             "time": "2015-09-28 16:26:35"
+        },
+        {
+            "name": "chekote/noun-store",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Chekote/noun-store.git",
+                "reference": "5c6143af5de8ca36519688014249a2b3230674e2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Chekote/noun-store/zipball/5c6143af5de8ca36519688014249a2b3230674e2",
+                "reference": "5c6143af5de8ca36519688014249a2b3230674e2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.30"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "": [
+                        "src",
+                        "test"
+                    ]
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Private STD Testing Services.",
+            "keywords": [
+                "noun",
+                "testing"
+            ],
+            "support": {
+                "source": "https://github.com/Chekote/noun-store/tree/master",
+                "issues": "https://github.com/Chekote/noun-store/issues"
+            },
+            "time": "2017-08-03 02:33:54"
         },
         {
             "name": "psr/log",
@@ -1087,49 +1130,6 @@
                 "webdriver"
             ],
             "time": "2016-03-05 09:10:18"
-        },
-        {
-            "name": "chekote/noun-store",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Chekote/noun-store.git",
-                "reference": "5c6143af5de8ca36519688014249a2b3230674e2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Chekote/noun-store/zipball/5c6143af5de8ca36519688014249a2b3230674e2",
-                "reference": "5c6143af5de8ca36519688014249a2b3230674e2",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.6.30"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^5.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "": [
-                        "src",
-                        "test"
-                    ]
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "Private STD Testing Services.",
-            "keywords": [
-                "noun",
-                "testing"
-            ],
-            "support": {
-                "source": "https://github.com/Chekote/noun-store/tree/master",
-                "issues": "https://github.com/Chekote/noun-store/issues"
-            },
-            "time": "2017-08-03 02:33:54"
         },
         {
             "name": "doctrine/instantiator",

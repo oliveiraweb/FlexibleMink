@@ -8,7 +8,7 @@ use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
 use features\Extensions\Assertion\AssertionContext;
 use Medology\Behat\GathersContexts;
-use Medology\Behat\Mink\FlexibleContext;
+use Medology\Behat\Mink\UsesFlexibleContext;
 use Medology\Behat\Mink\WebDownloadContext;
 use Medology\Behat\TypeCaster;
 use Medology\Behat\UsesStoreContext;
@@ -19,10 +19,8 @@ class FeatureContext implements Context, GathersContexts
     // Depends
     use AssertionContext;
     use TypeCaster;
+    use UsesFlexibleContext;
     use UsesStoreContext;
-
-    /** @var FlexibleContext */
-    protected $flexibleContext;
 
     /** @var WebDownloadContext */
     protected $webDownloadContext;
@@ -39,10 +37,6 @@ class FeatureContext implements Context, GathersContexts
                 'Expected Environment to be ' . InitializedContextEnvironment::class .
                     ', but got ' . get_class($environment)
           );
-        }
-
-        if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {
-            throw new RuntimeException('Failed to gather FlexibleContext');
         }
 
         if (!$this->webDownloadContext = $environment->getContext(WebDownloadContext::class)) {

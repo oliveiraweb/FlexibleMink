@@ -3,42 +3,18 @@
 namespace Medology\Behat\Mink;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\Environment\InitializedContextEnvironment;
 use Behat\Behat\Hook\Scope\AfterStepScope;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\Testwork\Tester\Result\TestResult;
-use Medology\Behat\GathersContexts;
-use RuntimeException;
 
 /**
  * Context for capturing screenshots of the web browser.
  *
  * Note: Only works with Mink drivers that support the getScreenshot() method.
  */
-class ScreenShotContext implements Context, GathersContexts
+class ScreenShotContext implements Context
 {
-    /** @var FlexibleContext */
-    protected $flexibleContext;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function gatherContexts(BeforeScenarioScope $scope)
-    {
-        $environment = $scope->getEnvironment();
-
-        if (!($environment instanceof InitializedContextEnvironment)) {
-            throw new RuntimeException(
-                'Expected Environment to be ' . InitializedContextEnvironment::class .
-                    ', but got ' . get_class($environment)
-          );
-        }
-
-        if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {
-            throw new RuntimeException('Failed to gather FlexibleContext');
-        }
-    }
+    use UsesFlexibleContext;
 
     /**
      * Captures a screenshot and saves it to the artifacts directory.

@@ -3,41 +3,17 @@
 namespace Medology\Behat;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\Environment\InitializedContextEnvironment;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use Exception;
-use Medology\Behat\Mink\FlexibleContext;
-use RuntimeException;
+use Medology\Behat\Mink\UsesFlexibleContext;
 
 /**
  * Provides functionality for working with CSV data.
  */
-class CsvContext implements Context, GathersContexts
+class CsvContext implements Context
 {
+    use UsesFlexibleContext;
     use UsesStoreContext;
-
-    /** @var FlexibleContext */
-    protected $flexibleContext;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function gatherContexts(BeforeScenarioScope $scope)
-    {
-        $environment = $scope->getEnvironment();
-
-        if (!($environment instanceof InitializedContextEnvironment)) {
-            throw new RuntimeException(
-                'Expected Environment to be ' . InitializedContextEnvironment::class .
-                    ', but got ' . get_class($environment)
-          );
-        }
-
-        if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {
-            throw new RuntimeException('Failed to gather FlexibleContext');
-        }
-    }
 
     /**
      * Ensures that the given variable in the store is a CSV containing the given rows.

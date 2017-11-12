@@ -3,14 +3,10 @@
 namespace Medology\Behat\Mink;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\Environment\InitializedContextEnvironment;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
-use Medology\Behat\GathersContexts;
 use Medology\Spinner;
-use RuntimeException;
 use WebDriver\Exception\NoAlertOpenError;
 
 /**
@@ -18,29 +14,9 @@ use WebDriver\Exception\NoAlertOpenError;
  *
  * @link https://gist.github.com/blazarecki/2888851
  */
-class AlertContext implements Context, GathersContexts
+class AlertContext implements Context
 {
-    /** @var FlexibleContext */
-    protected $flexibleContext;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function gatherContexts(BeforeScenarioScope $scope)
-    {
-        $environment = $scope->getEnvironment();
-
-        if (!($environment instanceof InitializedContextEnvironment)) {
-            throw new RuntimeException(
-                'Expected Environment to be ' . InitializedContextEnvironment::class .
-                    ', but got ' . get_class($environment)
-          );
-        }
-
-        if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {
-            throw new RuntimeException('Failed to gather FlexibleContext');
-        }
-    }
+    use UsesFlexibleContext;
 
     /**
      * Clears out any alerts or prompts that may be open.

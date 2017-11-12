@@ -3,46 +3,21 @@
 namespace Medology\Behat\Mink;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\Environment\InitializedContextEnvironment;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
 use Exception;
-use Medology\Behat\GathersContexts;
 use Medology\Behat\UsesStoreContext;
 use Medology\Spinner;
-use RuntimeException;
 
 /**
  * {@inheritdoc}
  */
-class WebDownloadContext implements Context, GathersContexts
+class WebDownloadContext implements Context
 {
+    use UsesFlexibleContext;
     use UsesStoreContext;
 
     protected static $baseUrlRegExp = '/^((http(s|):[\/]{2}|)([a-zA-Z]+\.|)[a-zA-Z0-9]+\.[a-zA-Z]+(\:[\d]+|)|[a-zA-Z0-9]+)/';
-
-    /** @var FlexibleContext */
-    protected $flexibleContext;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function gatherContexts(BeforeScenarioScope $scope)
-    {
-        $environment = $scope->getEnvironment();
-
-        if (!($environment instanceof InitializedContextEnvironment)) {
-            throw new RuntimeException(
-                'Expected Environment to be ' . InitializedContextEnvironment::class .
-                    ', but got ' . get_class($environment)
-          );
-        }
-
-        if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {
-            throw new RuntimeException('Failed to gather FlexibleContext');
-        }
-    }
 
     /**
      * Downloads the file references by the link and stores the content under the given key in the store.

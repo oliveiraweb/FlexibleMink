@@ -19,7 +19,7 @@ class FilterTest extends FilterTestBase
         // message check
         try {
             new Filter(-10, 10);
-            $this->expectException(InvalidArgumentException::class);
+            self::setExpectedException(InvalidArgumentException::class);
         } catch (Exception $e) {
             $this->assertEquals('Received bad arguments for ($curNode, $totalNodes): (-10, 10).', $e->getMessage());
         }
@@ -29,28 +29,28 @@ class FilterTest extends FilterTestBase
          **************************/
         try {
             new Filter(-1, 1);
-            $this->expectException(InvalidArgumentException::class);
+            self::setExpectedException(InvalidArgumentException::class);
         } catch (Exception $e) {
             $this->assertTrue($e instanceof InvalidArgumentException);
         }
 
         try {
             new Filter(0, 0);
-            $this->expectException(InvalidArgumentException::class);
+            self::setExpectedException(InvalidArgumentException::class);
         } catch (Exception $e) {
             $this->assertTrue($e instanceof InvalidArgumentException);
         }
 
         try {
             new Filter(-1, -1);
-            $this->expectException(InvalidArgumentException::class);
+            self::setExpectedException(InvalidArgumentException::class);
         } catch (Exception $e) {
             $this->assertTrue($e instanceof InvalidArgumentException);
         }
 
         try {
             new Filter(2, 1);
-            $this->expectException(InvalidArgumentException::class);
+            self::setExpectedException(InvalidArgumentException::class);
         } catch (Exception $e) {
             $this->assertTrue($e instanceof InvalidArgumentException);
         }
@@ -105,12 +105,14 @@ class FilterTest extends FilterTestBase
         $this->assertEquals('Scenario#3', $scenarios[2]->getTitle());
 
         $this->assertTrue($scenarios[2] instanceof OutlineNode);
-        $this->assertTrue($scenarios[2]->hasExamples());
+        /** @var OutlineNode $outline */
+        $outline = $scenarios[2];
+        $this->assertTrue($outline->hasExamples());
         $this->assertEquals([
             ['action' => 'act#1', 'outcome' => 'out#1'],
             ['action' => 'act#2', 'outcome' => 'out#2'],
             ['action' => 'act#3', 'outcome' => 'out#3'],
-        ], $scenarios[2]->getExampleTable()->getColumnsHash());
+        ], $outline->getExampleTable()->getColumnsHash());
 
         $this->assertEquals('Scenario#3 HD Remix', $scenarios[3]->getTitle());
     }
@@ -132,11 +134,13 @@ class FilterTest extends FilterTestBase
         $this->assertEquals('Scenario#3', $scenarios[1]->getTitle());
 
         $this->assertTrue($scenarios[1] instanceof OutlineNode);
-        $this->assertTrue($scenarios[1]->hasExamples());
+        /** @var OutlineNode $outline */
+        $outline = $scenarios[1];
+        $this->assertTrue($outline->hasExamples());
         $this->assertEquals([
             ['action' => 'act#1', 'outcome' => 'out#1'],
             ['action' => 'act#3', 'outcome' => 'out#3'],
-        ], $scenarios[1]->getExampleTable()->getColumnsHash());
+        ], $outline->getExampleTable()->getColumnsHash());
 
         /*****************
          *    Node 2    *
@@ -150,10 +154,12 @@ class FilterTest extends FilterTestBase
         $this->assertEquals('Scenario#3', $scenarios[1]->getTitle());
 
         $this->assertTrue($scenarios[1] instanceof OutlineNode);
-        $this->assertTrue($scenarios[1]->hasExamples());
+        /** @var OutlineNode $outline */
+        $outline = $scenarios[1];
+        $this->assertTrue($outline->hasExamples());
         $this->assertEquals([
             ['action' => 'act#2', 'outcome' => 'out#2'],
-        ], $scenarios[1]->getExampleTable()->getColumnsHash());
+        ], $outline->getExampleTable()->getColumnsHash());
 
         $this->assertEquals('Scenario#3 HD Remix', $scenarios[2]->getTitle());
     }
@@ -175,10 +181,12 @@ class FilterTest extends FilterTestBase
         $this->assertEquals('Scenario#3', $scenarios[1]->getTitle());
 
         $this->assertTrue($scenarios[1] instanceof OutlineNode);
-        $this->assertTrue($scenarios[1]->hasExamples());
+        /** @var OutlineNode $outline */
+        $outline = $scenarios[1];
+        $this->assertTrue($outline->hasExamples());
         $this->assertEquals([
             ['action' => 'act#2', 'outcome' => 'out#2'],
-        ], $scenarios[1]->getExampleTable()->getColumnsHash());
+        ], $outline->getExampleTable()->getColumnsHash());
 
         /*****************
          *    Node 2    *
@@ -192,10 +200,12 @@ class FilterTest extends FilterTestBase
         $this->assertEquals('Scenario#3', $scenarios[1]->getTitle());
 
         $this->assertTrue($scenarios[1] instanceof OutlineNode);
-        $this->assertTrue($scenarios[1]->hasExamples());
+        /** @var OutlineNode $outline */
+        $outline = $scenarios[1];
+        $this->assertTrue($outline->hasExamples());
         $this->assertEquals([
             ['action' => 'act#3', 'outcome' => 'out#3'],
-        ], $scenarios[1]->getExampleTable()->getColumnsHash());
+        ], $outline->getExampleTable()->getColumnsHash());
 
         /*****************
          *    Node 3    *
@@ -208,10 +218,12 @@ class FilterTest extends FilterTestBase
         $this->assertEquals('Scenario#3', $scenarios[0]->getTitle());
 
         $this->assertTrue($scenarios[0] instanceof OutlineNode);
-        $this->assertTrue($scenarios[0]->hasExamples());
+        /** @var OutlineNode $outline */
+        $outline = $scenarios[0];
+        $this->assertTrue($outline->hasExamples());
         $this->assertEquals([
             ['action' => 'act#1', 'outcome' => 'out#1'],
-        ], $scenarios[0]->getExampleTable()->getColumnsHash());
+        ], $outline->getExampleTable()->getColumnsHash());
 
         $this->assertEquals('Scenario#3 HD Remix', $scenarios[1]->getTitle());
     }
@@ -233,10 +245,12 @@ class FilterTest extends FilterTestBase
         $this->assertEquals('Scenario#3', $scenarios[1]->getTitle());
 
         $this->assertTrue($scenarios[1] instanceof OutlineNode);
-        $this->assertTrue($scenarios[1]->hasExamples());
+        /** @var OutlineNode $outline */
+        $outline = $scenarios[1];
+        $this->assertTrue($outline->hasExamples());
         $this->assertEquals([
             ['action' => 'act#3', 'outcome' => 'out#3'],
-        ], $scenarios[1]->getExampleTable()->getColumnsHash());
+        ], $outline->getExampleTable()->getColumnsHash());
 
         /*****************
          *    Node 2   *
@@ -260,10 +274,12 @@ class FilterTest extends FilterTestBase
         $this->assertEquals('Scenario#3', $scenarios[0]->getTitle());
 
         $this->assertTrue($scenarios[0] instanceof OutlineNode);
-        $this->assertTrue($scenarios[0]->hasExamples());
+        /** @var OutlineNode $outline */
+        $outline = $scenarios[0];
+        $this->assertTrue($outline->hasExamples());
         $this->assertEquals([
             ['action' => 'act#1', 'outcome' => 'out#1'],
-        ], $scenarios[0]->getExampleTable()->getColumnsHash());
+        ], $outline->getExampleTable()->getColumnsHash());
 
         /*****************
          *    Node 4    *
@@ -276,9 +292,11 @@ class FilterTest extends FilterTestBase
         $this->assertEquals('Scenario#3', $scenarios[0]->getTitle());
 
         $this->assertTrue($scenarios[0] instanceof OutlineNode);
-        $this->assertTrue($scenarios[0]->hasExamples());
+        /** @var OutlineNode $outline */
+        $outline = $scenarios[0];
+        $this->assertTrue($outline->hasExamples());
         $this->assertEquals([
             ['action' => 'act#2', 'outcome' => 'out#2'],
-        ], $scenarios[0]->getExampleTable()->getColumnsHash());
+        ], $outline->getExampleTable()->getColumnsHash());
     }
 }

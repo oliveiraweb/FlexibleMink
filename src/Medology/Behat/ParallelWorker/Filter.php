@@ -11,7 +11,7 @@ use InvalidArgumentException;
 use RuntimeException;
 
 /**
- * A scenario filter which filters on individual scenarios and outlines. Usefull for separating tests onto multiple
+ * A scenario filter which filters on individual scenarios and outlines. Useful for separating tests onto multiple
  * worker nodes.
  *
  * Based on the behat-partial-runner (http://github.com/m00t/behat-partial-runner) by Anton Serdyuk (m00t).

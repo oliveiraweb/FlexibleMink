@@ -20,11 +20,16 @@ register_shutdown_function('fatalHandler');
 
 define('BEHAT_BIN_PATH', __FILE__);
 
+/**
+ * Includes the specified file if it exists.
+ *
+ * @param  string $file the file to include.
+ * @return mixed  the value that the file returns.
+ */
 function includeIfExists($file)
 {
-    if (file_exists($file)) {
-        return include $file;
-    }
+    /** @noinspection PhpIncludeInspection no way to inspect a dynamic include */
+    return file_exists($file) ? include $file : false;
 }
 
 if (!$loader = includeIfExists(__DIR__.'/../vendor/autoload.php')) {

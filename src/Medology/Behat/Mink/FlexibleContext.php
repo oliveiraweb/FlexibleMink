@@ -638,9 +638,10 @@ class FlexibleContext extends MinkContext
      * Attaches a local file to field with specified id|name|label|value. This is used when running behat and
      * browser session in different containers.
      *
-     * @When /^(?:|I )attach the local file "(?P<path>[^"]*)" to "(?P<field>(?:[^"]|\\")*)"$/
-     * @param string $field The file field to select the file with
-     * @param string $path  The local path of the file
+     * @When   /^(?:|I )attach the local file "(?P<path>[^"]*)" to "(?P<field>(?:[^"]|\\")*)"$/
+     * @param  string                           $field The file field to select the file with
+     * @param  string                           $path  The local path of the file
+     * @throws UnsupportedDriverActionException if getWebDriverSession() is not supported by the current driver.
      */
     public function addLocalFileToField($path, $field)
     {
@@ -660,7 +661,13 @@ class FlexibleContext extends MinkContext
         $zip->addFile($path, basename($path));
         $zip->close();
 
-        $remotePath = $this->getSession()->getDriver()->getWebDriverSession()->file([
+        $driver = $this->getSession()->getDriver();
+        if (!($driver instanceof Selenium2Driver)) {
+            throw new UnsupportedDriverActionException('getWebDriverSession() is not supported by %s', $driver);
+        }
+
+        /** @noinspection PhpUndefinedMethodInspection file() method annotation is missing from WebDriver\Session */
+        $remotePath = $driver->getWebDriverSession()->file([
             'file' => base64_encode(file_get_contents($tempZip)),
         ]);
 

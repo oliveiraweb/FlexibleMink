@@ -7,7 +7,7 @@ use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
 
 /**
- * {@inheritdoc}
+ * Provides functionality modifying and checking the Javascript environment in the browser.
  */
 class JavaScriptContext implements Context
 {

@@ -7,7 +7,6 @@ use Medology\Behat\StoreContext;
 use PHPUnit_Framework_Error;
 use PHPUnit_Framework_TestCase;
 use stdClass;
-use TypeError;
 
 class StoreContextTest extends PHPUnit_Framework_TestCase
 {
@@ -67,6 +66,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
 
         // test invalid argument for $string
         try {
+            /* @noinspection PhpParamsInspection intentional wrong argument type */
             $this->storeContext->injectStoredValues([]);
             $this->setExpectedException('PHPUnit_Framework_Error_Warning');
         } catch (Exception $e) {
@@ -174,7 +174,8 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
         }
 
         // test function with no return
-        $badFn = function ($a) {
+        $badFn = function (/* @noinspection PhpUnusedParameterInspection */ $a) {
+            /** @noinspection PhpUnusedLocalVariableInspection */
             $a = 1;
         };
 
@@ -187,7 +188,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
         }
 
         // test function with bad return
-        $badFn = function ($a) {
+        $badFn = function (/* @noinspection PhpUnusedParameterInspection */ $a) {
             return 'bad return';
         };
 
@@ -199,7 +200,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
             $this->assertEquals('The $onGetFn method must return an object or an array!', $e->getMessage());
         }
 
-        $badFn = function ($a) {
+        $badFn = function (/* @noinspection PhpUnusedParameterInspection */ $a) {
             return function () {
             };
         };
@@ -221,7 +222,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
             $this->storeContext->injectStoredValues('(the test_property_1 of the testObj)', $goodFn)
         );
 
-        // test accessing property after unsetting with callback
+        // test accessing property after un-setting with callback
         $goodFn = function ($thing) {
             unset($thing->test_property_1);
 
@@ -298,10 +299,10 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
         $wrongReturnTypes = [
             function ($a, $b) {
             },
-            function ($a, $b) {
+            function (/* @noinspection PhpUnusedParameterInspection */ $a, $b) {
                 return '';
             },
-            function ($a, $b) {
+            function (/* @noinspection PhpUnusedParameterInspection */ $a, $b) {
                 return function () {
                 };
             },
@@ -321,7 +322,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
             $this->storeContext->injectStoredValues(
                 '(the test_property_1 of the testObj)',
                 null,
-                function ($a, $b) {
+                function (/* @noinspection PhpUnusedParameterInspection */ $a, $b) {
                     return false;
                 }
             );

@@ -15,11 +15,10 @@ use RuntimeException;
  */
 class CsvContext implements Context, GathersContexts
 {
+    use UsesStoreContext;
+
     /** @var FlexibleContext */
     protected $flexibleContext;
-
-    /** @var StoreContext */
-    protected $storeContext;
 
     /**
      * {@inheritdoc}
@@ -37,10 +36,6 @@ class CsvContext implements Context, GathersContexts
 
         if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {
             throw new RuntimeException('Failed to gather FlexibleContext');
-        }
-
-        if (!$this->storeContext = $environment->getContext(StoreContext::class)) {
-            throw new RuntimeException('Failed to gather StoreContext');
         }
     }
 

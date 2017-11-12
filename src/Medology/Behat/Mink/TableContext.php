@@ -11,7 +11,7 @@ use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
 use InvalidArgumentException;
 use Medology\Behat\GathersContexts;
-use Medology\Behat\StoreContext;
+use Medology\Behat\UsesStoreContext;
 use Medology\Spinner;
 use RuntimeException;
 
@@ -20,8 +20,7 @@ use RuntimeException;
  */
 class TableContext implements Context, GathersContexts
 {
-    /** @var StoreContext */
-    protected $storeContext;
+    use UsesStoreContext;
 
     /** @var FlexibleContext */
     protected $flexibleContext;
@@ -38,10 +37,6 @@ class TableContext implements Context, GathersContexts
                 'Expected Environment to be ' . InitializedContextEnvironment::class .
                     ', but got ' . get_class($environment)
           );
-        }
-
-        if (!$this->storeContext = $environment->getContext(StoreContext::class)) {
-            throw new RuntimeException('Failed to gather StoreContext');
         }
 
         if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {

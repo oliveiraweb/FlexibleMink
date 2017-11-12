@@ -10,8 +10,8 @@ use features\Extensions\Assertion\AssertionContext;
 use Medology\Behat\GathersContexts;
 use Medology\Behat\Mink\FlexibleContext;
 use Medology\Behat\Mink\WebDownloadContext;
-use Medology\Behat\StoreContext;
 use Medology\Behat\TypeCaster;
+use Medology\Behat\UsesStoreContext;
 use Medology\Spinner;
 
 class FeatureContext implements Context, GathersContexts
@@ -19,12 +19,10 @@ class FeatureContext implements Context, GathersContexts
     // Depends
     use AssertionContext;
     use TypeCaster;
+    use UsesStoreContext;
 
     /** @var FlexibleContext */
     protected $flexibleContext;
-
-    /** @var StoreContext */
-    protected $storeContext;
 
     /** @var WebDownloadContext */
     protected $webDownloadContext;
@@ -45,10 +43,6 @@ class FeatureContext implements Context, GathersContexts
 
         if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {
             throw new RuntimeException('Failed to gather FlexibleContext');
-        }
-
-        if (!$this->storeContext = $environment->getContext(StoreContext::class)) {
-            throw new RuntimeException('Failed to gather StoreContext');
         }
 
         if (!$this->webDownloadContext = $environment->getContext(WebDownloadContext::class)) {

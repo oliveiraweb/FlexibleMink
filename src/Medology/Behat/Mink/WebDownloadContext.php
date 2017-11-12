@@ -9,7 +9,7 @@ use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
 use Exception;
 use Medology\Behat\GathersContexts;
-use Medology\Behat\StoreContext;
+use Medology\Behat\UsesStoreContext;
 use Medology\Spinner;
 use RuntimeException;
 
@@ -18,13 +18,12 @@ use RuntimeException;
  */
 class WebDownloadContext implements Context, GathersContexts
 {
+    use UsesStoreContext;
+
     protected static $baseUrlRegExp = '/^((http(s|):[\/]{2}|)([a-zA-Z]+\.|)[a-zA-Z0-9]+\.[a-zA-Z]+(\:[\d]+|)|[a-zA-Z0-9]+)/';
 
     /** @var FlexibleContext */
     protected $flexibleContext;
-
-    /** @var StoreContext */
-    protected $storeContext;
 
     /**
      * {@inheritdoc}
@@ -38,10 +37,6 @@ class WebDownloadContext implements Context, GathersContexts
                 'Expected Environment to be ' . InitializedContextEnvironment::class .
                     ', but got ' . get_class($environment)
           );
-        }
-
-        if (!$this->storeContext = $environment->getContext(StoreContext::class)) {
-            throw new RuntimeException('Failed to gather StoreContext');
         }
 
         if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {

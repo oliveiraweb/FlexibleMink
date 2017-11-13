@@ -2,8 +2,6 @@
 
 namespace Medology\Behat\Mink;
 
-use Behat\Behat\Context\Environment\InitializedContextEnvironment;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\NodeElement;
@@ -15,20 +13,19 @@ use Behat\Mink\Exception\ResponseTextException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
 use InvalidArgumentException;
-use Medology\Behat\GathersContexts;
-use Medology\Behat\StoreContext;
 use Medology\Behat\TypeCaster;
+use Medology\Behat\UsesStoreContext;
 use Medology\Spinner;
-use RuntimeException;
 use ZipArchive;
 
 /**
  * Overwrites some MinkContext step definitions to make them more resilient to failures caused by browser/driver
  * discrepancies and unpredictable load times.
  */
-class FlexibleContext extends MinkContext implements GathersContexts
+class FlexibleContext extends MinkContext
 {
     use TypeCaster;
+    use UsesStoreContext;
 
     /** @var array map of common key names to key codes */
     protected static $keyCodes = [
@@ -38,28 +35,6 @@ class FlexibleContext extends MinkContext implements GathersContexts
         'shift tab'  => 2228233,
         'tab'        => 9,
     ];
-
-    /** @var StoreContext */
-    protected $storeContext;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function gatherContexts(BeforeScenarioScope $scope)
-    {
-        $environment = $scope->getEnvironment();
-
-        if (!($environment instanceof InitializedContextEnvironment)) {
-            throw new RuntimeException(
-                'Expected Environment to be ' . InitializedContextEnvironment::class .
-                    ', but got ' . get_class($environment)
-          );
-        }
-
-        if (!$this->storeContext = $environment->getContext(StoreContext::class)) {
-            throw new RuntimeException('Failed to gather StoreContext');
-        }
-    }
 
     /**
      * This method overrides the MinkContext::assertPageContainsText() default behavior for assertFieldContains to
@@ -663,9 +638,10 @@ class FlexibleContext extends MinkContext implements GathersContexts
      * Attaches a local file to field with specified id|name|label|value. This is used when running behat and
      * browser session in different containers.
      *
-     * @When /^(?:|I )attach the local file "(?P<path>[^"]*)" to "(?P<field>(?:[^"]|\\")*)"$/
-     * @param string $field The file field to select the file with
-     * @param string $path  The local path of the file
+     * @When   /^(?:|I )attach the local file "(?P<path>[^"]*)" to "(?P<field>(?:[^"]|\\")*)"$/
+     * @param  string                           $field The file field to select the file with
+     * @param  string                           $path  The local path of the file
+     * @throws UnsupportedDriverActionException if getWebDriverSession() is not supported by the current driver.
      */
     public function addLocalFileToField($path, $field)
     {
@@ -685,7 +661,13 @@ class FlexibleContext extends MinkContext implements GathersContexts
         $zip->addFile($path, basename($path));
         $zip->close();
 
-        $remotePath = $this->getSession()->getDriver()->getWebDriverSession()->file([
+        $driver = $this->getSession()->getDriver();
+        if (!($driver instanceof Selenium2Driver)) {
+            throw new UnsupportedDriverActionException('getWebDriverSession() is not supported by %s', $driver);
+        }
+
+        /** @noinspection PhpUndefinedMethodInspection file() method annotation is missing from WebDriver\Session */
+        $remotePath = $driver->getWebDriverSession()->file([
             'file' => base64_encode(file_get_contents($tempZip)),
         ]);
 

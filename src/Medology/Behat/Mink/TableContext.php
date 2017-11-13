@@ -3,51 +3,22 @@
 namespace Medology\Behat\Mink;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\Environment\InitializedContextEnvironment;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
 use InvalidArgumentException;
-use Medology\Behat\GathersContexts;
-use Medology\Behat\StoreContext;
+use Medology\Behat\UsesStoreContext;
 use Medology\Spinner;
 use RuntimeException;
 
 /**
  * Class TableContext.
  */
-class TableContext implements Context, GathersContexts
+class TableContext implements Context
 {
-    /** @var StoreContext */
-    protected $storeContext;
-
-    /** @var FlexibleContext */
-    protected $flexibleContext;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function gatherContexts(BeforeScenarioScope $scope)
-    {
-        $environment = $scope->getEnvironment();
-
-        if (!($environment instanceof InitializedContextEnvironment)) {
-            throw new RuntimeException(
-                'Expected Environment to be ' . InitializedContextEnvironment::class .
-                    ', but got ' . get_class($environment)
-          );
-        }
-
-        if (!$this->storeContext = $environment->getContext(StoreContext::class)) {
-            throw new RuntimeException('Failed to gather StoreContext');
-        }
-
-        if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {
-            throw new RuntimeException('Failed to gather FlexibleContext');
-        }
-    }
+    use UsesFlexibleContext;
+    use UsesStoreContext;
 
     /**
      * Finds a table with a given data-qa-id, name, or id. data-qa-id is given preference and matched exactly, while

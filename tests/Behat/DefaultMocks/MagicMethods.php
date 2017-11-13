@@ -26,5 +26,6 @@ class MagicMethods
 
     public function __toString()
     {
+        return '';
     }
 }

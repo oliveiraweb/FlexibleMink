@@ -3,39 +3,15 @@
 namespace Medology\Behat\Mink;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\Environment\InitializedContextEnvironment;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
-use Medology\Behat\GathersContexts;
-use RuntimeException;
 
 /**
- * {@inheritdoc}
+ * Provides functionality modifying and checking the Javascript environment in the browser.
  */
-class JavaScriptContext implements Context, GathersContexts
+class JavaScriptContext implements Context
 {
-    /** @var FlexibleContext */
-    protected $flexibleContext;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function gatherContexts(BeforeScenarioScope $scope)
-    {
-        $environment = $scope->getEnvironment();
-
-        if (!($environment instanceof InitializedContextEnvironment)) {
-            throw new RuntimeException(
-                'Expected Environment to be ' . InitializedContextEnvironment::class .
-                    ', but got ' . get_class($environment)
-          );
-        }
-
-        if (!$this->flexibleContext = $environment->getContext(FlexibleContext::class)) {
-            throw new RuntimeException('Failed to gather FlexibleContext');
-        }
-    }
+    use UsesFlexibleContext;
 
     /**
      * Determines if a javascript variable is set and has a value.

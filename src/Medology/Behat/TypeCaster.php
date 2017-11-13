@@ -49,8 +49,8 @@ trait TypeCaster
      * Casts a Quoted string to a string.
      *
      * This is helpful for when you want to write a step definition that
-     * accepts values that look like other scalar types, such as ints or
-     * bools.
+     * accepts values that look like other scalar types, such as int or
+     * bool.
      *
      * For example, if you wrote your step definition as follows:
      *

@@ -129,6 +129,29 @@ class FlexibleContext extends MinkContext
 
     /**
      * {@inheritdoc}
+     * @Then /^the field "(?P<field>[^"]+)" should(?P<not> not|) be visible$/
+     */
+    public function assertFieldVisibility($field, $not)
+    {
+        $locator = $this->fixStepArgument($field);
+
+        $fields = $this->getSession()->getPage()->findAll(
+          'named',
+          ['field', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)]
+        );
+
+        if (count($fields) > 1) {
+            throw new ExpectationException("The field '$locator' was found more than one time", $this->getSession());
+        }
+
+        $shouldBeVisible = !$not;
+        if (($shouldBeVisible && !$fields[0]->isVisible()) || (!$shouldBeVisible && $fields[0]->isVisible())) {
+            throw new ExpectationException("The field '$locator' was " . (!$not ? 'not ' : '') . 'visible or not found', $this->getSession());
+        }
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function assertElementContainsText($element, $text)
     {

@@ -3,8 +3,9 @@
 namespace Medology\Behat;
 
 use Behat\Behat\Context\Context;
+use Chekote\NounStore\Assert;
+use Chekote\NounStore\Store;
 use Exception;
-use nounstore\Store;
 use ReflectionFunction;
 
 /**
@@ -12,6 +13,16 @@ use ReflectionFunction;
  */
 class StoreContext extends Store implements Context
 {
+    /** @var Assert */
+    protected $assert;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->assert = new Assert($this);
+    }
+
     /**
      * Clears the registry before each Scenario to free up memory and prevent access to stale data.
      *
@@ -47,36 +58,18 @@ class StoreContext extends Store implements Context
     }
 
     /**
-     * Converts a key of the form "nth thing" into "n" and "thing".
-     *
-     * @param  string $key The key to parse
-     * @return array  For a key "nth thing", returns [thing, n], else [thing, null]
-     */
-    public function parseKey($key)
-    {
-        if (preg_match('/^([1-9][0-9]*)(?:st|nd|rd|th) (.+)$/', $key, $matches)) {
-            $nth = $matches[1];
-            $key = $matches[2];
-        } else {
-            $nth = '';
-        }
-
-        return [$key, $nth];
-    }
-
-    /**
      * Gets the value of a property from an object of the store.
      *
      * @param  string    $key      The key to retrieve the object for.
      * @param  string    $property The name of the property to retrieve from the object.
-     * @param  int       $nth      The nth value for the object to retrieve.
+     * @param  int       $index    The index of the key entry to check.
      * @throws Exception If an object was not found under the specified key.
      * @throws Exception If the object does not have the specified property.
      * @return mixed     The value of the property.
      */
-    public function getThingProperty($key, $property, $nth = null)
+    public function getThingProperty($key, $property, $index = null)
     {
-        $thing = $this->assertHas($key, $nth);
+        $thing = $this->assert->keyExists($key, $index);
 
         if (isset($thing, $property)) {
             return $thing->$property;
@@ -125,12 +118,12 @@ class StoreContext extends Store implements Context
             $thingName = $matches[2][$i];
             $thingProperty = str_replace(' ', '_', strtolower($matches[1][$i]));
 
-            if (!$this->has($thingName)) {
-                throw new Exception("Did not find $thingName in the store");
-            }
+            $thing = $this->assert->keyExists($thingName);
 
             // applies the hook the to the entity
-            $thing = $onGetFn ? $onGetFn($this->get($thingName)) : $this->get($thingName);
+            if ($onGetFn) {
+                $thing = $onGetFn($thing);
+            }
 
             // must return object, array, but not function
             if (!is_object($thing) && !is_array($thing) || is_callable($thing)) {

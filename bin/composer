@@ -8,8 +8,6 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
 docker run \
     -i${TTY} \
     --rm \
-    --env-file "$(pwd)"/docker/.env \
-    -v "$(pwd)":/app -w /app \
-	--link web:dockermachine.local \
+    -v "$(pwd)":/data -w /data \
 	--net ${PROJECT_NAME}_default \
-	php:5.6-cli php "$@"
+	composer/composer:1.2 "$@"

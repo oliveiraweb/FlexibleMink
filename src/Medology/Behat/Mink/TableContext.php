@@ -439,7 +439,9 @@ class TableContext implements Context
      */
     public function assertTableWithStructureExists(TableNode $tableNode)
     {
-        $table = $tableNode->getRows();
+        $table = array_map(function ($rowData) {
+            return array_map([$this->storeContext, 'injectStoredValues'], array_values($rowData));
+        }, $tableNode->getRows());
 
         $page = $this->flexibleContext->getSession()->getPage();
 
@@ -447,8 +449,7 @@ class TableContext implements Context
         $domTables = $page->findAll('css', 'table');
         foreach ($domTables as $domTable) {
             /** @var NodeElement[] $domRows */
-            $domRows = $domTable->findAll('css', 'tr');
-
+            $domRows = $domTable->findAll('xpath', '/tfoot/tr|thead/tr|tbody/tr');
             if (count($domRows) != count($table)) {
                 // This table doesn't have enough rows to match us.
                 continue 1;
@@ -458,8 +459,7 @@ class TableContext implements Context
                 $domRow = $domRows[$rowNum];
 
                 /** @var NodeElement[] $domCells */
-                $domCells = $domRow->findAll('css', 'th, td');
-
+                $domCells = $domRow->findAll('xpath', '/th|td');
                 if (count($domCells) != count($row)) {
                     // This table doesn't have enough columns to match us.
                     continue 2;

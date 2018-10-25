@@ -84,6 +84,33 @@ class FlexibleContext extends MinkContext
     }
 
     /**
+     * Asserts that a field is visible or not.
+     *
+     * @Then   /^the field "(?P<field>[^"]+)" should(?P<not> not|) be visible$/
+     * @param  string               $field The field to be checked
+     * @param  bool                 $not   check if field should be visible or not.
+     * @throws ExpectationException
+     */
+    public function assertFieldVisibility($field, $not)
+    {
+        $locator = $this->fixStepArgument($field);
+
+        $fields = $this->getSession()->getPage()->findAll(
+            'named',
+            ['field', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)]
+        );
+
+        if (count($fields) > 1) {
+            throw new ExpectationException("The field '$locator' was found more than one time", $this->getSession());
+        }
+
+        $shouldBeVisible = !$not;
+        if (($shouldBeVisible && !$fields[0]->isVisible()) || (!$shouldBeVisible && $fields[0]->isVisible())) {
+            throw new ExpectationException("The field '$locator' was " . (!$not ? 'not ' : '') . 'visible or not found', $this->getSession());
+        }
+    }
+
+    /**
      * This method overrides the MinkContext::assertElementContainsText() default behavior for
      * assertElementContainsText to inject stored values into the provided element and text.
      *
@@ -655,19 +682,36 @@ class FlexibleContext extends MinkContext
     }
 
     /**
-     * Scrolls the window to the top or bottom of the page body.
+     * Scrolls the window to the top, bottom, left, right (or any valid combination thereof) of the page body.
      *
-     * @Given /^the page is scrolled to the (?P<where>top|bottom)$/
-     * @When /^(?:I |)scroll to the (?P<where>top|bottom) of the page$/
-     * @param  string                           $where to scroll to. Must be either "top" or "bottom".
+     * @Given  /^the page is scrolled to the (?P<where>top|bottom)$/
+     * @When   /^(?:I |)scroll to the (?P<where>[ a-z]+) of the page$/
+     * @param  string                           $where to scroll to. Can be any valid combination of "top", "bottom",
+     *                                                 "left" and "right". e.g. "top", "top right", but not "top bottom"
      * @throws UnsupportedDriverActionException When operation not supported by the driver
      * @throws DriverException                  When the operation cannot be done
      */
     public function scrollWindowToBody($where)
     {
-        $x = ($where == 'top') ? '0' : 'document.body.scrollHeight';
+        // horizontal scroll
+        if (strpos($where, 'left') !== false) {
+            $x = 0;
+        } elseif (strpos($where, 'right') !== false) {
+            $x = 'document.body.scrollWidth';
+        } else {
+            $x = 'window.scrollX';
+        }
 
-        $this->getSession()->executeScript("window.scrollTo(0, $x)");
+        // vertical scroll
+        if (strpos($where, 'top') !== false) {
+            $y = 0;
+        } elseif (strpos($where, 'bottom') !== false) {
+            $y = 'document.body.scrollHeight';
+        } else {
+            $y = 'window.scrollY';
+        }
+
+        $this->getSession()->executeScript("window.scrollTo($x, $y)");
     }
 
     /**

@@ -212,6 +212,25 @@ class FlexibleContext extends MinkContext
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * Overrides the base method store the resulting element in the store under "element" and return it.
+     *
+     * @param  string                   $element      The selector to find the element.
+     * @param  string                   $selectorType css|xpath selector type to find the element.
+     * @throws ElementNotFoundException if the element was not found.
+     * @return NodeElement              The element found.
+     */
+    public function assertElementOnPage($element, $selectorType = 'css')
+    {
+        $node = $this->assertSession()->elementExists($selectorType, $element);
+
+        $this->storeContext->set('element', $node);
+
+        return $node;
+    }
+
+    /**
      * Asserts that an element with the given XPath is present in the container, and returns it.
      *
      * @param  NodeElement          $container The base element to search in.

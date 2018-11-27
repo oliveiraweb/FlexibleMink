@@ -2,6 +2,7 @@
 
 namespace Behat\FlexibleMink\Context;
 
+use Behat\FlexibleMink\Models\Geometry\Rectangle;
 use Behat\FlexibleMink\PseudoInterface\FlexibleContextInterface;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Driver\Selenium2Driver;
@@ -15,6 +16,7 @@ use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
 use Exception;
 use InvalidArgumentException;
+use JMS\Serializer\Tests\Fixtures\Node;
 use ZipArchive;
 
 /**
@@ -934,5 +936,169 @@ class FlexibleContext extends MinkContext
                 throw new ExpectationException("Page is not loaded. Ready state is '$readyState'", $this->getSession());
             }
         }, $timeout);
+    }
+
+    /**
+     * Asserts that a qaId is fully visible.
+     *
+     * @Then /^"(?P<qaId>[^"]+)" should(?P<not> not|) be fully visible$/
+     *
+     * @param  string                           $qaId The qaId of the dom element to find
+     * @param  bool                             $not  Asserts qaId is partially or not visible in the viewport.
+     * @throws ExpectationException
+     * @throws UnsupportedDriverActionException
+     */
+    public function assertQaIDIsFullyVisible($qaId, $not = false)
+    {
+        $qaId = $this->injectStoredValues($qaId);
+
+        $driver = $this->getSession()->getDriver();
+
+        $nodeElement = $this->waitFor(function () use ($qaId) {
+            return $this->getSession()->getPage()->find('xpath', '//*[@data-qa-id="' . $qaId . '"]');
+        });
+
+        if (!$nodeElement instanceof NodeElement && !$not) {
+            throw new ExpectationException(
+                "Couldn't find node element by qaId in " . __FUNCTION__,
+                $driver
+            );
+        } elseif (!$nodeElement instanceof NodeElement && $not) {
+            return;
+        }
+
+        try {
+            $this->assertNodeIsFullyVisible($nodeElement, $not);
+        } catch (ExpectationException $ExpectationException) {
+            throw new ExpectationException(
+                str_replace(['Node', 'node'], $qaId, $ExpectationException->getMessage()),
+                $driver
+            );
+        }
+    }
+
+    /**
+     * Asserts that a NodeElement is fully visible.
+     *
+     * @param  NodeElement                      $element
+     * @param  bool                             $not     Asserts NodeElement is partially or not visible in the viewport.
+     * @throws ExpectationException
+     * @throws UnsupportedDriverActionException
+     */
+    public function assertNodeIsFullyVisible(NodeElement $element, $not = false)
+    {
+        $driver = $this->getSession()->getDriver();
+
+        if (!$element instanceof NodeElement) {
+            throw new ExpectationException('Invalid node sent to ' . __FUNCTION__, $driver);
+        }
+
+        if (!$driver instanceof Selenium2Driver) {
+            throw new UnsupportedDriverActionException('%s does not support assertNodeIsFullyVisibleInViewPort', $driver);
+        }
+
+        if (!$element->isVisible()) {
+            if (!$not) {
+                throw new ExpectationException(
+                    'The element is not visible', $driver
+                );
+            }
+
+            return;
+        }
+
+        $allAreIn = true;
+
+        $parents = $this->getListOfAllNodeElementParents($element, 'html', true);
+
+        if (count($parents) < 1) {
+            throw new ExpectationException('Invalid number of node elements', $driver);
+        }
+
+        $elementViewportRectangle = $this->getElementViewportRectangle($element);
+
+        foreach ($parents as $parent) {
+            if (!$parent->isVisible()) {
+                if (!$not) {
+                    throw new ExpectationException(
+                        'One of the node elements parents is not visible', $driver
+                    );
+                }
+
+                return;
+            }
+
+            $isIn = $elementViewportRectangle->isFullyIn($this->getElementViewportRectangle($parent), $not);
+
+            $allAreIn = $allAreIn && !$isIn;
+
+            if (!$not && !$isIn) {
+                throw new ExpectationException(
+                    'Node is not fully visible in the viewport.', $driver
+                );
+            }
+        }
+
+        if ($not && $allAreIn) {
+            throw new ExpectationException(
+                'Node is fully visible in the viewport.', $driver
+            );
+        }
+    }
+
+    /**
+     * Get a rectangle that represents the location of a NodeElements viewport.
+     *
+     * @param  NodeElement $element NodeElement to get the viewport of.
+     * @return Rectangle   representing the viewport
+     */
+    public function getElementViewportRectangle(NodeElement $element)
+    {
+        $dimensions = $this->getSession()->getDriver()->getXpathElementDimensions($element->getXpath());
+
+        $YScrollBarWidth = 0;
+        $XScrollBarHeight = 0;
+
+        if ($dimensions['clientWidth'] > 0) {
+            $YScrollBarWidth = $dimensions['width'] - $dimensions['clientWidth'];
+        }
+
+        if ($dimensions['clientHeight'] > 0) {
+            $XScrollBarHeight = $dimensions['height'] - $dimensions['clientHeight'];
+        }
+
+        return new Rectangle(
+            $dimensions['left'],
+            $dimensions['top'],
+            $dimensions['right'] - $YScrollBarWidth,
+            $dimensions['bottom'] - $XScrollBarHeight
+        );
+    }
+
+    /**
+     * Get list of of all NodeElement parents.
+     *
+     * @param  NodeElement $NodeElement
+     * @param  string      $stopAt       html tag to stop at
+     * @param  bool        $reverseOrder list parents in reverse order (root element will be at index 0)
+     * @return array       of nodeElements
+     */
+    private function getListOfAllNodeElementParents(NodeElement $NodeElement, $stopAt, $reverseOrder)
+    {
+        $NodeElements = [];
+
+        while ($NodeElement->getParent() instanceof NodeElement) {
+            $NodeElements[] = ($NodeElement = $NodeElement->getParent());
+
+            if (strtolower($NodeElement->getTagName()) === strtolower($stopAt)) {
+                break;
+            }
+        }
+
+        if ($reverseOrder) {
+            $NodeElements = array_reverse($NodeElements);
+        }
+
+        return $NodeElements;
     }
 }

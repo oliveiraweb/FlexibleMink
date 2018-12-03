@@ -1168,6 +1168,91 @@ class FlexibleContext extends MinkContext
     }
 
     /**
+     * Step to assert that the specified element is not covered.
+     *
+     * @param  string               $identifier Element Id to find the element used in the assertion.
+     * @throws ExpectationException If element is found to be covered by another.
+     *
+     * @Then the :identifier element should not be covered by another
+     */
+    public function assertElementIsNotCoveredByIdStep($identifier)
+    {
+        /** @var NodeElement $element */
+        $element = $this->getSession()->getPage()->find('css', "#$identifier");
+
+        $this->assertElementIsNotCovered($element);
+    }
+
+    /**
+     * Asserts that the specified element is not covered by another element.
+     *
+     * Keep in mind that at the moment, this method performs a check in a square area so this may not work
+     * correctly with elements of different shapes.
+     *
+     * @param  NodeElement              $element  The element to assert that is not covered by something else.
+     * @param  int                      $leniency Percent of leniency when performing each pixel check.
+     * @throws ExpectationException     If element is found to be covered by another.
+     * @throws InvalidArgumentException The threshold provided is outside of the 0-100 range accepted.
+     */
+    public function assertElementIsNotCovered(NodeElement $element, $leniency = 20)
+    {
+        if ($leniency < 0 || $leniency > 99) {
+            throw new InvalidArgumentException('The leniency provided is outside of the 0-50 range accepted.');
+        }
+
+        $xpath = $element->getXpath();
+
+        /** @var array $coordinates */
+        $coordinates = $this->getSession()->evaluateScript(<<<JS
+          return document.evaluate("$xpath", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+            .singleNodeValue.getBoundingClientRect();
+JS
+        );
+
+        $width = $coordinates['width'] - 1;
+        $height = $coordinates['height'] - 1;
+        $right = $coordinates['right'];
+        $bottom = $coordinates['bottom'];
+
+        // X and Y are the starting points.
+        $x = $coordinates['left'];
+        $y = $coordinates['top'];
+
+        $xSpacing = ($width * ($leniency / 100)) ?: 1;
+        $ySpacing = ($height * ($leniency / 100)) ?: 1;
+
+        $expected = $element->getOuterHtml();
+
+        /**
+         * Asserts that each point checked on the row isn't covered by an element that doesn't match the expected.
+         *
+         * @param  int                  $x      Starting X position.
+         * @param  int                  $y      Starting Y position.
+         * @param  int                  $xLimit Width of element.
+         * @throws ExpectationException If element is found to be covered by another in the row specified.
+         */
+        $assertRow = function ($x, $y, $xLimit) use ($expected, $xSpacing) {
+            while ($x < $xLimit) {
+                $found = $this->getSession()->evaluateScript("return document.elementFromPoint($x, $y).outerHTML;");
+                if ($expected != $found) {
+                    throw new ExpectationException(
+                        'An element is above an interacting element.',
+                        $this->getSession()
+                    );
+                }
+
+                $x += $xSpacing;
+            }
+        };
+
+        // Go through each row in the square area found.
+        while ($y < $bottom) {
+            $assertRow($x, $y, $right);
+            $y += $ySpacing;
+        }
+    }
+
+    /**
      * Asserts that the current driver is Selenium 2 in preparation for performing an action that requires it.
      *
      * @param  string                           $operation the operation that you will attempt to perform that requires

@@ -666,7 +666,7 @@ class FlexibleContext extends MinkContext
     /**
      * Deletes all cookies.
      *
-     * @When   /^(?:|I )delete all cookies"$/
+     * @When   /^(?:|I )delete all cookies$/
      * @throws DriverException                  When the operation cannot be performed.
      * @throws Exception                        If the operation failed.
      * @throws UnsupportedDriverActionException When operation not supported by the driver.

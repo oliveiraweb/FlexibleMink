@@ -1370,31 +1370,73 @@ class FlexibleContext extends MinkContext
     }
 
     /**
-     * Returns true is $element is fully visible in the viewport, otherwise false.
+     * Checks if a node Element is fully visible in the viewport.
      *
      * @param  NodeElement                      $element the NodeElement to look for in the viewport.
-     * @throws UnsupportedDriverActionException if driver does not support the requested action.
-     * @return bool                             True is $element is fully visible in the viewport, otherwise false.
+     * @throws UnsupportedDriverActionException If driver does not support the requested action.
+     * @throws Exception                        If cannot get the Web Driver
+     * @return bool
      */
     public function nodeIsFullyVisibleInViewport(NodeElement $element)
     {
-        if (!$element->isVisible() ||
+        $driver = $this->assertSelenium2Driver('Checks if a node Element is fully visible in the viewport.');
+        if (!$driver->isDisplayed($element->getXpath()) ||
             count(($parents = $this->getListOfAllNodeElementParents($element, 'html'))) < 1
         ) {
             return false;
         }
-
         $elementViewportRectangle = $this->getElementViewportRectangle($element);
-
         foreach ($parents as $parent) {
             if (!$parent->isVisible() ||
-                !$elementViewportRectangle->isFullyIn($this->getElementViewportRectangle($parent))
+                !$elementViewportRectangle->isContainedIn($this->getElementViewportRectangle($parent))
             ) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * Checks if a node Element is visible in the viewport.
+     *
+     * @param  NodeElement                      $element The NodeElement to check for in the viewport
+     * @throws UnsupportedDriverActionException if driver does not support the requested action.
+     * @throws Exception                        If cannot get the Web Driver
+     * @return bool
+     */
+    public function nodeIsVisibleInViewport(NodeElement $element)
+    {
+        $driver = $this->assertSelenium2Driver('Checks if a node Element is visible in the viewport.');
+
+        $parents = $this->getListOfAllNodeElementParents($element, 'html');
+
+        if (!$driver->isDisplayed($element->getXpath()) || count($parents) < 1) {
+            return false;
+        }
+
+        $elementViewportRectangle = $this->getElementViewportRectangle($element);
+
+        foreach ($parents as $parent) {
+            if (!$elementViewportRectangle->overlaps($this->getElementViewportRectangle($parent))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if a node Element is visible in the document.
+     *
+     * @param  NodeElement                      $element NodeElement to to check for in the document
+     * @throws Exception                        If cannot get the Web Driver
+     * @throws UnsupportedDriverActionException If driver is not the selenium 2 driver
+     * @return bool
+     */
+    public function nodeIsVisibleInDocument(NodeElement $element)
+    {
+        return $this->assertSelenium2Driver('Check if element is displayed')->isDisplayed($element->getXpath());
     }
 
     /**

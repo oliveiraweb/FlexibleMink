@@ -162,6 +162,17 @@ trait FlexibleContextInterface
     abstract public function assertButtonDisabled($locator, $disabled = true);
 
     /**
+     * Finds the first matching visible button on the page, scrolling to one if necessary.
+     *
+     * Warning: Will return the first button if the driver does not support visibility checks.
+     *
+     * @param  string               $locator The button name.
+     * @throws ExpectationException If a visible button was not found.
+     * @return NodeElement          The button.
+     */
+    abstract public function scrollToButton($locator);
+
+    /**
      * Finds the first matching visible button on the page.
      *
      * Warning: Will return the first button if the driver does not support visibility checks.
@@ -171,6 +182,17 @@ trait FlexibleContextInterface
      * @return NodeElement          The button.
      */
     abstract public function assertVisibleButton($locator);
+
+    /**
+     * Finds the first matching visible link on the page, scrolling to it if necessary.
+     *
+     * Warning: Will return the first link if the driver does not support visibility checks.
+     *
+     * @param  string               $locator The link name.
+     * @throws ExpectationException If a visible link was not found.
+     * @return NodeElement          The link.
+     */
+    abstract public function scrollToLink($locator);
 
     /**
      * Finds the first matching visible link on the page.
@@ -184,6 +206,17 @@ trait FlexibleContextInterface
     abstract public function assertVisibleLink($locator);
 
     /**
+     * Finds the first matching visible option on the page, scrolling to it if necessary.
+     *
+     * Warning: Will return the first option if the driver does not support visibility checks.
+     *
+     * @param  string               $locator The option name.
+     * @throws ExpectationException If a visible option was not found.
+     * @return NodeElement          The option.
+     */
+    abstract public function scrollToOption($locator);
+
+    /**
      * Finds the first matching visible option on the page.
      *
      * Warning: Will return the first option if the driver does not support visibility checks.
@@ -193,6 +226,16 @@ trait FlexibleContextInterface
      * @return NodeElement          The option.
      */
     abstract public function assertVisibleOption($locator);
+
+    /**
+     * Checks that the page contains a visible input field, scrolls to it if it's not in the viewport, then returns it.
+     *
+     * @param  string                  $fieldName The input name.
+     * @param  TraversableElement|null $context   The context to search in, if not provided defaults to page.
+     * @throws ExpectationException    If a visible input field is not found.
+     * @return NodeElement             The found input field.
+     */
+    abstract public function scrollToField($fieldName, TraversableElement $context = null);
 
     /**
      * Checks that the page contains a visible input field and then returns it.
@@ -328,6 +371,22 @@ trait FlexibleContextInterface
      * @throws DriverException                  When the operation cannot be done
      */
     abstract public function scrollWindowToBody($where);
+
+    /**
+     * Finds the first visible element in the given set, prioritizing elements in the viewport but scrolling to one if
+     * necessary.
+     *
+     * @param  NodeElement[] $elements The elements to look for.
+     * @return NodeElement   The first visible element.
+     */
+    abstract public function scrollWindowToFirstVisibleElement(array $elements);
+
+    /**
+     * Scrolls the window to the given element.
+     *
+     * @param NodeElement $element The element to scroll to.
+     */
+    abstract public function scrollWindowToElement(NodeElement $element);
 
     /**
      * This overrides MinkContext::visit() to inject stored values into the URL.

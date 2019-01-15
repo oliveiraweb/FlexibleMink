@@ -247,7 +247,7 @@ class FlexibleContext extends MinkContext
     {
         $locator = $this->injectStoredValues($locator);
         $element = $this->waitFor(function () use ($locator) {
-            return $this->assertVisibleLink($locator);
+            return $this->scrollToLink($locator);
         });
 
         $element->click();
@@ -260,7 +260,7 @@ class FlexibleContext extends MinkContext
     {
         $locator = $this->injectStoredValues($locator);
         $element = $this->waitFor(function () use ($locator) {
-            return $this->assertVisibleOption($locator);
+            return $this->scrollToOption($locator);
         });
 
         $element->check();
@@ -274,7 +274,7 @@ class FlexibleContext extends MinkContext
         $field = $this->injectStoredValues($field);
         $value = $this->injectStoredValues($value);
         $element = $this->waitFor(function () use ($field) {
-            return $this->assertFieldExists($field);
+            return $this->scrollToField($field);
         });
 
         $element->setValue($value);
@@ -355,6 +355,22 @@ class FlexibleContext extends MinkContext
     /**
      * {@inheritdoc}
      */
+    public function scrollToButton($locator)
+    {
+        $locator = $this->fixStepArgument($locator);
+
+        $buttons = $this->getSession()->getPage()->findAll('named', ['button', $locator]);
+
+        if (!($element = $this->scrollWindowToFirstVisibleElement($buttons))) {
+            throw new ExpectationException("No visible button found for '$locator'", $this->getSession());
+        }
+
+        return $element;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function assertVisibleButton($locator)
     {
         $locator = $this->fixStepArgument($locator);
@@ -373,6 +389,30 @@ class FlexibleContext extends MinkContext
         }
 
         throw new ExpectationException("No visible button found for '$locator'", $this->getSession());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function scrollToLink($locator)
+    {
+        $locator = $this->fixStepArgument($locator);
+
+        // the link selector in Behat/Min/src/Selector/NamedSelector requires anchor tags have href
+        // we don't want that, because some don't, so rip out that section. Ideally we would load our own
+        // selector with registerNamedXpath, but I want to re-use the link named selector so we're doing it
+        // this way
+        $xpath = $this->getSession()->getSelectorsHandler()->selectorToXpath('named', ['link', $locator]);
+        $xpath = preg_replace('/\[\.\/@href\]/', '', $xpath);
+
+        /** @var NodeElement[] $links */
+        $links = $this->getSession()->getPage()->findAll('xpath', $xpath);
+
+        if (!($element = $this->scrollWindowToFirstVisibleElement($links))) {
+            throw new ExpectationException("No visible link found for '$locator'", $this->getSession());
+        }
+
+        return $element;
     }
 
     /**
@@ -409,6 +449,25 @@ class FlexibleContext extends MinkContext
     /**
      * {@inheritdoc}
      */
+    public function scrollToOption($locator)
+    {
+        $locator = $this->fixStepArgument($locator);
+
+        $options = $this->getSession()->getPage()->findAll(
+            'named',
+            ['field', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)]
+        );
+
+        if (!($element = $this->scrollWindowToFirstVisibleElement($options))) {
+            throw new ExpectationException("No visible option found for '$locator'", $this->getSession());
+        }
+
+        return $element;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function assertVisibleOption($locator)
     {
         $locator = $this->fixStepArgument($locator);
@@ -432,6 +491,23 @@ class FlexibleContext extends MinkContext
         }
 
         throw new ExpectationException("No visible option found for '$locator'", $this->getSession());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function scrollToField($fieldName, TraversableElement $context = null)
+    {
+        $context = $context ?: $this->getSession()->getPage();
+
+        /** @var NodeElement[] $fields */
+        $fields = ($context->findAll('named', ['field', $fieldName]) ?: $this->getInputsByLabel($fieldName, $context));
+
+        if (!($element = $this->scrollWindowToFirstVisibleElement($fields))) {
+            throw new ExpectationException("No visible input found for '$fieldName'", $this->getSession());
+        }
+
+        return $element;
     }
 
     /**
@@ -793,7 +869,7 @@ class FlexibleContext extends MinkContext
     {
         /** @var NodeElement $button */
         $button = $this->waitFor(function () use ($locator) {
-            return $this->assertVisibleButton($locator);
+            return $this->scrollToButton($locator);
         });
 
         $this->waitFor(function () use ($button, $locator) {
@@ -902,6 +978,41 @@ class FlexibleContext extends MinkContext
     /**
      * {@inheritdoc}
      */
+    public function scrollWindowToFirstVisibleElement(array $elements)
+    {
+        foreach ($elements as $field) {
+            if ($field->isVisible()) {
+                return $field;
+            }
+        }
+
+        // No fields are visible on the page, so try scrolling to each field and see if they become visible that way.
+        foreach ($elements as $field) {
+            $this->scrollWindowToElement($field);
+
+            if ($field->isVisible()) {
+                return $field;
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function scrollWindowToElement(NodeElement $element)
+    {
+        $xpath = json_encode($element->getXpath());
+        $this->getSession()->evaluateScript(<<<JS
+                document.evaluate($xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+                    .singleNodeValue
+                    .scrollIntoView(false)
+JS
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function visit($page)
     {
         parent::visit($this->injectStoredValues($page));
@@ -1003,17 +1114,15 @@ class FlexibleContext extends MinkContext
                 throw new ExpectationException('Radio Button was not found on the page', $this->getSession());
             }
 
-            $radioButtons = array_filter($radioButtons, function (NodeElement $radio) {
-                return $radio->isVisible();
-            });
+            usort($radioButtons, [$this, 'compareElementsByCoords']);
 
-            if (!$radioButtons) {
+            $radioButton = $this->scrollWindowToFirstVisibleElement($radioButtons);
+
+            if (!$radioButton) {
                 throw new ExpectationException('No Visible Radio Button was found on the page', $this->getSession());
             }
 
-            usort($radioButtons, [$this, 'compareElementsByCoords']);
-
-            return $radioButtons[0];
+            return $radioButton;
         });
 
         return $radioButton;

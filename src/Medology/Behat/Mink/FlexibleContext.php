@@ -1316,7 +1316,7 @@ class FlexibleContext extends MinkContext
      * @param  NodeElement $b the other NodeElement to compare.
      * @return int
      */
-    protected function compareElementsByCoords(NodeElement $a, NodeElement $b)
+    public function compareElementsByCoords(NodeElement $a, NodeElement $b)
     {
         /** @var Selenium2Driver $driver */
         $driver = $this->getSession()->getDriver();

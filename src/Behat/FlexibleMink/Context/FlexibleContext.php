@@ -87,6 +87,37 @@ class FlexibleContext extends MinkContext
     }
 
     /**
+     * Checks that current url has the specified query parameters.
+     *
+     * @Then /^(?:|I )should be on "(?P<page>[^"]+)" with the following query parameters:$/
+     *
+     * @param  string               $page       the current page path of the query parameters.
+     * @param  TableNode            $parameters the values of the query parameters.
+     * @throws ExpectationException if the expected current page is different.
+     * @throws ExpectationException if the one of the current page params are not set.
+     * @throws ExpectationException if the one of the current page param values does not match with the expected.
+     */
+    public function assertPageAddressWithQueryParameters($page, TableNode $parameters)
+    {
+        $this->assertPageAddress($page);
+        $parts = parse_url($this->getSession()->getCurrentUrl());
+        parse_str($parts['query'], $params);
+
+        foreach ($parameters->getRowsHash() as $param => $value) {
+            if (!isset($params[$param])) {
+                throw new ExpectationException("Query did not contain a $param parameter", $this->getSession());
+            }
+
+            if ($params[$param] != $value) {
+                throw new ExpectationException(
+                    "Expected query parameter $param to be $value, but found " . print_r($params[$param], true),
+                    $this->getSession()
+                );
+            }
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function assertPageContainsText($text)

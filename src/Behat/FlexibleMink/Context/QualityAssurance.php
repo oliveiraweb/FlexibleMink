@@ -2,6 +2,7 @@
 
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
+use Exception;
 
 trait QualityAssurance
 {
@@ -148,6 +149,45 @@ trait QualityAssurance
                     "$qaId is visible in the document.",
                     $this->getSession()->getDriver()
                 );
+            }
+        });
+    }
+
+    /**
+     * Check a node element with specific text inside the qa element.
+     *
+     * @When /^I (?P<action>check|uncheck) the checkbox "(?P<checkbox>[^"]+)" in the "(?P<qaId>[^"]+)"$/
+     *
+     * @param  string               $action   The action on the checkbox.
+     * @param  string               $checkbox The text inside the checkbox.
+     * @param  string               $qaId     The qa ID
+     * @throws Exception            If the string references something that does not exist in the store.
+     * @throws ExpectationException If the qa element was not found.
+     * @throws ExpectationException If the Checkbox with label was not found.
+     */
+    public function checkElementWithTextInQaElement($action, $checkbox, $qaId)
+    {
+        $checkbox = $this->injectStoredValues($checkbox);
+
+        $this->waitFor(function () use ($action, $checkbox, $qaId) {
+            $qaElement = $this->assertNodeElementExistsByQaId($qaId);
+
+            $targetElement = $qaElement->find(
+                'xpath',
+                '//label[contains(.,"' . $checkbox . '")]/input[@type="checkbox"]'
+            );
+
+            if (!$targetElement) {
+                throw new ExpectationException(
+                    "Checkbox with label '$checkbox' was not found within '$qaId'",
+                    $this->getSession()
+                );
+            }
+
+            if ($action === 'check') {
+                $targetElement->check();
+            } else {
+                $targetElement->uncheck();
             }
         });
     }

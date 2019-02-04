@@ -5,6 +5,7 @@ use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Medology\Behat\UsesStoreContext;
+use Medology\Spinner;
 use ReflectionException;
 use WebDriver\Exception as WebDriverException;
 
@@ -184,5 +185,41 @@ class QualityAssurance implements Context
                 $this->flexibleContext->getSession()->getDriver()
             );
         }
+    }
+
+    /**
+     * Check a node element with specific text inside the qa element.
+     *
+     * @When /^I (?P<action>check|uncheck) the checkbox "(?P<checkbox>[^"]+)" in the "(?P<qaId>[^"]+)"$/
+     *
+     * @param  string               $action   The action on the checkbox.
+     * @param  string               $checkbox The text inside the checkbox.
+     * @param  string               $qaId     The qa ID
+     * @throws ReflectionException  If the string references something that does not exist in the store.
+     * @throws ExpectationException If the QA element was not found.
+     * @throws ExpectationException If the Checkbox with that label was not found.
+     */
+    public function checkElementWithTextInQaElement($action, $checkbox, $qaId)
+    {
+        $checkbox = $this->storeContext->injectStoredValues($checkbox);
+
+        /* @noinspection PhpUnhandledExceptionInspection */
+        Spinner::waitFor(function () use ($action, $checkbox, $qaId) {
+            $qaElement = $this->assertNodeElementExistsByQaId($qaId);
+
+            $targetElement = $qaElement->find('xpath', '//label[contains(.,"' . $checkbox . '")]/input[@type="checkbox"]');
+            if (!$targetElement) {
+                throw new ExpectationException(
+                    "Checkbox with label '$checkbox' was not found within '$qaId'",
+                    $this->flexibleContext->getSession()->getDriver()
+                );
+            }
+
+            if ($action === 'check') {
+                $targetElement->check();
+            } else {
+                $targetElement->uncheck();
+            }
+        });
     }
 }

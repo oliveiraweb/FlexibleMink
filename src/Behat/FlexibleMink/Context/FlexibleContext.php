@@ -253,6 +253,36 @@ class FlexibleContext extends MinkContext
 
     /**
      * {@inheritdoc}
+     */
+    public function assertElementsExist($elementsSelector, $selectorType = 'css')
+    {
+        $session = $this->getSession();
+
+        return $this->waitFor(function () use ($session, $selectorType, $elementsSelector) {
+            if (!$allElements = $session->getPage()->findAll($selectorType, $elementsSelector)) {
+                throw new ExpectationException("No '$elementsSelector' was not found", $session);
+            }
+
+            return $allElements;
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function assertNthElement($elementSelector, $nth, $selectorType = 'css')
+    {
+        $allElements = $this->assertElementsExist($elementSelector, $selectorType);
+
+        if (!isset($allElements[$nth - 1])) {
+            throw new ExpectationException("Element $elementSelector $nth was not found", $this->getSession());
+        }
+
+        return $allElements[$nth - 1];
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * Overrides the base method to wait for the assertion to pass, and store
      * the resulting element in the store under "element".

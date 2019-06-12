@@ -13,6 +13,7 @@ use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\ResponseTextException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
+use Exception as GenericException;
 use InvalidArgumentException;
 use Medology\Behat\Mink\Models\Geometry\Rectangle;
 use Medology\Behat\StoreContext;
@@ -1203,6 +1204,7 @@ class FlexibleContext extends MinkContext
      * @throws DriverException                  When the operation cannot be performed.
      * @throws ExpectationException             If a visible button field is not found.
      * @throws UnsupportedDriverActionException When operation not supported by the driver.
+     * @throws ExpectationException             If Button is found but not visible in the viewport.
      */
     public function pressButton($locator)
     {
@@ -1215,6 +1217,7 @@ class FlexibleContext extends MinkContext
             }
         });
 
+        $this->assertNodeElementVisibleInViewport($button);
         $button->press();
     }
 
@@ -1601,6 +1604,26 @@ class FlexibleContext extends MinkContext
     }
 
     /**
+     * Asserts that the node element is visible in the viewport.
+     *
+     * @param  NodeElement          $element Element expected to be visble in the viewport.
+     * @throws ExpectationException If the element was not found visible in the viewport.
+     * @throws GenericException     If the assertion did not pass before the timeout was exceeded.
+     */
+    public function assertNodeElementVisibleInViewport(NodeElement $element)
+    {
+        Spinner::waitFor(function () use ($element) {
+            if (!$this->nodeIsVisibleInViewport($element)) {
+                throw new ExpectationException(
+                    'The following element was expected to be visible in viewport, but was not: ' .
+                    $element->getHtml(),
+                    $this->getSession()
+                );
+            }
+        });
+    }
+
+    /**
      * Checks if a node Element is visible in the viewport.
      *
      * @param  NodeElement                      $element The NodeElement to check for in the viewport
@@ -1612,7 +1635,7 @@ class FlexibleContext extends MinkContext
     {
         $driver = $this->assertSelenium2Driver('Checks if a node Element is visible in the viewport.');
 
-        $parents = $this->getListOfAllNodeElementParents($element, 'html');
+        $parents = $this->getListOfAllNodeElementParents($element, 'body');
 
         if (!$driver->isDisplayed($element->getXpath()) || count($parents) < 1) {
             return false;

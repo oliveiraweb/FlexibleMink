@@ -942,7 +942,6 @@ class FlexibleContext extends MinkContext
             }
         });
 
-        $this->assertNodeElementVisibleInViewport($button);
         $button->press();
     }
 
@@ -1240,22 +1239,6 @@ JS
                 throw new ExpectationException("Page is not loaded. Ready state is '$readyState'", $this->getSession());
             }
         }, $timeout);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function assertNodeElementVisibleInViewport(NodeElement $element)
-    {
-        $this->waitFor(function () use ($element) {
-            if (!$this->nodeIsVisibleInViewport($element)) {
-                throw new ExpectationException(
-                    'The following element was expected to be visible in viewport, but was not: ' .
-                        $element->getHtml(),
-                    $this->getSession()
-                );
-            }
-        });
     }
 
     /**

@@ -75,3 +75,36 @@ Feature: Store Context
      When I assert that the "'orderId'" of the "Commission" should contain "order-1234"
      Then the assertion should throw an Exception
       And the assertion should fail with the message "Expected the 'orderId' of the 'Commission' to contain 'order-1234', but found 'order-4321' instead"
+
+  Scenario: Chained objects/arrays 2nd level retrieves successful
+    Given the following is stored as "DataObject":
+      | childData  | bar |
+     And the following is stored as "ChildDataObject":
+      | attribute  | foo |
+     And "ChildDataObject" is stored as property "childData" of "DataObject"
+    Then the "DataObject's childData's attribute" should be "foo"
+
+  Scenario: Chained objects/arrays 3rd level retrieves successful
+    Given the following is stored as "DataObject":
+      | childData       | bar |
+      And the following is stored as "ChildDataObject":
+      | grandchildData  | foo |
+      And the following is stored as "GrandChildDataObject":
+      | attribute       | foo |
+      And "GrandChildDataObject" is stored as property "grandchildData" of "ChildDataObject"
+      And "ChildDataObject" is stored as property "childData" of "DataObject"
+     Then the "DataObject's childData's grandchildData's attribute" should be "foo"
+
+  Scenario: Chained objects/arrays non-object retrieval should throw an Exception
+    Given the following is stored as "DataObject":
+      | childData  | bar |
+     When I assert that the "DataObject's childData's grandchildData's attribute" should be "foo"
+     Then the assertion should throw an Exception
+      And the assertion should fail with the message "Expected DataObject's childData's grandchildData's attribute to be 'foo', but it was NULL"
+
+   Scenario: Data assigned to non-object/non-array property/key throw an Exception
+     Given the value "dataValue" is stored as "data"
+       And the value "bar" is stored as "foo"
+      When I assert that "data" is stored as property "someProperty" of "foo"
+      Then the assertion should throw an InvalidTypeException
+       And the assertion should fail with the message "Expected type for 'foo' is array/object but 'string' given"

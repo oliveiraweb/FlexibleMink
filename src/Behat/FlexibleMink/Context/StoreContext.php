@@ -141,7 +141,7 @@ trait StoreContext
      */
     private function parseKeyNested($key)
     {
-        $key_parts = explode('.', str_replace("'s ", '.', $key));
+        $key_parts = explode("'s ", $key);
 
         return [array_shift($key_parts), $key_parts];
     }
@@ -173,9 +173,15 @@ trait StoreContext
             list($key, $nth) = $this->parseKey($key);
         }
 
+        if ($this->isStoredWithSimpleKey($key, $nth)) {
+            return $nth
+                ? $this->registry[$key][$nth - 1]
+                : end($this->registry[$key]);
+        }
+
         list($target_key, $key_parts) = $this->parseKeyNested($key);
 
-        if (!$this->isStored($target_key, $nth)) {
+        if (!$this->isStoredWithSimpleKey($target_key, $nth)) {
             return;
         }
 
@@ -418,9 +424,28 @@ trait StoreContext
             list($key, $nth) = $this->parseKey($key);
         }
 
-        list($key, $unused) = $this->parseKeyNested($key);
+        list($base_key, $unused) = $this->parseKeyNested($key);
 
-        return $nth ? isset($this->registry[$key][$nth - 1]) : isset($this->registry[$key]);
+        return $nth
+            ? (isset($this->registry[$key][$nth - 1]) || isset($this->registry[$base_key][$nth - 1]))
+            : (isset($this->registry[$key]) || isset($this->registry[$base_key]));
+    }
+
+    /**
+     * Checks that the specified thing exists in the registry (Non-complex key only).
+     *
+     * @param  string $key The key to check.
+     * @param  int    $nth The nth value of the key.
+     * @return bool   True if the thing exists, false if not.
+     */
+    public function isStoredWithSimpleKey($key, $nth = null)
+    {
+        if (!$nth) {
+            list($key, $nth) = $this->parseKey($key);
+        }
+
+        return ($nth && isset($this->registry[$key][$nth - 1]))
+            || isset($this->registry[$key]);
     }
 
     /**

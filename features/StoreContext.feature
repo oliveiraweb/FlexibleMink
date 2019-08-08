@@ -102,9 +102,14 @@ Feature: Store Context
      Then the assertion should throw an Exception
       And the assertion should fail with the message "Expected DataObject's childData's grandchildData's attribute to be 'foo', but it was NULL"
 
-   Scenario: Data assigned to non-object/non-array property/key throw an Exception
-     Given the value "dataValue" is stored as "data"
-       And the value "bar" is stored as "foo"
-      When I assert that "data" is stored as property "someProperty" of "foo"
-      Then the assertion should throw an InvalidTypeException
-       And the assertion should fail with the message "Expected type for 'foo' is array/object but 'string' given"
+  Scenario: Data assigned to non-object/non-array property/key throw an Exception
+    Given the value "dataValue" is stored as "data"
+      And the value "bar" is stored as "foo"
+     When I assert that "data" is stored as property "someProperty" of "foo"
+     Then the assertion should throw an InvalidTypeException
+      And the assertion should fail with the message "Expected type for 'foo' is array/object but 'string' given"
+
+  Scenario: Non-complex key retrieves successful
+    Given the value "dataValue" is stored as "data's foo"
+     When I assert that the "data's foo" should be "dataValue"
+     Then the assertion should pass

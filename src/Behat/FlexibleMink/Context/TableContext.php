@@ -491,22 +491,25 @@ trait TableContext
      */
     public function assertTableShouldContainTheFollowingValues($name, TableNode $tableNode)
     {
-        $table = $this->getTableFromName($name);
         $expected = $tableNode->getColumnsHash();
 
-        $actual = array_map(function (array $row) use ($table) {
-            return array_combine($table['colHeaders'], $row);
-        }, $table['body']);
+        $this->waitFor(function () use ($name, $expected) {
+            $table = $this->getTableFromName($name, true);
 
-        foreach ($expected as $row) {
-            if (($key = $this->getTableRow($row, $actual)) === -1) {
-                throw new ExpectationException(
-                    'Row not found...',
-                    $this->getSession());
+            $actual = array_map(function (array $row) use ($table) {
+                return array_combine($table['colHeaders'], $row);
+            }, $table['body']);
+
+            foreach ($expected as $row) {
+                if (($key = $this->getTableRow($row, $actual)) === -1) {
+                    throw new ExpectationException(
+                        'Row not found...',
+                        $this->getSession());
+                }
+
+                unset($actual[$key]);
             }
-
-            unset($actual[$key]);
-        }
+        });
     }
 
     /**

@@ -285,8 +285,6 @@ trait TableContext
     /**
      * {@inheritdoc}
      *
-     * @Given the table :name has 1 row
-     * @Given the table :name has :num rows
      * @Then the table :name should have 1 row
      * @Then the table :name should have :num rows
      */
@@ -296,19 +294,21 @@ trait TableContext
             throw new InvalidArgumentException('Number of rows must be an integer greater than 0.');
         }
 
-        $table = $this->getTableFromName($name);
+        return $this->waitFor(function () use ($name, $num, $fullTable) {
+            $table = $this->getTableFromName($name);
 
-        $rowCount = count($table['body']);
+            $rowCount = count($table['body']);
 
-        if ($fullTable) {
-            $rowCount += count($table['head']) + count($table['body']);
-        }
+            if ($fullTable) {
+                $rowCount += count($table['head']) + count($table['body']);
+            }
 
-        if ($rowCount != $num) {
-            throw new ExpectationException("Expected $num row(s) for table '$name'. Instead got $rowCount.", $this->getSession());
-        }
+            if ($rowCount != $num) {
+                throw new ExpectationException("Expected $num row(s) for table '$name'. Instead got $rowCount.", $this->getSession());
+            }
 
-        return true;
+            return true;
+        });
     }
 
     /**

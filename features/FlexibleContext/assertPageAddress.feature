@@ -32,3 +32,7 @@ Feature: Assert Page Address Method
       | Param      | Value        | Error Message                                                  |
       | invalidKey | test         | Query did not contain a invalidKey parameter                   |
       | key        | invalidTest  | Expected query parameter key to be invalidTest, but found test |
+
+  Scenario: External URL address
+    When I go to "https://www.google.com"
+    Then I should be on "https://www.google.com"

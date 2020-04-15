@@ -97,9 +97,8 @@ class FlexibleContext extends MinkContext
             parent::assertPageAddress($page);
         } else {
             // it's a full URL, compare manually
-            $actual = rtrim($this->getSession()->getCurrentUrl(), '/');
-            $page = rtrim($page, '/');
-            if ($actual !== $page) {
+            $actual = $this->getSession()->getCurrentUrl();
+            if (strpos($actual, $page) !== 0) {
                 throw new ExpectationException(
                     sprintf('Current page is "%s", but "%s" expected.', $actual, $page),
                     $this->getSession()

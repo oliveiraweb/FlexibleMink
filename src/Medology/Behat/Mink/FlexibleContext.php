@@ -1741,7 +1741,7 @@ class FlexibleContext extends MinkContext
     {
         $driver = $this->assertSelenium2Driver('Checks if a node Element is fully visible in the viewport.');
         if (!$driver->isDisplayed($element->getXpath()) ||
-            count(($parents = $this->getListOfAllNodeElementParents($element, 'html'))) < 1
+            count(($parents = $this->getAncestors($element, 'html'))) < 1
         ) {
             return false;
         }
@@ -1786,9 +1786,10 @@ class FlexibleContext extends MinkContext
     {
         $driver = $this->assertSelenium2Driver('Checks if a node Element is visible in the viewport.');
 
-        $parents = $this->getListOfAllNodeElementParents($element, 'body');
+        $parents = $this->getAncestors($element, 'body');
 
-        if (!$driver->isDisplayed($element->getXpath()) || count($parents) < 1) {
+        // if the element is displayed, or it is detached from the DOM, it is not visible
+        if (!$driver->isDisplayed($element->getXpath()) || !$element->getParent()) {
             return false;
         }
 
@@ -2039,22 +2040,24 @@ JS
     }
 
     /**
-     * Get list of of all NodeElement parents.
+     * Returns all ancestors of the specified node element.
      *
-     * @param string $stopAt html tag to stop at
+     * @param NodeElement $node   the node element to fetch ancestors for.
+     * @param string|null $stopAt html tag to stop at. This node will NOT be included in the returned list.
      *
      * @return NodeElement[]
      */
-    private function getListOfAllNodeElementParents(NodeElement $nodeElement, $stopAt)
+    private function getAncestors(NodeElement $node, $stopAt = null)
     {
-        $nodeElements = [];
-        while ($nodeElement->getParent() instanceof NodeElement) {
-            $nodeElements[] = ($nodeElement = $nodeElement->getParent());
-            if (strtolower($nodeElement->getTagName()) === strtolower($stopAt)) {
+        $nodes = [];
+        while (($node = $node->getParent()) instanceof NodeElement) {
+            if (strcasecmp($node->getTagName(), $stopAt) === 0) {
                 break;
             }
+
+            $nodes[] = $node;
         }
 
-        return $nodeElements;
+        return $nodes;
     }
 }

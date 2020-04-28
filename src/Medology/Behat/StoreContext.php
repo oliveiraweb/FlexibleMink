@@ -184,9 +184,11 @@ class StoreContext extends Store implements Context
                 $thing = $onGetFn($thing);
             }
 
-            // must return object, array, but not function
-            if (!is_object($thing) && !is_array($thing) || is_callable($thing)) {
-                throw new InvalidArgumentException('The $onGetFn method must return an object or an array!');
+            // must return an array or a non-callable object
+            if (!is_array($thing) && (!is_object($thing) || is_callable($thing))) {
+                throw new InvalidArgumentException(
+                    'The $onGetFn method must return an array or a non-callable object!'
+                );
             }
 
             $hasValueResult = $hasValue($thing, $thingProperty);
@@ -262,15 +264,15 @@ class StoreContext extends Store implements Context
     /**
      * Fetches a value from an object and ensures it is prepared for injection into a string.
      *
-     * @param mixed  $property       the property to get from the object
-     * @param object $thing          the object to get the value from
-     * @param string $propertyFormat the pattern for formatting the value
+     * @param mixed        $property       the property to get from the object
+     * @param array|object $thing          the thing to get the value from
+     * @param string       $propertyFormat the pattern for formatting the value
      *
      * @return mixed the prepared value
      */
     protected function getValueForInjection($property, $thing, $propertyFormat = null)
     {
-        $value = $thing->$property;
+        $value = is_array($thing) ? $thing[$property] : $thing->$property;
 
         if ($propertyFormat) {
             $propertyFormat = $this->processPropertyFormat($propertyFormat);

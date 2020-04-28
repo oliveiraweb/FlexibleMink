@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
 namespace Tests\Medology\Behat;
 
 use DateTime;
@@ -24,58 +28,6 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests that an error is thrown when second argument of injectStoredValues is an empty string.
-     *
-     * @throws Exception when a unsupported version of PHP is being used
-     */
-    public function testErrorIsThrownWhenSecondArgumentOfInjectStoredValuesIsAnEmptyString()
-    {
-        $this->assertFunctionThrowsTypeErrorThatContainsMessage(function () {
-            $this->storeContext->injectStoredValues('', '');
-        }, 'injectStoredValues() must be callable');
-    }
-
-    /**
-     * Tests that an error is thrown when second argument of injectStoredValues is an empty string.
-     *
-     * @throws Exception when a unsupported version of PHP is being used
-     */
-    public function testErrorIsThrownWhenSecondArgumentOfInjectStoredValuesIsAnInteger()
-    {
-        $this->assertFunctionThrowsTypeErrorThatContainsMessage(function () {
-            $this->storeContext->injectStoredValues('', 0);
-        }, 'injectStoredValues() must be callable');
-    }
-
-    /**
-     * Tests that an error is thrown when second argument of injectStoredValues is an empty string.
-     *
-     * @throws Exception when a unsupported version of PHP is being used
-     */
-    public function testErrorIsThrownWhenSecondArgumentOfInjectStoredValuesIsAnObject()
-    {
-        $this->assertFunctionThrowsTypeErrorThatContainsMessage(function () {
-            $this->storeContext->injectStoredValues('', $this->getMockObject());
-        }, 'injectStoredValues() must be callable');
-    }
-
-    /**
-     * Test that a non-callable has value throws appropriate error.
-     *
-     * @dataProvider nonCallableValuesProvider
-     *
-     * @param mixed $nonCallable non-callable variable from data provider
-     *
-     * @throws Exception when a unsupported version of PHP is being used
-     */
-    public function testNonCallableHasValueThrowsAppropriateError($nonCallable)
-    {
-        $this->assertFunctionThrowsTypeErrorThatContainsMessage(function () use ($nonCallable) {
-            $this->storeContext->injectStoredValues('', null, $nonCallable);
-        }, 'injectStoredValues() must be callable');
-    }
-
-    /**
      * Returns a list of non-callable values.
      *
      * @return array
@@ -83,6 +35,110 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
     public function nonCallableValuesProvider()
     {
         return [[''], [0],  [$this->getMockObject()]];
+    }
+
+    /**
+     * Provides examples of strings that have injection-like syntax, but are not really injectable.
+     *
+     * @return string[][]
+     */
+    public function injectLikeSyntaxDataProvider()
+    {
+        return [
+            ['the total_cost of the Order'],
+            ['(the total_cost of the Order'],
+            ['the total_cost of the Order)'],
+            ['the (total_cost of the Order)'],
+            ['(the total_cost of Order)'],
+        ];
+    }
+
+    /**
+     * @dataProvider injectLikeSyntaxDataProvider
+     * @param string $string the value to pass to injectStoredValues
+     */
+    public function testInjectionLikeSyntaxIsNotInjected($string)
+    {
+        $this->assertEquals($string, $this->storeContext->injectStoredValues($string));
+    }
+
+    /**
+     * Provides examples of strings that reference things not in the store, and the expected error message.
+     *
+     * @return string[][]
+     */
+    public function nonExistentItemDataProvider()
+    {
+        return [
+            ['(the test_property_1 of the FakeObj)', "Entry 'FakeObj' was not found in the store."],
+        ];
+    }
+
+    /**
+     * @dataProvider nonExistentItemDataProvider
+     * @param string $string the value to pass to injectStoredValues
+     * @param string $error  the expected Exception error message
+     */
+    public function testInjectNonExistentItem($string, $error)
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage($error);
+
+        $this->storeContext->injectStoredValues($string);
+    }
+
+    public function onGetFnWrongArgsDataProvider()
+    {
+        return [
+            'no args'       => [function () {}],
+            'too many args' => [function (/** @scrutinizer ignore-unused */ $a, /** @scrutinizer ignore-unused */ $b) {}],
+        ];
+    }
+
+    /**
+     * @dataProvider onGetFnWrongArgsDataProvider
+     * @param $onGetFn
+     */
+    public function testOnGetFnMustTakeOneArgument($onGetFn)
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Method $onGetFn must take one argument!');
+
+        $this->storeContext->injectStoredValues('(the test_property_1 of the testObj)', $onGetFn);
+    }
+
+    /**
+     * Provides examples of onGetFn that return the wrong data type.
+     *
+     * @return callable[][]
+     */
+    public function onGetFnWrongReturnTypeDataProvider()
+    {
+        return [
+            'no return'       => [function (/** @scrutinizer ignore-unused */ $a) {}],
+            'return string'   => [function ($a) {
+                return gettype($a);
+            }],
+            'return function' => [function ($a) {
+                return function () use ($a) {
+                    gettype($a);
+                };
+            }],
+        ];
+    }
+
+    /**
+     * @dataProvider onGetFnWrongReturnTypeDataProvider
+     * @param callable $onGetFn
+     */
+    public function testOnGetFnWrongReturnType(callable $onGetFn)
+    {
+        $this->storeContext->set('person', $this->getMockObject());
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The $onGetFn method must return an array or a non-callable object!');
+
+        $this->storeContext->injectStoredValues('(the name of the person)', $onGetFn);
     }
 
     /**
@@ -106,52 +162,16 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
         $this->assertEmpty($this->storeContext->injectStoredValues(''));
         $this->assertEmpty($this->storeContext->injectStoredValues(null));
 
-        // test invalid argument for $string
-        try {
-            /* @noinspection PhpParamsInspection intentional wrong argument type */
-            $this->storeContext->injectStoredValues([]);
-            $this->setExpectedException('PHPUnit_Framework_Error_Warning');
-        } catch (Exception $e) {
-            $this->assertInstanceOf('PHPUnit_Framework_Error_Warning', $e);
-        }
-
-        try {
-            $this->storeContext->injectStoredValues(function () {
-            });
-            $this->setExpectedException('PHPUnit_Framework_Error_Warning');
-        } catch (Exception $e) {
-            $this->assertInstanceOf('PHPUnit_Framework_Error_Warning', $e);
-        }
-
         // test reflection of non-matching inputs
         $this->assertEquals(1452, $this->storeContext->injectStoredValues(1452));
         $this->assertEquals('lol', $this->storeContext->injectStoredValues('lol'));
-        $this->assertEquals('the total_cost of the Order', $this->storeContext->injectStoredValues('the total_cost of the Order'));
-        $this->assertEquals('(the total_cost of the Order', $this->storeContext->injectStoredValues('(the total_cost of the Order'));
-        $this->assertEquals('the total_cost of the Order)', $this->storeContext->injectStoredValues('the total_cost of the Order)'));
-        $this->assertEquals(
-            'the (total_cost of the Order)',
-            $this->storeContext->injectStoredValues('the (total_cost of the Order)')
-        );
-        $this->assertEquals('(the total_cost of Order)', $this->storeContext->injectStoredValues('(the total_cost of Order)'));
-
-        // test non-existing store key
-        $badName = 'FakeObj';
-
-        try {
-            $this->storeContext->injectStoredValues("(the test_property_1 of the $badName)");
-            $this->setExpectedException('Exception');
-        } catch (Exception $e) {
-            $this->assertInstanceOf('Exception', $e);
-            $this->assertEquals("Entry '$badName' was not found in the store.", $e->getMessage());
-        }
 
         // test bad property
         $badProperty = 'bad_property_1';
 
         try {
             $this->storeContext->injectStoredValues("(the $badProperty of the $name)");
-            $this->setExpectedException('Exception');
+            $this->expectException('Exception');
         } catch (Exception $e) {
             $this->assertInstanceOf('Exception', $e);
             $this->assertEquals("$name does not have a $badProperty property", $e->getMessage());
@@ -169,69 +189,6 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
 
         // test null values
         $this->assertEmpty($this->storeContext->injectStoredValues('', null));
-
-        // test function with bad arguments
-        $badFn = function () {
-        };
-
-        try {
-            $this->storeContext->injectStoredValues('(the test_property_1 of the testObj)', $badFn);
-            $this->setExpectedException('TypeError');
-        } catch (Exception $e) {
-            $this->assertInstanceOf('Exception', $e);
-            $this->assertEquals('Method $onGetFn must take one argument!', $e->getMessage());
-        }
-
-        $badFn = function ($a, $b) {
-        };
-
-        try {
-            $this->storeContext->injectStoredValues('(the test_property_1 of the testObj)', $badFn);
-            $this->setExpectedException('Exception');
-        } catch (Exception $e) {
-            $this->assertInstanceOf('Exception', $e);
-            $this->assertEquals('Method $onGetFn must take one argument!', $e->getMessage());
-        }
-
-        // test function with no return
-        $badFn = function (/* @noinspection PhpUnusedParameterInspection */ $a) {
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $a = 1;
-        };
-
-        try {
-            $this->storeContext->injectStoredValues('(the test_property_1 of the testObj)', $badFn);
-            $this->setExpectedException('Exception');
-        } catch (Exception $e) {
-            $this->assertInstanceOf('Exception', $e);
-            $this->assertEquals('The $onGetFn method must return an object or an array!', $e->getMessage());
-        }
-
-        // test function with bad return
-        $badFn = function (/* @noinspection PhpUnusedParameterInspection */ $a) {
-            return 'bad return';
-        };
-
-        try {
-            $this->storeContext->injectStoredValues('(the test_property_1 of the testObj)', $badFn);
-            $this->setExpectedException('Exception');
-        } catch (Exception $e) {
-            $this->assertInstanceOf('Exception', $e);
-            $this->assertEquals('The $onGetFn method must return an object or an array!', $e->getMessage());
-        }
-
-        $badFn = function (/* @noinspection PhpUnusedParameterInspection */ $a) {
-            return function () {
-            };
-        };
-
-        try {
-            $this->storeContext->injectStoredValues('(the test_property_1 of the testObj)', $badFn);
-            $this->setExpectedException('Exception');
-        } catch (Exception $e) {
-            $this->assertInstanceOf('Exception', $e);
-            $this->assertEquals('The $onGetFn method must return an object or an array!', $e->getMessage());
-        }
 
         // test basic reflection
         $goodFn = function ($thing) {
@@ -251,7 +208,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
 
         try {
             $this->storeContext->injectStoredValues('(the test_property_1 of the testObj)', $goodFn);
-            $this->setExpectedException('Exception');
+            $this->expectException('Exception');
         } catch (Exception $e) {
             $this->assertInstanceOf('Exception', $e);
             $this->assertEquals('testObj does not have a test_property_1 property', $e->getMessage());
@@ -291,14 +248,18 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
             function () {
             },
             function ($a) {
+                gettype($a);
             },
             function ($a, $b, $c) {
+                gettype($a);
+                gettype($b);
+                gettype($c);
             },
         ];
         foreach ($wrongArgCounts as $wrongArgCount) {
             try {
                 $this->storeContext->injectStoredValues('(the test_property_1 of the testObj)', null, $wrongArgCount);
-                $this->setExpectedException('Exception');
+                $this->expectException('Exception');
             } catch (Exception $e) {
                 $this->assertInstanceOf('Exception', $e);
                 $this->assertEquals('Lambda $hasValue must take two arguments!', $e->getMessage());
@@ -307,20 +268,21 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
 
         // Lambda with wrong return type throws appropriate error
         $wrongReturnTypes = [
+            function (/** @scrutinizer ignore-unused */ $a, /** @scrutinizer ignore-unused */ $b) {
+            },
             function ($a, $b) {
+                return gettype($a) . gettype($b);
             },
-            function (/* @noinspection PhpUnusedParameterInspection */ $a, $b) {
-                return '';
-            },
-            function (/* @noinspection PhpUnusedParameterInspection */ $a, $b) {
-                return function () {
+            function ($a, $b) {
+                return function () use ($a, $b) {
+                    return gettype($a) . gettype($b);
                 };
             },
         ];
         foreach ($wrongReturnTypes as $wrongReturnType) {
             try {
                 $this->storeContext->injectStoredValues('(the test_property_1 of the testObj)', null, $wrongReturnType);
-                $this->setExpectedException('Exception');
+                $this->expectException('Exception');
             } catch (Exception $e) {
                 $this->assertInstanceOf('Exception', $e);
                 $this->assertEquals('$hasValue lambda must return a boolean!', $e->getMessage());
@@ -336,7 +298,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
                     return false;
                 }
             );
-            $this->setExpectedException('Exception');
+            $this->expectException('Exception');
         } catch (Exception $e) {
             $this->assertInstanceOf('Exception', $e);
             $this->assertEquals('testObj does not have a test_property_1 property', $e->getMessage());
@@ -358,32 +320,42 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
          * Formatted as
          *****************************/
 
-        // DateTime is formatted with default format when no format is specified
-        $this->assertEquals(
-            '2028-10-28T15:30:10+0000',
-            $this->storeContext->injectStoredValues('(the date_prop of the testObj)')
-        );
-
-        // DateTime is formatted with specified format
-        $this->assertEquals(
-            '10/28/2028',
-            $this->storeContext->injectStoredValues('(the date_prop of the testObj formatted as a US date)')
-        );
-
         // DateTime is formatted as per host object format
         $testObj->dateFormat = 'm/d/Y H:i';
         $this->assertEquals(
             '10/28/2028 15:30',
             $this->storeContext->injectStoredValues('(the date_prop of the testObj)')
         );
+    }
 
-        // DateTime is formatted as specified format, even if host object has format
-        $this->assertEquals(
-            '10/28/2028 at 3:30 PM',
-            $this->storeContext->injectStoredValues(
-                '(the date_prop of the testObj formatted as a US date and 12hr time)'
-            )
-        );
+    public function dateTimeFormatDataProvider()
+    {
+        return [
+            'DateTime is formatted with default format when no format is specified' => [
+                '(the date_prop of the testObj)',
+                '2028-10-28T15:30:10+0000',
+            ],
+            'DateTime is formatted with specified format' => [
+                '(the date_prop of the testObj formatted as a US date)',
+                '10/28/2028',
+            ],
+            'DateTime is formatted as specified format, even if host object has format' => [
+                '(the date_prop of the testObj formatted as a US date and 12hr time)',
+                '10/28/2028 at 3:30 PM',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dateTimeFormatDataProvider
+     *
+     * @param $input
+     * @param $output
+     */
+    public function testDateTimeFormatting($input, $output)
+    {
+        $this->storeContext->set('testObj', $this->getMockObject());
+        $this->assertEquals($output, $this->storeContext->injectStoredValues($input));
     }
 
     /**
@@ -423,9 +395,9 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
         list($majorVersion, $minorVersion) = explode('.', PHP_VERSION, 3);
 
         if ($majorVersion >= 7) {
-            $this->setExpectedException(TypeError::class);
+            $this->expectException(TypeError::class);
         } elseif ($majorVersion == 5 && $minorVersion == 6) {
-            $this->setExpectedException(PHPUnit_Framework_Error::class);
+            $this->expectException(PHPUnit_Framework_Error::class);
         } else {
             throw new Exception('This php version is not supported. PHP version must be >= 5.6');
         }
@@ -463,19 +435,11 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      */
     private function getMockObject()
     {
-        static $obj = null;
-
-        if (is_object($obj)) {
-            return $obj;
-        }
-
-        $obj = (object) [
+        return (object) [
             'test_property_1' => 'test_value_1',
             'test_property_2' => 'test_value_2',
             'test_property_3' => 'test_value_3',
             'date_prop'       => new DateTime('2028-10-28 15:30:10'),
         ];
-
-        return $obj;
     }
 }

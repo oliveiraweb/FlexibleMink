@@ -70,7 +70,7 @@ class CsvContext implements Context
      * Ensures that the given variable in the store is a CSV with the given column headers.
      * The CSV must contain exactly the rows given, and no more.
      *
-     * @Then   /^the "(?P<key>[^"]+)" should be CSV data with the following headers:$/
+     * @Then   the :key should be CSV data with the following headers:
      *
      * @param string    $key   the key the CSV is stored under
      * @param TableNode $table a list of headers that the CSV must match
@@ -83,16 +83,37 @@ class CsvContext implements Context
 
         $actualHeaders = str_getcsv(str_getcsv($this->storeContext->get($key), "\n")[0]);
 
-        if ($diff = array_diff($expectedHeaders, $actualHeaders)) {
-            $missing = implode("', '", $diff);
+        $this->assertHeadersArePresent($expectedHeaders, $actualHeaders, $key);
+        $this->assertNoAdditionalHeaders($expectedHeaders, $actualHeaders, $key);
+    }
 
-            throw new Exception("CSV '$key' is missing headers '$missing'");
+    /**
+     * Asserts that required CSV headers are present.
+     *
+     * @param  string[]  $required the headers that are required to be present.
+     * @param  string[]  $actual   the headers that are actually present.
+     * @param  string    $csvName  The name of the CSV (for the exception message).
+     * @throws Exception if any of the required headers are not present.
+     */
+    private function assertHeadersArePresent(array $required, array $actual, $csvName)
+    {
+        if ($diff = array_diff($required, $actual)) {
+            throw new Exception("CSV '$csvName' is missing headers '" . implode("', '", $diff) . "'");
         }
+    }
 
-        if ($diff = array_diff($actualHeaders, $expectedHeaders)) {
-            $extra = implode("', '", $diff);
-
-            throw new Exception("CSV '$key' contains extra headers '$extra'");
+    /**
+     * Asserts that no additional CSV headers are present.
+     *
+     * @param  string[]  $required the headers that are required to be present.
+     * @param  string[]  $actual   the headers that are actually present.
+     * @param  string    $csvName  The name of the CSV (for the exception message).
+     * @throws Exception if any additional headers are present.
+     */
+    private function assertNoAdditionalHeaders(array $required, array $actual, $csvName)
+    {
+        if ($diff = array_diff($actual, $required)) {
+            throw new Exception("CSV '$csvName' contains extra headers '" . implode("', '", $diff) . "'");
         }
     }
 }

@@ -27,6 +27,7 @@ class JavaScriptContext implements Context
     public function assertJavascriptVariableHasAValue($variable)
     {
         // Get the value of our variable from javascript
+        /** @var mixed $result return type for Session::evaluateScript is wrong */
         $result = $this->flexibleContext->getSession()->evaluateScript('return ' . $variable . ';');
 
         // If it's null - we failed
@@ -88,23 +89,24 @@ class JavaScriptContext implements Context
     }
 
     /**
-     * Asserts that a javascript variable has a specified value.
+     * Asserts that a javascript variable has the specified value.
      *
-     * @Then   the javascript variable :variableName should have the value of :expectedValue
+     * @Then the javascript variable :varName should have the value of :expected
      *
-     * @param string $variableName  this is the name of the variable to be checked
-     * @param string $expectedValue this is the expected value
+     * @param string $varName  the name of the variable to be checked
+     * @param mixed  $expected the expected value
      *
-     * @throws ExpectationException if variable value does not match expected value
+     * @throws ExpectationException if the actual value does not match the expected value
      */
-    public function assertJavascriptVariable($variableName, $expectedValue)
+    public function assertJavascriptVariable($varName, $expected)
     {
-        $returnedValue = $this->flexibleContext->getSession()->evaluateScript(
-            'return ' . $variableName . ';'
-        );
+        $actual = $this->flexibleContext->getSession()->evaluateScript("return $varName;");
 
-        if ($returnedValue != $expectedValue) {
-            throw new ExpectationException("Expected \"$expectedValue\" but got \"$returnedValue\"", $this->flexibleContext->getSession());
+        if ($actual != $expected) {
+            throw new ExpectationException(
+                'Expected ' . print_r($expected, true) . ' but got ' . print_r($actual, true),
+                $this->flexibleContext->getSession()
+            );
         }
     }
 

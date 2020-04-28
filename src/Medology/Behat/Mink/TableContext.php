@@ -21,8 +21,8 @@ class TableContext implements Context
 
     /**
      * This method will retrieve a table by its name. If the table is stored in the key store, that will be used,
-     * otherwise a fresh parse will be done against the table's HTML. Setting {@param $forceFresh} to true will
-     * ignore the key store and build the table from HTML.
+     * otherwise a fresh parse will be done against the table's HTML. Setting $forceFresh to true will ignore the key
+     * store and build the table from HTML.
      *
      * @param string $name       The name of the table to be used in an xpath query
      * @param bool   $forceFresh Setting to true will rebuild the table from HTML and not use the store
@@ -75,7 +75,10 @@ class TableContext implements Context
         try {
             $table = $this->findNamedTable($name);
         } catch (ElementNotFoundException $e) {
-            throw new ExpectationException("Could not find table with name '$name'.", $this->flexibleContext->getSession());
+            throw new ExpectationException(
+                "Could not find table with name '$name'.",
+                $this->flexibleContext->getSession()
+            );
         }
 
         return $table;
@@ -87,14 +90,15 @@ class TableContext implements Context
      * @Then  the table :name should have 1 row
      * @Then  the table :name should have :num rows
      *
-     * @param string $name      The name of the table
-     * @param int    $num       The number of BODY rows $name table should have
-     * @param bool   $fullTable By default, only table body rows are used. Setting this to true will count the whole
-     *                          table
-     * @returns true
+     * @param string     $name      The name of the table
+     * @param int|string $num       The number of BODY rows $name table should have
+     * @param bool       $fullTable By default, only table body rows are used. Setting this to true will count the whole
+     *                              table
      *
      * @throws InvalidArgumentException If $num is not an integer
      * @throws ExpectationException     If the number of found rows was not $num
+     *
+     * @return true
      */
     public function assertTableHasRows($name, $num = 1, $fullTable = false)
     {
@@ -111,7 +115,10 @@ class TableContext implements Context
         }
 
         if ($rowCount != $num) {
-            throw new ExpectationException("Expected $num row(s) for table '$name'. Instead got $rowCount.", $this->flexibleContext->getSession());
+            throw new ExpectationException(
+                "Expected $num row(s) for table '$name'. Instead got $rowCount.",
+                $this->flexibleContext->getSession()
+            );
         }
 
         return true;
@@ -123,8 +130,8 @@ class TableContext implements Context
      * @Then  the table :name should have 1 column
      * @Then  the table :name should have :num columns
      *
-     * @param string $name The name of the table
-     * @param int    $num  The number of columns the table should have
+     * @param string     $name The name of the table
+     * @param int|string $num  The number of columns the table should have
      * @returns true
      *
      * @throws InvalidArgumentException If $num is not an integer
@@ -140,7 +147,10 @@ class TableContext implements Context
         $colCount = count($table['body'][0]);
 
         if ($colCount != $num) {
-            throw new ExpectationException("Expected $num column(s) for table '$name'. Instead got $colCount.", $this->flexibleContext->getSession());
+            throw new ExpectationException(
+                "Expected $num column(s) for table '$name'. Instead got $colCount.",
+                $this->flexibleContext->getSession()
+            );
         }
 
         return true;
@@ -171,14 +181,20 @@ class TableContext implements Context
 
         foreach ($table['colHeaders'] as $colText) {
             if ($colText && !in_array($colText, $expectedCols)) {
-                throw new ExpectationException("Found column title $colText, but was not expecting it.", $this->flexibleContext->getSession());
+                throw new ExpectationException(
+                    "Found column title $colText, but was not expecting it.",
+                    $this->flexibleContext->getSession()
+                );
             }
 
             $remainingCols = array_diff($remainingCols, [$colText]);
         }
 
         if ($remainingCols) {
-            throw new ExpectationException("Did not find matches for '" . implode($remainingCols, ',') . "'.", $this->flexibleContext->getSession());
+            throw new ExpectationException(
+                "Did not find matches for '" . implode(',', $remainingCols) . "'.",
+                $this->flexibleContext->getSession()
+            );
         }
 
         return true;
@@ -215,7 +231,10 @@ class TableContext implements Context
         $cellVal = $this->getCellFromTable($table, $rIdx, $cIdx, $section);
 
         if ($cellVal != $val) {
-            throw new ExpectationException("Expected $val at ($rIdx, $cIdx) in table $piece. Instead got $cellVal!", $this->flexibleContext->getSession());
+            throw new ExpectationException(
+                "Expected $val at ($rIdx, $cIdx) in table $piece. Instead got $cellVal!",
+                $this->flexibleContext->getSession()
+            );
         }
 
         return true;
@@ -272,7 +291,10 @@ class TableContext implements Context
         }
 
         // Oh no! No matches.
-        throw new ExpectationException('A table matching the supplied structure could not be found.', $this->flexibleContext->getSession());
+        throw new ExpectationException(
+            'A table matching the supplied structure could not be found.',
+            $this->flexibleContext->getSession()
+        );
     }
 
     /**
@@ -304,7 +326,10 @@ class TableContext implements Context
             }
         }
 
-        throw new ExpectationException('A row matching the supplied values could not be found.', $this->flexibleContext->getSession());
+        throw new ExpectationException(
+            'A row matching the supplied values could not be found.',
+            $this->flexibleContext->getSession()
+        );
     }
 
     /**
@@ -367,11 +392,19 @@ class TableContext implements Context
         }
 
         if (count($table[$piece]) < $rIdx) {
-            throw new ExpectationException("The row index $rIdx for the table is out of bounds. Table has " . count($table[$piece]) . ' rows.', $this->flexibleContext->getSession());
+            throw new ExpectationException(
+                "The row index $rIdx for the table is out of bounds. Table has "
+                    . count($table[$piece]) . ' rows.',
+                $this->flexibleContext->getSession()
+            );
         }
 
         if (count($table[$piece][$rIdx - 1]) < $cIdx) {
-            throw new ExpectationException("The col index $cIdx for the table is out of bounds. Table has " . count($table[$piece][$rIdx - 1]) . ' cols.', $this->flexibleContext->getSession());
+            throw new ExpectationException(
+                "The col index $cIdx for the table is out of bounds. Table has "
+                    . count($table[$piece][$rIdx - 1]) . ' cols.',
+                $this->flexibleContext->getSession()
+            );
         }
 
         return $table[$piece][$rIdx - 1][$cIdx - 1];
@@ -433,10 +466,6 @@ class TableContext implements Context
 
         $table = $this->flexibleContext->assertSession()->elementExists('xpath', "//table[$idPiece or $namePiece]");
 
-        if (!$table) {
-            throw new ElementNotFoundException($this->flexibleContext->getSession()->getDriver(), 'table', 'xpath', 'id, name');
-        }
-
         if (!$table->isVisible()) {
             throw new RuntimeException("Found table '$name', but it is not visible!");
         }
@@ -481,7 +510,12 @@ class TableContext implements Context
 
         // we couldn't find a HEAD row that didn't have split columns
         if (!$colRow) {
-            throw new ElementNotFoundException($this->flexibleContext->getSession()->getDriver(), 'tr/(td or th)', 'xpath', 'not(@colspan>\'1\')');
+            throw new ElementNotFoundException(
+                $this->flexibleContext->getSession()->getDriver(),
+                'tr/(td or th)',
+                'xpath',
+                'not(@colspan>\'1\')'
+            );
         }
 
         // get all the cells in the selected row
@@ -522,23 +556,23 @@ class TableContext implements Context
         $bodyRows = $table->findAll('xpath', '/tbody/tr');
         $footRows = $table->findAll('xpath', '/tfoot/tr');
 
-        /*
+        /**
          * Anonymous function to retrieve cell values from an array of row nodes. Does not support row or colspan!
          *
-         * @param NodeElement[] $rows The rows to parse
-         * @return array The cell values for the rows numerically indexed as [row][col]
+         * @param  NodeElement[] $rows The rows to parse
+         * @return array         The cell values for the rows numerically indexed as [row][col]
          */
         $parser = function (array $rows) {
             $data = [];
 
-            /** @var NOdeElement[] $rows */
-            for ($i = 0; $i < count($rows); ++$i) {
+            $rowCount = count($rows);
+            for ($i = 0; $i < $rowCount; ++$i) {
                 $row = $rows[$i];
                 /** @var NodeElement[] $cells */
                 $cells = $row->findAll('xpath', '/td|/th');
 
-                for ($j = 0; $j < count($cells); ++$j) {
-                    /** @var NodeElement $cell */
+                $cellCount = count($cells);
+                for ($j = 0; $j < $cellCount; ++$j) {
                     $cell = $cells[$j];
 
                     //Handle select

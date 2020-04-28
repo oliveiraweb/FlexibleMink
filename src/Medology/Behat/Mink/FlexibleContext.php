@@ -22,7 +22,6 @@ use Medology\Behat\TypeCaster;
 use Medology\Behat\UsesStoreContext;
 use Medology\Spinner;
 use OutOfBoundsException;
-use phpDocumentor\Reflection\DocBlock\Tags\Throws;
 use ReflectionException;
 use WebDriver\Exception;
 use ZipArchive;
@@ -61,6 +60,8 @@ class FlexibleContext extends MinkContext
      *
      * Overrides the base method to support injecting stored values and matching URLs that include hostname.
      *
+     * @param string $page the page to assert we are on.
+     *
      * @throws DriverException          if the driver failed to perform the action
      * @throws ExpectationException     If the current page is not the expected page.
      *                                  and they do not conform to its requirements. This method does not pass
@@ -79,32 +80,21 @@ class FlexibleContext extends MinkContext
 
         /* @noinspection PhpUnhandledExceptionInspection */
         Spinner::waitFor(function () use ($page) {
-            $this->assertPageAddressOnce($page);
-        });
-    }
-
-    /**
-     * Logic for asserting a page address/URL. Call within a waitFor lambda function.
-     * Otherwise, call assertPageAddress, which calls this method in a waitFor for you.
-     *
-     * @param string $page the page to assert we're on
-     */
-    public function assertPageAddressOnce($page)
-    {
-        // is the page a path, or a full URL?
-        if (preg_match('!^https?://!', $page) == 0) {
-            // it's just a path. delegate to parents implementation
-            parent::assertPageAddress($page);
-        } else {
-            // it's a full URL, compare manually
-            $actual = $this->getSession()->getCurrentUrl();
-            if (strpos($actual, $page) !== 0) {
-                throw new ExpectationException(
-                    sprintf('Current page is "%s", but "%s" expected.', $actual, $page),
-                    $this->getSession()
-                );
+            // is the page a path, or a full URL?
+            if (preg_match('!^https?://!', $page) == 0) {
+                // it's just a path. delegate to parents implementation
+                parent::assertPageAddress($page);
+            } else {
+                // it's a full URL, compare manually
+                $actual = $this->getSession()->getCurrentUrl();
+                if (strpos($actual, $page) !== 0) {
+                    throw new ExpectationException(
+                        sprintf('Current page is "%s", but "%s" expected.', $actual, $page),
+                        $this->getSession()
+                    );
+                }
             }
-        }
+        });
     }
 
     /**
@@ -183,7 +173,7 @@ class FlexibleContext extends MinkContext
      *                                  injectStoredValues method.
      * @throws ResponseTextException    if the text is not found
      */
-    public function assertPageContainsTexts(TableNode $table, $not = null)
+    public function assertPageContainsTexts(TableNode $table, $not = '')
     {
         if (count($table->getRow(0)) > 1) {
             throw new InvalidArgumentException('Arguments must be a single-column list of items');
@@ -263,10 +253,7 @@ class FlexibleContext extends MinkContext
     {
         $locator = $this->fixStepArgument($field);
 
-        $fields = $this->getSession()->getPage()->findAll(
-            'named',
-            ['field', $this->getSession()->getSelectorsHandler()->xpathLiteral($locator)]
-        );
+        $fields = $this->getSession()->getPage()->findAll('named', ['field', $locator]);
 
         if (count($fields) > 1) {
             throw new ExpectationException("The field '$locator' was found more than one time", $this->getSession());
@@ -284,8 +271,8 @@ class FlexibleContext extends MinkContext
      *
      * @see    StoreContext::injectStoredValues()
      *
-     * @param string|array $element css element selector
-     * @param string       $text    expected text
+     * @param string $element css element selector
+     * @param string $text    expected text
      *
      * @throws InvalidArgumentException If injectStoredValues incorrectly believes one or more closures were passed,
      *                                  and they do not conform to its requirements. This method does not pass
@@ -311,8 +298,8 @@ class FlexibleContext extends MinkContext
      *
      * @see    MinkContext::assertElementNotContainsText
      *
-     * @param string|array $element css element selector
-     * @param string       $text    expected text that should not being found
+     * @param string $element css element selector
+     * @param string $text    expected text that should not being found
      *
      * @throws InvalidArgumentException If injectStoredValues incorrectly believes one or more closures were passed,
      *                                  and they do not conform to its requirements. This method does not pass
@@ -377,8 +364,8 @@ class FlexibleContext extends MinkContext
     /**
      * Checks that elements with specified selector exist.
      *
-     * @param string       $element      the element to search for
-     * @param string|array $selectorType selector type locator
+     * @param string $element      the element to search for
+     * @param string $selectorType selector type locator
      *
      * @throws ExpectationException when no element is found
      *
@@ -401,9 +388,9 @@ class FlexibleContext extends MinkContext
     /**
      * Checks that the nth element exists and returns it.
      *
-     * @param string       $element      the elements to search for
-     * @param int          $nth          this is the nth amount of the element
-     * @param string|array $selectorType selector type locator
+     * @param string $element      the elements to search for
+     * @param int    $nth          this is the nth amount of the element
+     * @param string $selectorType selector type locator
      *
      * @throws ExpectationException when the nth element is not found
      *
@@ -533,8 +520,8 @@ class FlexibleContext extends MinkContext
      * @Given  the :locator button is :disabled
      * @Then   the :locator button should be :disabled
      *
-     * @param string $locator  The button
-     * @param bool   $disabled The state of the button
+     * @param string      $locator  The button
+     * @param string|bool $disabled The state of the button
      *
      * @throws DriverException                  when the operation cannot be performed
      * @throws ExpectationException             if button is disabled but shouldn't be
@@ -1239,6 +1226,12 @@ class FlexibleContext extends MinkContext
 
             $session = $this->getSession();
             $value = $session->getPage()->findField($field)->getValue();
+            if (!is_string($value)) {
+                throw new ExpectationException(
+                    "The value of input $field is not a string. Maybe you specified the wrong field?",
+                    $this->getSession()
+                );
+            }
 
             // Workaround for browser's fake path stuff that obscures the directory of the attached file.
             $fileParts = explode(DIRECTORY_SEPARATOR, $path);
@@ -1363,11 +1356,10 @@ class FlexibleContext extends MinkContext
     /**
      * Asserts that all nodes have the specified attribute value.
      *
-     * @param string $locator     the attribute locator of the node element
-     * @param array  $attributes  A key value paid of the attribute and value the nodes
-     *                            should contain
-     * @param string $selector    the selector to use to find the node
-     * @param null   $occurrences the number of time the node element should be found
+     * @param string   $locator     the attribute locator of the node element
+     * @param array    $attributes  A key value paid of the attribute and value the nodes should contain
+     * @param string   $selector    the selector to use to find the node
+     * @param int|null $occurrences the number of time the node element should be found
      *
      * @throws DriverException                  When the operation cannot be done
      * @throws ExpectationException             If the nodes attributes do not match
@@ -1381,7 +1373,7 @@ class FlexibleContext extends MinkContext
             throw new ExpectationException("No node elements were found on the page using '$locator'", $this->getSession());
         }
 
-        if ($occurrences && count($nodes) !== $occurrences) {
+        if (!is_null($occurrences) && count($nodes) !== $occurrences) {
             throw new ExpectationException("Expected $occurrences nodes with '$locator' but found " . count($nodes), $this->getSession());
         }
 
@@ -1677,7 +1669,6 @@ class FlexibleContext extends MinkContext
      */
     public function compareElementsByCoords(NodeElement $a, NodeElement $b)
     {
-        /** @var Selenium2Driver $driver */
         $driver = $this->getSession()->getDriver();
         if (!($driver instanceof Selenium2Driver) || !method_exists($driver, 'getXpathBoundingClientRect')) {
             // If not supported by driver, just return -1 so the keep the original sort.
@@ -1957,7 +1948,7 @@ JS
      *
      * @param NodeElement[] $elements the elements to look for
      *
-     * @return NodeElement the first visible element
+     * @return NodeElement|null the first visible element
      */
     public function scrollWindowToFirstVisibleElement(array $elements)
     {
@@ -2022,7 +2013,6 @@ JS
         $label = $this->storeContext->injectStoredValues($label);
         $this->fixStepArgument($label);
 
-        /** @var NodeElement[] $radioButtons */
         $radioButtons = $this->getSession()->getPage()->findAll('named', ['radio', $label]);
 
         if (!$radioButtons) {

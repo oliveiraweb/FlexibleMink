@@ -30,6 +30,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
             'test_property_2' => 'test_value_2',
             'test_property_3' => 'test_value_3',
             'date_prop'       => new DateTime('2028-10-28 15:30:10'),
+            'phone_prop'      => '4414031737',
         ];
 
         return $obj;
@@ -494,6 +495,38 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
          ***********************/
         $this->assertEquals(['1 University', null], $this->parseKey('1 University'));
         $this->assertEquals(['2 University', null], $this->parseKey('2 University'));
+    }
+
+    public function phoneNumberFormatDataProvider()
+    {
+        return [
+            'Phone is formatted with default format when no format is specified' => [
+                '(the phone_prop of the testObj)',
+                '4414031737',
+            ],
+            'Phone is formatted with specified US format' => [
+                '(the phone_prop of the testObj formatted as a US phone number)',
+                '(441) 403-1737',
+            ],
+            'Phone is formatted as specified ###-###-#### format' => [
+                '(the phone_prop of the testObj formatted as a ###-###-### phone number)',
+                '441-403-1737',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider phoneNumberFormatDataProvider
+     *
+     * @param string $input  the store context input to retrieve value from.
+     * @param string $output the expected output from the store.
+     */
+    public function testPhoneNumberFormatting($input, $output)
+    {
+        $testObj = $this->getMockObject();
+        $name = 'testObj';
+        $this->put($testObj, $name);
+        $this->assertEquals($output, $this->injectStoredValues($input));
     }
 
     /**

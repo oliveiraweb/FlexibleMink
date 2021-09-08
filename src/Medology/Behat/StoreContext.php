@@ -32,17 +32,20 @@ class StoreContext extends Store implements Context
     protected static $dateFormat = DateTime::ISO8601;
 
     protected static $format_map = [
-        'a MySQL date'                    => 'Y-m-d',
-        'a MySQL date and time'           => 'Y-m-d H:i:s',
-        'a US date'                       => 'm/d/Y',
-        'a US date and time'              => 'm/d/Y H:i:s',
-        'a US time'                       => 'h:i',
-        'a US military time'              => 'H:i',
-        'a US time with seconds'          => 'h:i:s',
-        'a US military time with seconds' => 'H:i:s',
-        'a US date and 12hr time'         => 'm/d/Y \a\t g:i A',
-        'a US phone number'               => ['/(\d{3})(\d{3})(\d{4})/', '($1) $2-$3'],
-        'a ###-###-### phone number'      => ['/(\d{3})(\d{3})(\d{4})/', '$1-$2-$3'],
+        'a MySQL date'                                  => 'Y-m-d',
+        'a MySQL date and time'                         => 'Y-m-d H:i:s',
+        'a US date'                                     => 'm/d/Y',
+        'a US date and time'                            => 'm/d/Y H:i:s',
+        'a US time'                                     => 'h:i',
+        'a US time with uppercase meridiem'             => 'h:i A',
+        'a US time with meridiem'                       => 'h:i a',
+        'a US military time'                            => 'H:i',
+        'a US time with seconds and uppercase meridiem' => 'h:i:s A',
+        'a US time with seconds and meridiem'           => 'h:i:s a',
+        'a US military time with seconds'               => 'H:i:s',
+        'a US date and 12hr time'                       => 'm/d/Y \a\t g:i A',
+        'a US phone number'                             => ['/(\d{3})(\d{3})(\d{4})/', '($1) $2-$3'],
+        'a ###-###-### phone number'                    => ['/(\d{3})(\d{3})(\d{4})/', '$1-$2-$3'],
     ];
 
     public function __construct()

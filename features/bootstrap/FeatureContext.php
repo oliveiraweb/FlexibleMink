@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
@@ -19,6 +20,20 @@ class FeatureContext implements Context
     use UsesFlexibleContext;
     use UsesStoreContext;
     use UsesWebDownloadContext;
+
+    /**
+     * Starts the WebDriver session before each scenario.
+     *
+     * Mink no longer automatically starts the WebDriver session automatically, so we do that here.
+     *
+     * @BeforeScenario
+     */
+    public function beforeScenario(BeforeScenarioScope $scope)
+    {
+        // Browser setup
+        $this->gatherFlexibleContext($scope);
+        $this->startWebDriverSession();
+    }
 
     /**
      * Places an object with the given structure into the store.
@@ -165,6 +180,17 @@ JS
 
         if ($this->webDownloadContext->checkImageLoaded($image->getXpath())) {
             throw new ExpectationException("Expected img '$locator' to not load. Instead it did load!", $this->flexibleContext->getSession());
+        }
+    }
+
+    /**
+     * Starts the WebDriver session if it is not already started.
+     */
+    protected function startWebDriverSession()
+    {
+        $minkSession = $this->flexibleContext->getSession();
+        if (!$minkSession->isStarted()) {
+            $minkSession->start();
         }
     }
 }

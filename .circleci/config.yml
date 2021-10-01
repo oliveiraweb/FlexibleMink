@@ -29,9 +29,6 @@ commands:
           name: Add in submodules
           command: git submodule update --init
       - run:
-          name: Run style fixer
-          command: bin/ci-style-fixer
-      - run:
           name: Initialize docker .env
           command: bin/init/init_docker_env.sh
       - run:
@@ -44,6 +41,9 @@ commands:
           command: |
             mkdir -p /tmp/artifacts
             bin/init_project
+      - run:
+          name: Run style fixer
+          command: bin/ci-style-fixer
       - store_test_results:
           path: /tmp/artifacts
       - store_artifacts:
@@ -80,17 +80,16 @@ commands:
 
 executors:
   ubuntu:
+    environment:
+      PATH: /opt/circleci/.pyenv/shims:./bin:./node_modules/.bin:./vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     machine:
       image: ubuntu-1604:202007-01
-      enabled: true
 
 jobs:
   build:
     working_directory: /tmp/FlexibleMink
     parallelism: 1
     executor: ubuntu
-    environment:
-      - PATH: /opt/circleci/.pyenv/shims:./bin:./node_modules/.bin:./vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     steps:
       - build
 
@@ -98,8 +97,6 @@ jobs:
     working_directory: /tmp/FlexibleMink
     parallelism: 1
     executor: ubuntu
-    environment:
-      - PATH: /opt/circleci/.pyenv/shims:./bin:./node_modules/.bin:./vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     steps:
       - test
 
@@ -108,8 +105,7 @@ jobs:
     parallelism: 1
     executor: ubuntu
     environment:
-      - USE_PHP5: 1
-      - PATH: /opt/circleci/.pyenv/shims:./bin:./node_modules/.bin:./vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      USE_PHP5: 1
     steps:
       - build
 
@@ -118,8 +114,7 @@ jobs:
     parallelism: 1
     executor: ubuntu
     environment:
-      - USE_PHP5: 1
-      - PATH: /opt/circleci/.pyenv/shims:./bin:./node_modules/.bin:./vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      USE_PHP5: 1
     steps:
       - test
 

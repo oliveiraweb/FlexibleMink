@@ -16,6 +16,7 @@ docker run \
     --rm \
     -v "$(pwd)":/app \
     -v ~/.composer:/home/user/.composer:delegated \
+    -v ~/.ssh:/home/user/.ssh:delegated \
     -w /app \
 	--link web:dockermachine.local \
 	--net ${PROJECT_NAME}_default \

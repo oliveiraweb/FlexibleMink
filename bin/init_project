@@ -7,13 +7,16 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 echo "Installing Composer..."
 "$ROOT"/bin/init/install_composer.sh
 
-echo "Installing Composer dependencies with out dev..."
-composer install --no-interaction --no-suggest
-
 if [[ "${CI:-}" == "true" ]]; then
+    echo "Configuring Composer Github OAuth..."
+    composer config -g github-oauth.github.com "$GITHUB_OAUTH"
+
     echo "Initializing git hooks..."
     "$ROOT"/bin/init_git_hooks
 
     echo "Initializing submodules..."
     git submodule update --init
 fi
+
+echo "Installing Composer dependencies..."
+composer install --no-interaction

@@ -25,7 +25,7 @@ trait HasWaitProxy
      *
      * @return mixed the value of the property if it exists and is accessible
      */
-    public function __get($property)
+    public function __get(string $property)
     {
         if ($property === 'wait') {
             return $this->wait;

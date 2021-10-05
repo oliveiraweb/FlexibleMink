@@ -20,7 +20,7 @@ trait UsesCsvContext
      * @throws RuntimeException if the current environment is not initialized
      * @BeforeScenario
      */
-    public function gatherCsvContext(BeforeScenarioScope $scope)
+    public function gatherCsvContext(BeforeScenarioScope $scope): void
     {
         $environment = $scope->getEnvironment();
 

@@ -111,7 +111,7 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException if the one of the current page params are not set
      * @throws ExpectationException if the one of the current page param values does not match with the expected
      */
-    public function assertPageAddressWithQueryParameters($page, TableNode $parameters)
+    public function assertPageAddressWithQueryParameters(string $page, TableNode $parameters): void
     {
         $this->assertPageAddress($page);
         $parts = parse_url($this->getSession()->getCurrentUrl());
@@ -173,7 +173,7 @@ class FlexibleContext extends MinkContext
      *                                  injectStoredValues method.
      * @throws ResponseTextException    if the text is not found
      */
-    public function assertPageContainsTexts(TableNode $table, $not = '')
+    public function assertPageContainsTexts(TableNode $table, string $not = ''): void
     {
         if (count($table->getRow(0)) > 1) {
             throw new InvalidArgumentException('Arguments must be a single-column list of items');
@@ -249,7 +249,7 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException             if there is more than one matching field found
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function assertFieldVisibility($field, $not)
+    public function assertFieldVisibility(string $field, bool $not): void
     {
         $locator = $this->fixStepArgument($field);
 
@@ -332,7 +332,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the element found
      */
-    public function assertElementOnPage($element, $selectorType = 'css')
+    public function assertElementOnPage($element, string $selectorType = 'css')
     {
         $node = $this->assertSession()->elementExists($selectorType, $element);
 
@@ -352,7 +352,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the found element
      */
-    public function assertElementInsideElement(NodeElement $container, $xpath)
+    public function assertElementInsideElement(NodeElement $container, $xpath): NodeElement
     {
         if (!$element = $container->find('xpath', $xpath)) {
             throw new ExpectationException('Nothing found inside element with xpath $xpath', $this->getSession());
@@ -371,7 +371,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement[] all elements found with by the given selector
      */
-    public function assertElementsExist($element, $selectorType = 'css')
+    public function assertElementsExist(string $element, string $selectorType = 'css'): array
     {
         $session = $this->getSession();
 
@@ -396,7 +396,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the nth element found
      */
-    public function assertNthElement($element, $nth, $selectorType = 'css')
+    public function assertNthElement(string $element, int $nth, string $selectorType = 'css'): NodeElement
     {
         $allElements = $this->assertElementsExist($element, $selectorType);
         if (!isset($allElements[$nth - 1])) {
@@ -413,7 +413,7 @@ class FlexibleContext extends MinkContext
      *
      * @see MinkContext::clickLink
      *
-     * @param string $locator the id|title|alt|text of the link to be clicked
+     * @param string $link the id|title|alt|text of the link to be clicked
      *
      * @throws DriverException                  when the operation cannot be performed
      * @throws ExpectationException             if the specified link is not visible
@@ -426,13 +426,13 @@ class FlexibleContext extends MinkContext
      *                                          with the injectStoredValues method.
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function clickLink($locator)
+    public function clickLink($link)
     {
-        $locator = $this->storeContext->injectStoredValues($locator);
+        $link = $this->storeContext->injectStoredValues($link);
 
         Spinner::waitFor(
-            function () use ($locator) {
-                $this->scrollToLink($locator)->click();
+            function () use ($link) {
+                $this->scrollToLink($link)->click();
             }
         );
     }
@@ -534,7 +534,7 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException             if the button can't be found
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function assertButtonDisabled($locator, $disabled = true)
+    public function assertButtonDisabled(string $locator, $disabled = true): void
     {
         if (is_string($disabled)) {
             $disabled = 'disabled' == $disabled;
@@ -568,7 +568,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the button
      */
-    public function assertButtonExists($locator)
+    public function assertButtonExists(string $locator): NodeElement
     {
         $locator = $this->fixStepArgument($locator);
 
@@ -592,7 +592,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the button
      */
-    public function assertVisibleButton($locator)
+    public function assertVisibleButton(string $locator): NodeElement
     {
         $locator = $this->fixStepArgument($locator);
 
@@ -615,8 +615,8 @@ class FlexibleContext extends MinkContext
     /**
      * Finds the first matching visible button on the page, scrolling to it if necessary.
      *
-     * @param string             $locator the button name
-     * @param TraversableElement $context element on the page to which button belongs
+     * @param string                  $locator the button name
+     * @param TraversableElement|null $context element on the page to which button belongs
      *
      * @throws DriverException                  when the operation cannot be performed
      * @throws ExpectationException             if a visible button was not found
@@ -624,7 +624,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the button
      */
-    public function scrollToButton($locator, TraversableElement $context = null)
+    public function scrollToButton(string $locator, TraversableElement $context = null): NodeElement
     {
         $locator = $this->fixStepArgument($locator);
 
@@ -657,7 +657,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the link
      */
-    public function assertVisibleLink($locator)
+    public function assertVisibleLink(string $locator): NodeElement
     {
         $links = $this->getLinks($locator);
 
@@ -684,7 +684,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the link
      */
-    public function scrollToLink($locator)
+    public function scrollToLink(string $locator): NodeElement
     {
         /* @noinspection PhpUnhandledExceptionInspection */
         return Spinner::waitFor(function () use ($locator) {
@@ -705,7 +705,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement[] the links matching the given name
      */
-    public function getLinks($locator)
+    public function getLinks(string $locator): array
     {
         $locator = $this->fixStepArgument($locator);
 
@@ -733,7 +733,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the option
      */
-    public function assertVisibleOption($locator)
+    public function assertVisibleOption(string $locator): NodeElement
     {
         $locator = $this->fixStepArgument($locator);
 
@@ -766,7 +766,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the option
      */
-    public function scrollToOption($locator)
+    public function scrollToOption(string $locator): NodeElement
     {
         $locator = $this->fixStepArgument($locator);
 
@@ -794,7 +794,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the found input field
      */
-    public function assertFieldExists($fieldName, TraversableElement $context = null)
+    public function assertFieldExists(string $fieldName, TraversableElement $context = null): NodeElement
     {
         $context = $context ?: $this->getSession()->getPage();
 
@@ -822,7 +822,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the found input field
      */
-    public function scrollToField($fieldName, TraversableElement $context = null)
+    public function scrollToField(string $fieldName, TraversableElement $context = null): NodeElement
     {
         /* @noinspection PhpUnhandledExceptionInspection */
         return Spinner::waitFor(function () use ($fieldName, $context) {
@@ -850,7 +850,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement[]
      */
-    public function getInputsByLabel($labelName, TraversableElement $context)
+    public function getInputsByLabel(string $labelName, TraversableElement $context): array
     {
         /** @var NodeElement[] $labels */
         $labels = $context->findAll('xpath', "//label[contains(text(), '$labelName')]");
@@ -878,7 +878,7 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException             if a visible input field is found
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function assertFieldNotExists($fieldName)
+    public function assertFieldNotExists(string $fieldName): void
     {
         try {
             $this->assertFieldExists($fieldName);
@@ -908,7 +908,7 @@ class FlexibleContext extends MinkContext
      *                                          with the injectStoredValues method.
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function assertLinesInOrder(TableNode $table)
+    public function assertLinesInOrder(TableNode $table): void
     {
         if (count($table->getRow(0)) > 1) {
             throw new InvalidArgumentException('Arguments must be a single-column list of items');
@@ -948,7 +948,7 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException             if any of the fields is not visible in the page
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function assertPageContainsFields(TableNode $tableNode)
+    public function assertPageContainsFields(TableNode $tableNode): void
     {
         foreach ($tableNode->getRowsHash() as $field => $value) {
             $this->assertFieldExists($field);
@@ -966,7 +966,7 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException             if any of the fields is visible in the page
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function assertPageNotContainsFields(TableNode $tableNode)
+    public function assertPageNotContainsFields(TableNode $tableNode): void
     {
         foreach ($tableNode->getRowsHash() as $field => $value) {
             $this->assertFieldNotExists($field);
@@ -986,7 +986,7 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException             If the option does/doesn't exist as expected
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function assertSelectContainsOption($select, $existence, $option)
+    public function assertSelectContainsOption(string $select, string $existence, string $option): void
     {
         $select = $this->fixStepArgument($select);
         $option = $this->fixStepArgument($option);
@@ -995,6 +995,7 @@ class FlexibleContext extends MinkContext
         if ($existence && $opt) {
             throw new ExpectationException("The option '$option' exist in the select", $this->getSession());
         }
+
         if (!$existence && !$opt) {
             throw new ExpectationException("The option '$option' does not exist in the select", $this->getSession());
         }
@@ -1021,7 +1022,7 @@ class FlexibleContext extends MinkContext
      *                                          problem with the injectStoredValues method.
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function assertSelectContainsExactOptions($select, TableNode $tableNode)
+    public function assertSelectContainsExactOptions(string $select, TableNode $tableNode): void
     {
         if (count($tableNode->getRow(0)) > 1) {
             throw new InvalidArgumentException('Arguments must be a single-column list of items');
@@ -1079,7 +1080,7 @@ class FlexibleContext extends MinkContext
      * @throws ElementNotFoundException if the option is not found in the dropdown even after waiting
      * @throws ExpectationException     if the option is not selected from the dropdown even after waiting
      */
-    public function assertSelectOptionSelected($field, $option)
+    public function assertSelectOptionSelected(string $field, string $option): void
     {
         /** @var NodeElement $selectField */
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -1116,7 +1117,7 @@ class FlexibleContext extends MinkContext
      * @throws DriverException                  when the operation cannot be performed
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function setCookie($key, $value)
+    public function setCookie(string $key, string $value): void
     {
         $this->getSession()->setCookie($key, $value);
     }
@@ -1129,7 +1130,7 @@ class FlexibleContext extends MinkContext
      *
      * @return array key/value pairs of cookie name/value
      */
-    public function getCookies()
+    public function getCookies(): array
     {
         $driver = $this->assertSelenium2Driver('Get all cookies');
 
@@ -1151,7 +1152,7 @@ class FlexibleContext extends MinkContext
      * @throws DriverException                  when the operation cannot be performed
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function deleteCookie($key)
+    public function deleteCookie(string $key): void
     {
         $this->getSession()->setCookie($key, null);
     }
@@ -1165,7 +1166,7 @@ class FlexibleContext extends MinkContext
      * @throws Exception                        if the operation failed
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function deleteCookies()
+    public function deleteCookies(): void
     {
         $this->assertSelenium2Driver('Delete all cookies')->getWebDriverSession()->deleteAllCookies();
     }
@@ -1183,7 +1184,7 @@ class FlexibleContext extends MinkContext
      * @throws ElementNotFoundException         if the field could not be found
      * @throws UnsupportedDriverActionException if getWebDriverSession() is not supported by the current driver
      */
-    public function addLocalFileToField($path, $field)
+    public function addLocalFileToField(string $path, string $field): void
     {
         $driver = $this->assertSelenium2Driver('Add local file to field');
 
@@ -1223,7 +1224,7 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException if the value of the input does not match expected after the file is
      *                              attached
      */
-    public function attachFileToField($field, $path)
+    public function attachFileToField($field, $path): void
     {
         /* @noinspection PhpUnhandledExceptionInspection */
         Spinner::waitFor(function () use ($field, $path) {
@@ -1262,7 +1263,7 @@ class FlexibleContext extends MinkContext
      *                                          problem with the injectStoredValues method.
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function blurField($locator)
+    public function blurField(string $locator): void
     {
         $this->wait->assertFieldExists($locator)->blur();
     }
@@ -1282,7 +1283,7 @@ class FlexibleContext extends MinkContext
      *                                          problem with the injectStoredValues method.
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function focusBlurField($locator)
+    public function focusBlurField(string $locator): void
     {
         $this->focusField($locator);
         $this->blurField($locator);
@@ -1302,7 +1303,7 @@ class FlexibleContext extends MinkContext
      *                                          problem with the injectStoredValues method.
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function focusField($locator)
+    public function focusField(string $locator): void
     {
         $this->wait->assertFieldExists($locator)->focus();
     }
@@ -1318,7 +1319,7 @@ class FlexibleContext extends MinkContext
      * @throws InvalidArgumentException         if $key is not recognized as a valid key
      * @throws UnsupportedDriverActionException when operation not supported by the driver
      */
-    public function hitKey($key)
+    public function hitKey(string $key): void
     {
         if (!array_key_exists($key, self::$keyCodes)) {
             throw new InvalidArgumentException("The key '$key' is not defined.");
@@ -1370,8 +1371,12 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException             If the nodes attributes do not match
      * @throws UnsupportedDriverActionException When operation not supported by the driver
      */
-    public function assertNodesHaveAttributeValues($locator, array $attributes, $selector = 'named', $occurrences = null)
-    {
+    public function assertNodesHaveAttributeValues(
+        string $locator,
+        array $attributes,
+        string $selector = 'named',
+        int $occurrences = null
+    ) {
         /** @var NodeElement[] $links */
         $nodes = $this->getSession()->getPage()->findAll($selector, $locator);
         if (!count($nodes)) {
@@ -1406,7 +1411,7 @@ class FlexibleContext extends MinkContext
      *                                          the injectStoredValues method.
      * @throws UnsupportedDriverActionException When operation not supported by the driver
      */
-    public function selectOption($select, $option, TraversableElement $context = null)
+    public function selectOption($select, $option, TraversableElement $context = null): void
     {
         $select = $this->storeContext->injectStoredValues($select);
         $option = $this->storeContext->injectStoredValues($option);
@@ -1425,7 +1430,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement[]
      */
-    public function getOptionFields($locator, TraversableElement $context = null)
+    public function getOptionFields(string $locator, TraversableElement $context = null): array
     {
         $context = $context ?: $this->getSession()->getPage();
 
@@ -1449,7 +1454,7 @@ class FlexibleContext extends MinkContext
      *
      * @return NodeElement the select or radio
      */
-    public function assertVisibleOptionField($locator, TraversableElement $context = null)
+    public function assertVisibleOptionField(string $locator, TraversableElement $context = null): NodeElement
     {
         foreach ($this->getOptionFields($locator, $context) as $field) {
             if ($field->isVisible()) {
@@ -1473,7 +1478,7 @@ class FlexibleContext extends MinkContext
      * @throws DriverException                  When the operation cannot be done
      * @throws UnsupportedDriverActionException When operation not supported by the driver
      */
-    public function scrollWindowToBody($whereToScroll, $useSmoothScroll = false)
+    public function scrollWindowToBody(string $whereToScroll, bool $useSmoothScroll = false): void
     {
         // horizontal scroll
         $scrollHorizontal = 'window.scrollX';
@@ -1517,7 +1522,7 @@ class FlexibleContext extends MinkContext
      *                                  This should never happen. If it does, there is a problem with the
      *                                  injectStoredValues method.
      */
-    public function visit($page)
+    public function visit($page): void
     {
         parent::visit($this->storeContext->injectStoredValues($page));
     }
@@ -1536,7 +1541,7 @@ class FlexibleContext extends MinkContext
      *                                  This should never happen. If it does, there is a problem with the
      *                                  injectStoredValues method.
      */
-    public function assertCheckboxChecked($checkbox)
+    public function assertCheckboxChecked($checkbox): void
     {
         $checkbox = $this->storeContext->injectStoredValues($checkbox);
         parent::assertCheckboxChecked($checkbox);
@@ -1556,7 +1561,7 @@ class FlexibleContext extends MinkContext
      *                                  This should never happen. If it does, there is a problem with the
      *                                  injectStoredValues method.
      */
-    public function assertCheckboxNotChecked($checkbox)
+    public function assertCheckboxNotChecked($checkbox): void
     {
         $checkbox = $this->storeContext->injectStoredValues($checkbox);
         parent::assertCheckboxNotChecked($checkbox);
@@ -1581,7 +1586,7 @@ class FlexibleContext extends MinkContext
      *                                          with the injectStoredValues method.
      * @throws UnsupportedDriverActionException When operation not supported by the driver
      */
-    public function ensureRadioButtonChecked($label)
+    public function ensureRadioButtonChecked($label): void
     {
         $this->wait->findRadioButton($label)->click();
     }
@@ -1606,7 +1611,7 @@ class FlexibleContext extends MinkContext
      *                                          with the injectStoredValues method.
      * @throws UnsupportedDriverActionException When operation not supported by the driver
      */
-    public function assertRadioButtonChecked($label)
+    public function assertRadioButtonChecked(string $label): void
     {
         if (!$this->findRadioButton($label)->isChecked()) {
             throw new ExpectationException("Radio button \"$label\" is not checked, but it should be.", $this->getSession());
@@ -1631,7 +1636,7 @@ class FlexibleContext extends MinkContext
      *                                          with the injectStoredValues method.
      * @throws UnsupportedDriverActionException When operation not supported by the driver
      */
-    public function assertRadioButtonNotChecked($label)
+    public function assertRadioButtonNotChecked(string $label): void
     {
         if ($this->findRadioButton($label)->isChecked()) {
             throw new ExpectationException("Radio button \"$label\" is checked, but it should not be.", $this->getSession());
@@ -1649,7 +1654,7 @@ class FlexibleContext extends MinkContext
      *
      * @return bool true if the element has the specified attribute values, false if not
      */
-    public function elementHasAttributeValues(NodeElement $node, array $attributes)
+    public function elementHasAttributeValues(NodeElement $node, array $attributes): bool
     {
         foreach ($attributes as $name => $value) {
             if ($node->getAttribute($name) != $value) {
@@ -1672,7 +1677,7 @@ class FlexibleContext extends MinkContext
      *
      * @return int
      */
-    public function compareElementsByCoords(NodeElement $a, NodeElement $b)
+    public function compareElementsByCoords(NodeElement $a, NodeElement $b): int
     {
         $driver = $this->getSession()->getDriver();
         if (!($driver instanceof Selenium2Driver) || !method_exists($driver, 'getXpathBoundingClientRect')) {
@@ -1697,7 +1702,7 @@ class FlexibleContext extends MinkContext
      *
      * @return string the fully qualified directory, with no trailing directory separator
      */
-    public function getArtifactsDir()
+    public function getArtifactsDir(): string
     {
         return realpath(__DIR__ . '/../../../../artifacts');
     }
@@ -1712,7 +1717,7 @@ class FlexibleContext extends MinkContext
      *
      * @throws ExpectationException if the page did not finish loading before the timeout expired
      */
-    public function waitForPageLoad()
+    public function waitForPageLoad(): void
     {
         /* @noinspection PhpUnhandledExceptionInspection throws ExpectationException, not Exception. */
         Spinner::waitFor(function () {
@@ -1733,7 +1738,7 @@ class FlexibleContext extends MinkContext
      *
      * @return bool
      */
-    public function nodeIsFullyVisibleInViewport(NodeElement $element)
+    public function nodeIsFullyVisibleInViewport(NodeElement $element): bool
     {
         $driver = $this->assertSelenium2Driver('Checks if a node Element is fully visible in the viewport.');
         if (!$driver->isDisplayed($element->getXpath()) ||
@@ -1761,7 +1766,7 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException if the element was not found visible in the viewport
      * @throws GenericException     if the assertion did not pass before the timeout was exceeded
      */
-    public function assertNodeElementVisibleInViewport(NodeElement $element)
+    public function assertNodeElementVisibleInViewport(NodeElement $element): void
     {
         if (!$this->nodeIsVisibleInViewport($element)) {
             throw new ExpectationException('The following element was expected to be visible in viewport, but was not: ' . $element->getHtml(), $this->getSession());
@@ -1778,7 +1783,7 @@ class FlexibleContext extends MinkContext
      *
      * @return bool
      */
-    public function nodeIsVisibleInViewport(NodeElement $element)
+    public function nodeIsVisibleInViewport(NodeElement $element): bool
     {
         $driver = $this->assertSelenium2Driver('Checks if a node Element is visible in the viewport.');
 
@@ -1810,7 +1815,7 @@ class FlexibleContext extends MinkContext
      *
      * @return bool
      */
-    public function nodeIsVisibleInDocument(NodeElement $element)
+    public function nodeIsVisibleInDocument(NodeElement $element): bool
     {
         return $this->assertSelenium2Driver('Check if element is displayed')->isDisplayed($element->getXpath());
     }
@@ -1824,7 +1829,7 @@ class FlexibleContext extends MinkContext
      *
      * @return Rectangle representing the viewport
      */
-    public function getElementViewportRectangle(NodeElement $element)
+    public function getElementViewportRectangle(NodeElement $element): Rectangle
     {
         $driver = $this->assertSelenium2Driver('Get XPath Element Dimensions');
 
@@ -1850,7 +1855,7 @@ class FlexibleContext extends MinkContext
      *
      * @Then the :identifier element should not be covered by another
      */
-    public function assertElementIsNotCoveredByIdStep($identifier)
+    public function assertElementIsNotCoveredByIdStep(string $identifier): void
     {
         /** @var NodeElement $element */
         $element = $this->getSession()->getPage()->find('css', "#$identifier");
@@ -1870,7 +1875,7 @@ class FlexibleContext extends MinkContext
      * @throws ExpectationException     if element is found to be covered by another
      * @throws InvalidArgumentException the threshold provided is outside of the 0-100 range accepted
      */
-    public function assertElementIsNotCovered(NodeElement $element, $leniency = 20)
+    public function assertElementIsNotCovered(NodeElement $element, int $leniency = 20): void
     {
         if ($leniency < 0 || $leniency > 99) {
             throw new InvalidArgumentException('The leniency provided is outside of the 0-50 range accepted.');
@@ -1937,7 +1942,7 @@ JS
      *
      * @return Selenium2Driver
      */
-    public function assertSelenium2Driver($operation)
+    public function assertSelenium2Driver(string $operation): Selenium2Driver
     {
         $driver = $this->getSession()->getDriver();
         if (!($driver instanceof Selenium2Driver)) {
@@ -1955,7 +1960,7 @@ JS
      *
      * @return NodeElement|null the first visible element
      */
-    public function scrollWindowToFirstVisibleElement(array $elements)
+    public function scrollWindowToFirstVisibleElement(array $elements): ?NodeElement
     {
         foreach ($elements as $field) {
             if ($field->isVisible()) {
@@ -1982,7 +1987,7 @@ JS
      *
      * @param NodeElement $element the element to scroll to
      */
-    public function scrollWindowToElement(NodeElement $element)
+    public function scrollWindowToElement(NodeElement $element): void
     {
         $xpath = json_encode($element->getXpath());
         $this->getSession()->evaluateScript(
@@ -2013,7 +2018,7 @@ JS
      *
      * @return NodeElement
      */
-    public function findRadioButton($label)
+    public function findRadioButton(string $label): NodeElement
     {
         $label = $this->storeContext->injectStoredValues($label);
         $this->fixStepArgument($label);
@@ -2042,7 +2047,7 @@ JS
      *
      * @return NodeElement[]
      */
-    private function getAncestors(NodeElement $node, $stopAt = null)
+    private function getAncestors(NodeElement $node, string $stopAt = null): array
     {
         $nodes = [];
         while (($node = $node->getParent()) instanceof NodeElement) {

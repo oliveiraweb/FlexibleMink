@@ -19,7 +19,7 @@ class CastStringToIntTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->typeCasterTraitMock = $this->getMockForTrait(TypeCaster::class);
@@ -28,12 +28,12 @@ class CastStringToIntTest extends TestCase
     /**
      * Test numbers are converted properly.
      *
-     * @param $input    string The input to the conversion method
-     * @param $expected mixed  The out put of the conversion method
+     * @param string $input    The input to the conversion method
+     * @param mixed  $expected The output of the conversion method
      *
      * @dataProvider conversionExamples
      */
-    public function testNumbersBiggerPhpMaxIntAreCastedToStrings($input, $expected)
+    public function testNumbersBiggerPhpMaxIntAreCastedToStrings(string $input, $expected): void
     {
         self::assertSame($expected, $this->typeCasterTraitMock->castStringToInt($input));
     }
@@ -41,7 +41,7 @@ class CastStringToIntTest extends TestCase
     /**
      * Conversion examples of expected outputs based on the input.
      */
-    public function conversionExamples()
+    public function conversionExamples(): array
     {
         return [
             'numeric string values more than PHP_INT_MAX are not converted to integers'                   => ['9223372036854775808', '9223372036854775808'],

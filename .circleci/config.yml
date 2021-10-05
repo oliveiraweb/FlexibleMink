@@ -100,24 +100,6 @@ jobs:
     steps:
       - test
 
-  build-php5:
-    working_directory: /tmp/FlexibleMink
-    parallelism: 1
-    executor: ubuntu
-    environment:
-      USE_PHP5: 1
-    steps:
-      - build
-
-  test-php5:
-    working_directory: /tmp/FlexibleMink
-    parallelism: 1
-    executor: ubuntu
-    environment:
-      USE_PHP5: 1
-    steps:
-      - test
-
 workflows:
   version: 2
   build-and-test:
@@ -130,11 +112,3 @@ workflows:
           - org-global
         requires:
           - build
-    - build-php5:
-        context:
-          - org-global
-    - test-php5:
-        context:
-          - org-global
-        requires:
-          - build-php5

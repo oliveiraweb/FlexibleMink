@@ -20,7 +20,7 @@ trait UsesScreenShotContext
      * @throws RuntimeException if the current environment is not initialized
      * @BeforeScenario
      */
-    public function gatherScreenShotContext(BeforeScenarioScope $scope)
+    public function gatherScreenShotContext(BeforeScenarioScope $scope): void
     {
         $environment = $scope->getEnvironment();
 

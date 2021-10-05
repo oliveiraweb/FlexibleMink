@@ -16,7 +16,7 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
  */
 class PressButtonTest extends FlexibleContextTest
 {
-    public function testFailingToSeeNodeElementIsVisibleInViewportPreventsButtonFromBeingPressed()
+    public function testFailingToSeeNodeElementIsVisibleInViewportPreventsButtonFromBeingPressed(): void
     {
         // Need mock with original constructor.
         $flexible_context = $this->getFlexibleMock();
@@ -36,7 +36,7 @@ class PressButtonTest extends FlexibleContextTest
         $flexible_context->pressButton('this is a test');
     }
 
-    public function testAttemptingToPressDisabledButtonThrowsException()
+    public function testAttemptingToPressDisabledButtonThrowsException(): void
     {
         $flexible_context = $this->getFlexibleMock();
         $button_locator = 'test';
@@ -54,10 +54,8 @@ class PressButtonTest extends FlexibleContextTest
 
     /**
      * Exceptions thrown when calling specified mock, method combination.
-     *
-     * @return array
      */
-    public function dataFlexibleContextExceptions()
+    public function dataFlexibleContextExceptions(): array
     {
         return [
             ['scrollToButton',                     $this->createMock(ExpectationException::class)],
@@ -76,8 +74,10 @@ class PressButtonTest extends FlexibleContextTest
      * @param string    $method    name of method called on mock being tested
      * @param Exception $exception exception that should be have bubbled up
      */
-    public function testExceptionsThrownFromFlexibleContextMethodsShouldBubbleOut($method, Exception $exception)
-    {
+    public function testExceptionsThrownFromFlexibleContextMethodsShouldBubbleOut(
+        string $method,
+        Exception $exception
+    ): void {
         $flexible_context = $this->getFlexibleMock();
         $button = $this->createPartialMock(NodeElement::class, ['getAttribute', 'press']);
         $button->method('getAttribute')->willReturn('enabled');
@@ -94,10 +94,8 @@ class PressButtonTest extends FlexibleContextTest
 
     /**
      * Exceptions thrown when calling specified mock, method combination.
-     *
-     * @return array
      */
-    public function dataButtonExceptions()
+    public function dataButtonExceptions(): array
     {
         return [
             ['getAttribute', $this->createMock(DriverException::class)],
@@ -115,7 +113,7 @@ class PressButtonTest extends FlexibleContextTest
      * @param string    $method    name of method called on mock being tested
      * @param Exception $exception exception that should be have bubbled up
      */
-    public function testExceptionsThrownFromButtonMethodsShouldBubbleOut($method, Exception $exception)
+    public function testExceptionsThrownFromButtonMethodsShouldBubbleOut(string $method, Exception $exception): void
     {
         $flexible_context = $this->getFlexibleMock();
         $button = $this->createPartialMock(NodeElement::class, ['getAttribute', 'press']);

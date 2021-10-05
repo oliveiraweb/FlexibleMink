@@ -14,7 +14,7 @@ class FilterTest extends FilterTestBase
     /**
      * This test is for making sure that invalid arguments for construction properly except.
      */
-    public function testParallelWorkerFilter()
+    public function testParallelWorkerFilter(): void
     {
         // message check
         try {
@@ -59,7 +59,7 @@ class FilterTest extends FilterTestBase
     /**
      * This test makes sure that isFeatureMatch is always false, regardless of the construct arguments on the filter.
      */
-    public function testIsFeatureMatch()
+    public function testIsFeatureMatch(): void
     {
         $feature = new FeatureNode(null, null, [], null, [], null, null, null, 1);
 
@@ -76,7 +76,7 @@ class FilterTest extends FilterTestBase
     /**
      * This test makes sure that isScenarioMatch is always true, regardless of the construct arguments on the filter.
      */
-    public function testIsScenarioMatch()
+    public function testIsScenarioMatch(): void
     {
         $scenario = new ScenarioNode(null, [], [], null, 2);
 
@@ -93,7 +93,7 @@ class FilterTest extends FilterTestBase
     /**
      * This tests that FeatureFilter works correctly with the default construction arguments for the filter.
      */
-    public function testFeatureFilterDefaults()
+    public function testFeatureFilterDefaults(): void
     {
         $filter = new Filter();
         $feature = $filter->filterFeature($this->getParsedFeature());
@@ -120,7 +120,7 @@ class FilterTest extends FilterTestBase
     /**
      * This tests that FeatureFilter works properly when there are 2 test nodes.
      */
-    public function testFeatureFilterNodes2()
+    public function testFeatureFilterNodes2(): void
     {
         /*****************
          *    Node 1    *
@@ -167,7 +167,7 @@ class FilterTest extends FilterTestBase
     /**
      * This tests if FeatureFilter works properly when there are 3 test nodes.
      */
-    public function testFeatureFilterNodes3()
+    public function testFeatureFilterNodes3(): void
     {
         /*****************
          *    Node 1    *
@@ -231,7 +231,7 @@ class FilterTest extends FilterTestBase
     /**
      * This tests if FeatureFilter works properly when there are 4 test nodes.
      */
-    public function testFeatureFilterNodes4()
+    public function testFeatureFilterNodes4(): void
     {
         /*****************
          *    Node 1    *

@@ -23,7 +23,7 @@ class ScreenShotContext implements Context
      *
      * @param string $name the name for the screenshot file (excluding path and extension)
      */
-    public function takeScreenShot($name = 'screenshot')
+    public function takeScreenShot(string $name = 'screenshot'): void
     {
         $fileName = date('Ymd-His-') . uniqid('', true) . '.png';
         file_put_contents(
@@ -42,7 +42,7 @@ class ScreenShotContext implements Context
      *          $this->takeScreenShotAfterFailedStep($scope);
      *        }
      */
-    public function takeScreenShotAfterFailedStep(AfterStepScope $scope)
+    public function takeScreenShotAfterFailedStep(AfterStepScope $scope): void
     {
         if (TestResult::FAILED === $scope->getTestResult()->getResultCode()) {
             $name = str_replace(' ', '_', $scope->getFeature()->getTitle() . '-' . $scope->getStep()->getText());

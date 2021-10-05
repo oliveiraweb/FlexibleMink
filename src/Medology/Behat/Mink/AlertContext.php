@@ -24,7 +24,7 @@ class AlertContext implements Context
      *
      * @throws UnsupportedDriverActionException if the current driver does not support cancelling the alert
      */
-    public function clearAlerts()
+    public function clearAlerts(): void
     {
         if (!$this->flexibleContext->getSession()->getDriver()->isStarted()) {
             return;
@@ -44,7 +44,7 @@ class AlertContext implements Context
      *
      * @throws UnsupportedDriverActionException if the current driver does not support confirming the alert
      */
-    public function confirmAlert()
+    public function confirmAlert(): void
     {
         $this->flexibleContext->assertSelenium2Driver('Confirm Alert')->getWebDriverSession()->accept_alert();
     }
@@ -56,7 +56,7 @@ class AlertContext implements Context
      *
      * @throws UnsupportedDriverActionException if the current driver does not support cancelling the alert
      */
-    public function cancelAlert()
+    public function cancelAlert(): void
     {
         $this->flexibleContext->assertSelenium2Driver('Cancel Alert')->getWebDriverSession()->dismiss_alert();
     }
@@ -71,7 +71,7 @@ class AlertContext implements Context
      * @throws ExpectationException             if the given text is not present in the current alert
      * @throws UnsupportedDriverActionException if the current driver does not support asserting the alert message
      */
-    public function assertAlertMessage($expected)
+    public function assertAlertMessage(string $expected): void
     {
         $driver = $this->flexibleContext->assertSelenium2Driver('Assert Alert');
         $session = $this->flexibleContext->getSession();
@@ -96,7 +96,7 @@ class AlertContext implements Context
      *
      * @throws UnsupportedDriverActionException if the current driver does not support setting the alert text
      */
-    public function setAlertText($message)
+    public function setAlertText(string $message): void
     {
         $this->flexibleContext->assertSelenium2Driver('Set Alert')->getWebDriverSession()
             ->postAlert_text(['text' => $message]);

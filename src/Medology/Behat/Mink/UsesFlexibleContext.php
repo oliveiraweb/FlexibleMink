@@ -20,7 +20,7 @@ trait UsesFlexibleContext
      * @throws RuntimeException if the current environment is not initialized
      * @BeforeScenario
      */
-    public function gatherFlexibleContext(BeforeScenarioScope $scope)
+    public function gatherFlexibleContext(BeforeScenarioScope $scope): void
     {
         $environment = $scope->getEnvironment();
 

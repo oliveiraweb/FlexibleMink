@@ -3,6 +3,7 @@
 namespace Medology\Behat;
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Chekote\NounStore\Assert;
 use Chekote\NounStore\Key;
 use Chekote\NounStore\Store;
@@ -10,6 +11,7 @@ use DateTime;
 use DateTimeInterface;
 use Exception;
 use InvalidArgumentException;
+use Medology\Behat\Traits\GathersContexts as GathersContextsTrait;
 use OutOfBoundsException;
 use ReflectionException;
 use ReflectionFunction;
@@ -18,10 +20,15 @@ use ReflectionProperty;
 /**
  * Context for storing and working with nouns.
  */
-class StoreContext extends Store implements Context
+class StoreContext extends Store implements Context, GathersContexts
 {
+    use GathersContextsTrait;
+
     /** @var Assert */
     protected $assert;
+
+    /** @var DateInjector */
+    protected $dateInjector;
 
     /** @var callable[] array of functions to call after the registry is cleared to initialize it for use */
     protected $initializations;
@@ -32,20 +39,8 @@ class StoreContext extends Store implements Context
     protected static $dateFormat = DateTime::ISO8601;
 
     protected static $format_map = [
-        'a MySQL date'                                  => 'Y-m-d',
-        'a MySQL date and time'                         => 'Y-m-d H:i:s',
-        'a US date'                                     => 'm/d/Y',
-        'a US date and time'                            => 'm/d/Y H:i:s',
-        'a US time'                                     => 'h:i',
-        'a US time with uppercase meridiem'             => 'g:i A',
-        'a US time with meridiem'                       => 'g:i a',
-        'a US military time'                            => 'H:i',
-        'a US time with seconds and uppercase meridiem' => 'g:i:s A',
-        'a US time with seconds and meridiem'           => 'g:i:s a',
-        'a US military time with seconds'               => 'H:i:s',
-        'a US date and 12hr time'                       => 'm/d/Y \a\t g:i A',
-        'a US phone number'                             => ['/(\d{3})(\d{3})(\d{4})/', '($1) $2-$3'],
-        'a ###-###-### phone number'                    => ['/(\d{3})(\d{3})(\d{4})/', '$1-$2-$3'],
+        'a US phone number'          => ['/(\d{3})(\d{3})(\d{4})/', '($1) $2-$3'],
+        'a ###-###-### phone number' => ['/(\d{3})(\d{3})(\d{4})/', '$1-$2-$3'],
     ];
 
     public function __construct()
@@ -58,11 +53,21 @@ class StoreContext extends Store implements Context
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function gatherContexts(BeforeScenarioScope $scope): void
+    {
+        $env = $this->getEnvironment($scope);
+
+        $this->dateInjector = $env->getContext(DateInjector::class);
+    }
+
+    /**
      * Clears the registry before each Scenario to free up memory and prevent access to stale data.
      *
      * @BeforeScenario
      */
-    public function clearRegistry()
+    public function clearRegistry(): void
     {
         $this->reset();
 
@@ -76,7 +81,7 @@ class StoreContext extends Store implements Context
      *
      * @param callable $callable must accept a single argument, which is the StoreContext
      */
-    public function registerInitialization(callable $callable)
+    public function registerInitialization(callable $callable): void
     {
         $this->initializations[] = $callable;
     }
@@ -94,7 +99,7 @@ class StoreContext extends Store implements Context
      *
      * @throws Exception if the thing does not match the expected value
      */
-    public function assertThingIs($key, $expected = null)
+    public function assertThingIs(string $key, $expected = null): void
     {
         if (($actual = $this->get($key)) !== $expected) {
             throw new Exception("Expected $key to be " . var_export($expected, true) . ', but it was ' . var_export($actual, true));
@@ -113,7 +118,7 @@ class StoreContext extends Store implements Context
      *
      * @return mixed the value of the property
      */
-    public function getThingProperty($key, $property, $index = null)
+    public function getThingProperty(string $key, string $property, int $index = null)
     {
         $thing = $this->assert->keyExists($this->key->build($key, $index));
 
@@ -153,7 +158,7 @@ class StoreContext extends Store implements Context
      *
      * @return string the parsed string
      */
-    public function injectStoredValues($string, callable $onGetFn = null, callable $hasValue = null)
+    public function injectStoredValues(string $string, callable $onGetFn = null, callable $hasValue = null): string
     {
         if ($onGetFn && (new ReflectionFunction($onGetFn))->getNumberOfParameters() != 1) {
             throw new InvalidArgumentException('Method $onGetFn must take one argument!');
@@ -218,7 +223,7 @@ class StoreContext extends Store implements Context
      * @param string $current the current key of the thing
      * @param string $new     the new key under which to store the thing
      */
-    public function referToStoredAs($current, $new)
+    public function referToStoredAs(string $current, string $new): void
     {
         $this->set($new, $this->get($current));
     }
@@ -234,7 +239,7 @@ class StoreContext extends Store implements Context
      *
      * @throws Exception When the value is not found in the property
      */
-    public function assertThingPropertyContains($thing, $property, $expected)
+    public function assertThingPropertyContains(string $thing, string $property, string $expected): void
     {
         $expected = $this->injectStoredValues($expected);
 
@@ -251,7 +256,7 @@ class StoreContext extends Store implements Context
      *
      * @return string
      */
-    protected function parseProperty($property)
+    protected function parseProperty(string $property): string
     {
         if (substr($property, 0, 1) === "'" && substr($property, -1) === "'") {
             return trim($property, "'");
@@ -297,13 +302,15 @@ class StoreContext extends Store implements Context
      *
      * @return mixed the programmatic format
      */
-    protected function processPropertyFormat($propertyFormat)
+    protected function processPropertyFormat(string $propertyFormat)
     {
-        if (!isset(self::$format_map[$propertyFormat])) {
+        $format_map = self::$format_map + $this->dateInjector->getFormatMap();
+
+        if (!isset($format_map[$propertyFormat])) {
             throw new InvalidArgumentException("Unknown value for thingFormat: $propertyFormat");
         }
 
-        return self::$format_map[$propertyFormat];
+        return $format_map[$propertyFormat];
     }
 
     /**
@@ -321,7 +328,7 @@ class StoreContext extends Store implements Context
      *
      * @return string the formatted date time
      */
-    protected function formatDateTime(DateTimeInterface $dateTime, $thing, $format = null)
+    protected function formatDateTime(DateTimeInterface $dateTime, $thing, string $format = null): string
     {
         if ($format) {
             $value = $dateTime->format($format);
@@ -350,7 +357,7 @@ class StoreContext extends Store implements Context
      *
      * @return string the formatted date time
      */
-    protected function formatDateTimeFromHostObject(DateTimeInterface $dateTime, $object)
+    protected function formatDateTimeFromHostObject(DateTimeInterface $dateTime, $object): string
     {
         return ($format = $this->getPropertyValue($object, 'dateFormat'))
             ? $dateTime->format($format)
@@ -365,7 +372,7 @@ class StoreContext extends Store implements Context
      * @return string the result of calling __toString() on the date time, or formatting it as
      *                static::$dateFormat if no __toString method exists
      */
-    protected function formatDateTimeWithoutHostObject(DateTimeInterface $dateTime)
+    protected function formatDateTimeWithoutHostObject(DateTimeInterface $dateTime): string
     {
         return method_exists($dateTime, '__toString')
             ? (string) $dateTime
@@ -380,7 +387,7 @@ class StoreContext extends Store implements Context
      *
      * @return mixed|null the value of the property. Will return null if the property does not exist.
      */
-    protected function getPropertyValue($object, $propertyName)
+    protected function getPropertyValue($object, string $propertyName)
     {
         $value = null;
 

@@ -41,7 +41,7 @@ class AsyncMink
      *
      * @return mixed the result of the lambda if it succeeds
      */
-    public function __call($method, array $arguments)
+    public function __call(string $method, array $arguments)
     {
         return Spinner::waitFor(function () use ($method, $arguments) {
             return call_user_func_array([$this->flexibleContext, $method], $arguments);

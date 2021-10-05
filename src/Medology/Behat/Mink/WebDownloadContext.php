@@ -26,7 +26,7 @@ class WebDownloadContext implements Context
      * @param string $key     the key to store the content under, defaulting to "Download"
      * @param string $headers these are headers that may be needed depending on the item being downloaded
      */
-    public function downloadViaLink($locator, $key = 'Download', $headers = '')
+    public function downloadViaLink(string $locator, string $key = 'Download', string $headers = ''): void
     {
         $this->download(
             $this->getFullUrl($this->flexibleContext->assertVisibleLink($locator)->getAttribute('href')),
@@ -44,7 +44,7 @@ class WebDownloadContext implements Context
      *
      * @return string
      */
-    public function getFullUrl($link)
+    public function getFullUrl(string $link): string
     {
         if (!preg_match(self::$baseUrlRegExp, $link)) {
             $currentUrl = $this->flexibleContext->getSession()->getCurrentUrl();
@@ -78,9 +78,9 @@ class WebDownloadContext implements Context
      *
      * @throws Exception if curl could not be initialized for the specified URL
      *
-     * @return mixed the curl_exec result of downloading the file
+     * @return bool|string the curl_exec result of downloading the file
      */
-    public function download($file, $key = 'Download', $headersString = '')
+    public function download(string $file, string $key = 'Download', string $headersString = '')
     {
         $ch = curl_init($file);
         if ($ch === false) {
@@ -116,7 +116,7 @@ class WebDownloadContext implements Context
      *
      * @return bool True if image loaded, false otherwise
      */
-    public function checkImageLoaded($xpath, $src = null)
+    public function checkImageLoaded(string $xpath, string $src = null): bool
     {
         $driver = $this->flexibleContext->getSession()->getDriver();
         $xpath = str_replace('"', "'", $xpath);

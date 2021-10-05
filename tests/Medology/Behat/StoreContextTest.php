@@ -9,9 +9,11 @@ namespace Tests\Medology\Behat;
 
 use DateTime;
 use Exception;
+use Medology\Behat\DateInjector;
 use Medology\Behat\StoreContext;
 use PHPUnit_Framework_Error;
 use PHPUnit_Framework_TestCase;
+use ReflectionProperty;
 use stdClass;
 use TypeError;
 
@@ -23,17 +25,19 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
     /**
      * Sets up the environment before each test.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->storeContext = new StoreContext();
+
+        $property = new ReflectionProperty(StoreContext::class, 'dateInjector');
+        $property->setAccessible(true);
+        $property->setValue($this->storeContext, new DateInjector());
     }
 
     /**
      * Returns a list of non-callable values.
-     *
-     * @return array
      */
-    public function nonCallableValuesProvider()
+    public function nonCallableValuesProvider(): array
     {
         return [[''], [0],  [$this->getMockObject()]];
     }
@@ -43,7 +47,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      *
      * @return string[][]
      */
-    public function injectLikeSyntaxDataProvider()
+    public function injectLikeSyntaxDataProvider(): array
     {
         return [
             ['the total_cost of the Order'],
@@ -59,7 +63,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      *
      * @param string $string the value to pass to injectStoredValues
      */
-    public function testInjectionLikeSyntaxIsNotInjected($string)
+    public function testInjectionLikeSyntaxIsNotInjected(string $string): void
     {
         $this->assertEquals($string, $this->storeContext->injectStoredValues($string));
     }
@@ -69,7 +73,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      *
      * @return string[][]
      */
-    public function nonExistentItemDataProvider()
+    public function nonExistentItemDataProvider(): array
     {
         return [
             ['(the test_property_1 of the FakeObj)', "Entry 'FakeObj' was not found in the store."],
@@ -82,7 +86,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      * @param string $string the value to pass to injectStoredValues
      * @param string $error  the expected Exception error message
      */
-    public function testInjectNonExistentItem($string, $error)
+    public function testInjectNonExistentItem(string $string, string $error): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage($error);
@@ -90,7 +94,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
         $this->storeContext->injectStoredValues($string);
     }
 
-    public function onGetFnWrongArgsDataProvider()
+    public function onGetFnWrongArgsDataProvider(): array
     {
         return [
             'no args'       => [function () {}],
@@ -100,10 +104,8 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider onGetFnWrongArgsDataProvider
-     *
-     * @param $onGetFn
      */
-    public function testOnGetFnMustTakeOneArgument($onGetFn)
+    public function testOnGetFnMustTakeOneArgument(callable $onGetFn): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Method $onGetFn must take one argument!');
@@ -116,7 +118,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      *
      * @return callable[][]
      */
-    public function onGetFnWrongReturnTypeDataProvider()
+    public function onGetFnWrongReturnTypeDataProvider(): array
     {
         return [
             'no return'     => [function (/* @scrutinizer ignore-unused */ $a) {}],
@@ -134,7 +136,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider onGetFnWrongReturnTypeDataProvider
      */
-    public function testOnGetFnWrongReturnType(callable $onGetFn)
+    public function testOnGetFnWrongReturnType(callable $onGetFn): void
     {
         $this->storeContext->set('person', $this->getMockObject());
 
@@ -147,7 +149,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
     /**
      * Tests the StoreContext::injectStoredValues method.
      */
-    public function testInjectStoredValues()
+    public function testInjectStoredValues(): void
     {
         /***********************
          * Set up Mocks
@@ -163,7 +165,6 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
 
         // test empty string and variations
         $this->assertEmpty($this->storeContext->injectStoredValues(''));
-        $this->assertEmpty($this->storeContext->injectStoredValues(null));
 
         // test reflection of non-matching inputs
         $this->assertEquals(1452, $this->storeContext->injectStoredValues(1452));
@@ -331,7 +332,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function dateTimeFormatDataProvider()
+    public function dateTimeFormatDataProvider(): array
     {
         return [
             'DateTime is formatted with default format when no format is specified' => [
@@ -355,13 +356,13 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      * @param $input
      * @param $output
      */
-    public function testDateTimeFormatting($input, $output)
+    public function testDateTimeFormatting($input, $output): void
     {
         $this->storeContext->set('testObj', $this->getMockObject());
         $this->assertEquals($output, $this->storeContext->injectStoredValues($input));
     }
 
-    public function phoneNumberFormatDataProvider()
+    public function phoneNumberFormatDataProvider(): array
     {
         return [
             'Phone is formatted with default format when no format is specified' => [
@@ -385,7 +386,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      * @param string $input  the store context input to retrieve value from
      * @param string $output the expected output from the store
      */
-    public function testPhoneNumberFormatting($input, $output)
+    public function testPhoneNumberFormatting(string $input, string $output): void
     {
         $this->storeContext->set('testObj', $this->getMockObject());
         $this->assertEquals($output, $this->storeContext->injectStoredValues($input));
@@ -394,7 +395,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
     /**
      * Tests injectStoredValues using objects with magic properties.
      */
-    public function testInjectStoredValuesMagicProperties()
+    public function testInjectStoredValuesMagicProperties(): void
     {
         $name = 'magicMock';
         $mock = $this->getMockBuilder('Tests\Behat\DefaultMocks\MagicMethods')
@@ -423,7 +424,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      *
      * @throws Exception when a unsupported version of PHP is being used
      */
-    protected function expectTypeErrorException()
+    protected function expectTypeErrorException(): void
     {
         list($majorVersion, $minorVersion) = explode('.', PHP_VERSION, 3);
 
@@ -444,7 +445,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      *
      * @throws Exception when a unsupported version of PHP is being used
      */
-    protected function assertFunctionThrowsTypeErrorThatContainsMessage(callable $fn, $expectedMessage)
+    protected function assertFunctionThrowsTypeErrorThatContainsMessage(callable $fn, string $expectedMessage): void
     {
         $this->expectTypeErrorException();
 
@@ -466,7 +467,7 @@ class StoreContextTest extends PHPUnit_Framework_TestCase
      *
      * @return stdClass A mock object with properties test_property_1/2/3
      */
-    private function getMockObject()
+    private function getMockObject(): stdClass
     {
         return (object) [
             'test_property_1' => 'test_value_1',

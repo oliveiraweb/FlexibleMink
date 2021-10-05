@@ -20,7 +20,7 @@ trait UsesJavaScriptContext
      * @throws RuntimeException if the current environment is not initialized
      * @BeforeScenario
      */
-    public function gatherJavaScriptContext(BeforeScenarioScope $scope)
+    public function gatherJavaScriptContext(BeforeScenarioScope $scope): void
     {
         $environment = $scope->getEnvironment();
 

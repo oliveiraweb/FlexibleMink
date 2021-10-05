@@ -27,7 +27,7 @@ class CsvContext implements Context
      *
      * @throws Exception if the given rows are not present in the CSV
      */
-    public function assertThingIsCSVWithData($key, TableNode $table)
+    public function assertThingIsCSVWithData(string $key, TableNode $table): void
     {
         $expectedData = $table->getRows();
 
@@ -77,7 +77,7 @@ class CsvContext implements Context
      *
      * @throws Exception if the given headers are not an exact match with the CSV headers
      */
-    public function assertThingIsCSVWithRows($key, TableNode $table)
+    public function assertThingIsCSVWithRows(string $key, TableNode $table): void
     {
         $expectedHeaders = $table->getColumn(0);
 
@@ -96,7 +96,7 @@ class CsvContext implements Context
      *
      * @throws Exception if any of the required headers are not present
      */
-    private function assertHeadersArePresent(array $required, array $actual, $csvName)
+    private function assertHeadersArePresent(array $required, array $actual, string $csvName): void
     {
         if ($diff = array_diff($required, $actual)) {
             throw new Exception("CSV '$csvName' is missing headers '" . implode("', '", $diff) . "'");
@@ -112,7 +112,7 @@ class CsvContext implements Context
      *
      * @throws Exception if any additional headers are present
      */
-    private function assertNoAdditionalHeaders(array $required, array $actual, $csvName)
+    private function assertNoAdditionalHeaders(array $required, array $actual, string $csvName): void
     {
         if ($diff = array_diff($actual, $required)) {
             throw new Exception("CSV '$csvName' contains extra headers '" . implode("', '", $diff) . "'");

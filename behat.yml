@@ -5,6 +5,7 @@ default:
       contexts:
         - FeatureContext
         - Medology\Behat\CsvContext
+        - Medology\Behat\DateInjector
         - Medology\Behat\StoreContext
         - Medology\Behat\Mink\AlertContext
         - Medology\Behat\Mink\FlexibleContext

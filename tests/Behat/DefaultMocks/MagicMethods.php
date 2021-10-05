@@ -8,15 +8,16 @@ class MagicMethods
     {
     }
 
-    public function __set($name, $value)
+    public function __set($name, $value): void
     {
     }
 
-    public function __isset($name)
+    public function __isset($name): bool
     {
+        return false;
     }
 
-    public function __unset($name)
+    public function __unset($name): void
     {
     }
 
@@ -24,7 +25,7 @@ class MagicMethods
     {
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return '';
     }

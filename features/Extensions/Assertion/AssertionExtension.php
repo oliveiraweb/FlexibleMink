@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class AssertionExtension implements Extension
 {
-    const TESTER_INJECTOR_TAG = 'assertion.injector';
+    public const TESTER_INJECTOR_TAG = 'assertion.injector';
 
     /**
      * {@inheritdoc}

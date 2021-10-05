@@ -16,10 +16,7 @@ use PHPUnit_Framework_TestCase;
  */
 abstract class FilterTestBase extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @return Parser
-     */
-    protected function getParser()
+    protected function getParser(): Parser
     {
         return new Parser(
             new Lexer(
@@ -41,10 +38,7 @@ abstract class FilterTestBase extends PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return string
-     */
-    protected function getGherkinFeature()
+    protected function getGherkinFeature(): string
     {
         return <<<'GHERKIN'
 Feature: Long feature with outline
@@ -81,10 +75,8 @@ GHERKIN;
 
     /**
      * @throws PHPUnit_Framework_AssertionFailedError if the parser returns null (it should never do this)
-     *
-     * @return FeatureNode
      */
-    protected function getParsedFeature()
+    protected function getParsedFeature(): FeatureNode
     {
         if (!$feature = $this->getParser()->parse($this->getGherkinFeature())) {
             throw new PHPUnit_Framework_AssertionFailedError('Parser returned null when parsing out Gherkin fixture.');

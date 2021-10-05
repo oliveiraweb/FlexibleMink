@@ -19,7 +19,7 @@ trait TypeCaster
      *
      * @return int|string the string cast to an int, or the original string if it is outside the max int range of the system
      */
-    public function castStringToInt($string)
+    public function castStringToInt(string $string)
     {
         $intval = intval($string);
 
@@ -35,7 +35,7 @@ trait TypeCaster
      *
      * @return float the resulting float
      */
-    public function castStringToFloat($string)
+    public function castStringToFloat(string $string): float
     {
         /* @todo Add PHP_FLOAT_MAX check when we move all our projects to at least php 7.2 */
         return floatval($string);
@@ -52,7 +52,7 @@ trait TypeCaster
      *
      * @return bool the resulting bool
      */
-    public function castStringToBool($string)
+    public function castStringToBool(string $string): bool
     {
         return strtolower($string) === 'true';
     }
@@ -90,7 +90,7 @@ trait TypeCaster
      *
      * @return string the resulting bool
      */
-    public function castQuotedStringToString($string)
+    public function castQuotedStringToString(string $string): string
     {
         return substr($string, 1, -1);
     }

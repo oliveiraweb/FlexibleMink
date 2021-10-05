@@ -5,6 +5,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
+use Carbon\Carbon;
 use features\Extensions\Assertion\AssertionContext;
 use Medology\Behat\Mink\UsesFlexibleContext;
 use Medology\Behat\Mink\UsesWebDownloadContext;
@@ -28,7 +29,7 @@ class FeatureContext implements Context
      *
      * @BeforeScenario
      */
-    public function beforeScenario(BeforeScenarioScope $scope)
+    public function beforeScenario(BeforeScenarioScope $scope): void
     {
         // Browser setup
         $this->gatherFlexibleContext($scope);
@@ -43,7 +44,7 @@ class FeatureContext implements Context
      * @param string    $key        the key to put the object into the store under
      * @param TableNode $attributes the attributes of the object to create
      */
-    public function putStoreStep($key, TableNode $attributes)
+    public function putStoreStep($key, TableNode $attributes): void
     {
         $this->storeContext->set($key, (object) ($attributes->getRowsHash()));
     }
@@ -51,13 +52,13 @@ class FeatureContext implements Context
     /**
      * Places the given arbitrary value into the store.
      *
-     * @Given /^the value (?P<value>.+) is stored as (?P<key>".+")$/
+     * @Given the value :value is stored as :key
      * @Given the following string is stored as :key:
      *
      * @param mixed  $value the value to put into the store
      * @param string $key   the key to put the value into the store under
      */
-    public function putSingleStoreStep($value, $key)
+    public function putSingleStoreStep($value, $key): void
     {
         if ($value instanceof PyStringNode) {
             $value = $value->getRaw();
@@ -67,11 +68,31 @@ class FeatureContext implements Context
     }
 
     /**
+     * Clears the Carbon test now value.
+     *
+     * @Given the datetime is :value
+     */
+    public function setTestNow(string $value): void
+    {
+        Carbon::setTestNow($value);
+    }
+
+    /**
+     * Clears the Carbon test now value.
+     *
+     * @BeforeScenario
+     */
+    public function clearCarbonTestNow(): void
+    {
+        Carbon::setTestNow(null);
+    }
+
+    /**
      * Decreases the default timeout for the sake of testing failing assertions more quickly.
      *
      * @BeforeSuite
      */
-    public static function setSpinnerTimeout()
+    public static function setSpinnerTimeout(): void
     {
         Spinner::$default_timeout = 5;
     }
@@ -84,7 +105,7 @@ class FeatureContext implements Context
      * @param string $path    the path to visit
      * @param int    $timeout the time to wait before visiting the path
      */
-    public function visitPathDelayed($path, $timeout)
+    public function visitPathDelayed($path, $timeout): void
     {
         $path = json_encode($path); // Quick and painless quotation wrapping + escaping.
         $timeout *= 1000;
@@ -106,7 +127,7 @@ JS
      * @param string $type whether to create an alert, confirmation dialog, or prompt
      * @param string $text the text to show in the popup
      */
-    public function ensureAlertExists($type, $text)
+    public function ensureAlertExists($type, $text): void
     {
         $text = json_encode($text); // Free character escaping, quoting, etc.
 
@@ -123,7 +144,7 @@ JS
      *
      * @throws ExpectationException if the actual result does not match the expected results
      */
-    public function assertAlertResult($type, $result)
+    public function assertAlertResult($type, $result): void
     {
         $actual = $this->flexibleContext->getSession()->evaluateScript("{$type}_result");
 
@@ -146,7 +167,7 @@ JS
      * @throws ExpectationException If the <img> tag is not found
      * @throws ExpectationException If the image is not loaded
      */
-    public function assertImageLoaded($imgSrc, $locator)
+    public function assertImageLoaded($imgSrc, $locator): void
     {
         $session = $this->flexibleContext->getSession();
         $image = $session->getPage()->find('css', "img#$locator");
@@ -170,7 +191,7 @@ JS
      * @throws ExpectationException If the <img> tag is not found
      * @throws ExpectationException If the image is loaded
      */
-    public function assertImageNotLoaded($locator)
+    public function assertImageNotLoaded($locator): void
     {
         $image = $this->flexibleContext->getSession()->getPage()->find('css', "img#$locator");
 
@@ -186,7 +207,7 @@ JS
     /**
      * Starts the WebDriver session if it is not already started.
      */
-    protected function startWebDriverSession()
+    protected function startWebDriverSession(): void
     {
         $minkSession = $this->flexibleContext->getSession();
         if (!$minkSession->isStarted()) {

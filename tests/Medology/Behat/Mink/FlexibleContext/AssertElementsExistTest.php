@@ -2,6 +2,7 @@
 
 namespace Tests\Medology\Behat\Mink\FlexibleContext;
 
+use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
 
 /**
@@ -9,7 +10,7 @@ use Behat\Mink\Exception\ExpectationException;
  */
 class AssertElementsExistTest extends FlexibleContextTest
 {
-    public function testThrowsExpectationExceptionWhenElementDoesntExist()
+    public function testThrowsExpectationExceptionWhenElementDoesntExist(): void
     {
         $this->pageMock->method('findAll')->willReturn([]);
         $this->expectException(ExpectationException::class);
@@ -17,17 +18,17 @@ class AssertElementsExistTest extends FlexibleContextTest
         $this->flexible_context->assertElementsExist('image');
     }
 
-    public function testReturnsAllFoundElements()
+    public function testReturnsAllFoundElements(): void
     {
-        $expectedElements = ['element1', 'element2'];
+        $expectedElements = [$this->createMock(NodeElement::class), $this->createMock(NodeElement::class)];
         $this->pageMock->method('findAll')->willReturn($expectedElements);
         $elements = $this->flexible_context->assertElementsExist('image');
         $this->assertEquals($expectedElements, $elements);
     }
 
-    public function testReturnsTheFoundElements()
+    public function testReturnsTheFoundElements(): void
     {
-        $expectedElements = ['element1'];
+        $expectedElements = [$this->createMock(NodeElement::class)];
         $this->pageMock->method('findAll')->willReturn($expectedElements);
         $elements = $this->flexible_context->assertElementsExist('image');
         $this->assertEquals($expectedElements, $elements);

@@ -27,7 +27,7 @@ abstract class FlexibleContextTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->flexible_context = $this->createPartialMock(FlexibleContext::class, $this->flexible_context_mocked_methods);
         $this->sessionMock = $this->createMock(Session::class);
@@ -39,7 +39,7 @@ abstract class FlexibleContextTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
         $this->pageMock = null;

@@ -20,7 +20,7 @@ trait UsesWebDownloadContext
      * @throws RuntimeException if the current environment is not initialized
      * @BeforeScenario
      */
-    public function gatherWebDownloadContext(BeforeScenarioScope $scope)
+    public function gatherWebDownloadContext(BeforeScenarioScope $scope): void
     {
         $environment = $scope->getEnvironment();
 

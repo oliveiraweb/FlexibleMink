@@ -7,8 +7,6 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
 . "${ROOT}"/bin/lib/env.sh
 . "${ROOT}"/bin/lib/tty.sh
 . "${ROOT}"/docker/lib/docker_host_user_id.sh
-. "${ROOT}"/docker/lib/images.sh
-. "${ROOT}"/docker/lib/php_image.sh
 
 docker run \
     -e LOCAL_USER_ID="$DOCKER_HOST_USER_ID" \
@@ -20,4 +18,4 @@ docker run \
     -w /app \
 	--link web:dockermachine.local \
 	--net ${PROJECT_NAME}_default \
-	${RESOLVED_PHP_IMAGE} php "$@"
+	chekote/php:7.3.11-behat3.4 php "$@"

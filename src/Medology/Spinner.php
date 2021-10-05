@@ -16,7 +16,7 @@ class Spinner
      * the value returned by the lambda. This is useful when waiting on remote drivers such as Selenium.
      *
      * @param callable $lambda  The lambda to call. Must return true on success.
-     * @param int      $timeout the number of seconds to spin for.
+     * @param int      $timeout the number of seconds to spin for
      *
      * @throws Exception if the assertion did not pass before the timeout was exceeded
      *

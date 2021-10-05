@@ -24,7 +24,7 @@ class JavaScriptContext implements Context
      *
      * @throws ExpectationException if the given variable is undefined
      */
-    public function assertJavascriptVariableHasAValue($variable)
+    public function assertJavascriptVariableHasAValue(string $variable): void
     {
         // Get the value of our variable from javascript
         /** @var mixed $result return type for Session::evaluateScript is wrong */
@@ -47,7 +47,7 @@ class JavaScriptContext implements Context
      *
      * @throws ExpectationException if the type of the given variable does not match what's expected
      */
-    public function assertJavascriptVariableType($variable, $not, $type)
+    public function assertJavascriptVariableType(string $variable, $not, string $type): void
     {
         // Get the type of our variable from javascript.
         $result = $this->flexibleContext->getSession()->evaluateScript('return typeof(' . $variable . ');');
@@ -68,7 +68,7 @@ class JavaScriptContext implements Context
      *
      * @throws ExpectationException if the Javascript variable isn't a match
      */
-    public function assertJsonContentsOneByOne($variableName, TableNode $values)
+    public function assertJsonContentsOneByOne(string $variableName, TableNode $values): void
     {
         $returnedJsonData = $this->flexibleContext->getSession()->evaluateScript(
             'return JSON.stringify(' . $variableName . ');'
@@ -98,7 +98,7 @@ class JavaScriptContext implements Context
      *
      * @throws ExpectationException if the actual value does not match the expected value
      */
-    public function assertJavascriptVariable($varName, $expected)
+    public function assertJavascriptVariable(string $varName, $expected): void
     {
         $actual = $this->flexibleContext->getSession()->evaluateScript("return $varName;");
 
@@ -120,7 +120,7 @@ class JavaScriptContext implements Context
      *
      * @throws ExpectationException if variable value does not match expected value
      */
-    public function assertJavascriptVariables(TableNode $table)
+    public function assertJavascriptVariables(TableNode $table): void
     {
         $attributes = array_map([$this->storeContext, 'injectStoredValues'], $table->getRowsHash());
 
@@ -137,7 +137,7 @@ class JavaScriptContext implements Context
      *
      * @return string JSON encoded string
      */
-    protected function getRawOrJson($value)
+    protected function getRawOrJson($value): string
     {
         if (is_array($value) || is_object($value)) {
             return json_encode($value);

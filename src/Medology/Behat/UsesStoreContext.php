@@ -20,7 +20,7 @@ trait UsesStoreContext
      * @throws RuntimeException if the current environment is not initialized
      * @BeforeScenario
      */
-    public function gatherStoreContext(BeforeScenarioScope $scope)
+    public function gatherStoreContext(BeforeScenarioScope $scope): void
     {
         $environment = $scope->getEnvironment();
 

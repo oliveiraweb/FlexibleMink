@@ -27,7 +27,7 @@ class Rectangle
      * @param int $right  right x position
      * @param int $bottom Bottom y position
      */
-    public function __construct($left, $top, $right, $bottom)
+    public function __construct(int $left, int $top, int $right, int $bottom)
     {
         $this->left = $left;
         $this->top = $top;
@@ -42,7 +42,7 @@ class Rectangle
      *
      * @return bool
      */
-    public function isContainedIn(self $rectangle)
+    public function isContainedIn(self $rectangle): bool
     {
         return
             $this->left >= $rectangle->left &&
@@ -58,7 +58,7 @@ class Rectangle
      *
      * @return bool
      */
-    public function overlaps(self $rectangle)
+    public function overlaps(self $rectangle): bool
     {
         return $this->overlapsInY($rectangle) && $this->overlapsInX($rectangle);
     }
@@ -70,7 +70,7 @@ class Rectangle
      *
      * @return bool
      */
-    private function overlapsInX(self $rectangle)
+    private function overlapsInX(self $rectangle): bool
     {
         return
             //If overlaps on the left
@@ -88,7 +88,7 @@ class Rectangle
      *
      * @return bool
      */
-    private function overlapsInY(self $rectangle)
+    private function overlapsInY(self $rectangle): bool
     {
         return
             //If the top overlaps

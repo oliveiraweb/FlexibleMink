@@ -34,7 +34,7 @@ class QualityAssurance implements Context
      *
      * @return NodeElement|null Page element node
      */
-    public function getNodeElementByQaId($qaId)
+    public function getNodeElementByQaId(string $qaId): ?NodeElement
     {
         $this->flexibleContext->waitForPageLoad();
         $xpath = '//*[@data-qa-id="' . $this->storeContext->injectStoredValues($qaId) . '"]';
@@ -53,7 +53,7 @@ class QualityAssurance implements Context
      *
      * @return NodeElement Page element node
      */
-    public function assertNodeElementExistsByQaId($qaId)
+    public function assertNodeElementExistsByQaId(string $qaId): NodeElement
     {
         $element = $this->getNodeElementByQaID($qaId);
 
@@ -78,7 +78,7 @@ class QualityAssurance implements Context
      * @throws UnsupportedDriverActionException When operation not supported by the driver
      * @throws WebDriverException               If cannot get the Web Driver
      */
-    public function assertQaIdIsFullyVisibleInViewport($qaId)
+    public function assertQaIdIsFullyVisibleInViewport(string $qaId): void
     {
         $element = $this->assertNodeElementExistsByQaId($qaId);
 
@@ -101,7 +101,7 @@ class QualityAssurance implements Context
      * @throws UnsupportedDriverActionException exception thrown by drivers when they don't support the requested action
      * @throws WebDriverException               If cannot get the Web Driver
      */
-    public function assertQaIdIsPartiallyVisibleInViewport($qaId)
+    public function assertQaIdIsPartiallyVisibleInViewport(string $qaId): void
     {
         $element = $this->assertNodeElementExistsByQaId($qaId);
 
@@ -126,7 +126,7 @@ class QualityAssurance implements Context
      * @throws UnsupportedDriverActionException exception thrown by drivers when they don't support the requested action
      * @throws WebDriverException               If cannot get the Web Driver
      */
-    public function assertQaIdIsNotVisibleInViewport($qaId)
+    public function assertQaIdIsNotVisibleInViewport(string $qaId): void
     {
         $element = $this->getNodeElementByQaID($qaId);
 
@@ -149,7 +149,7 @@ class QualityAssurance implements Context
      * @throws WebDriverException               If cannot get the Web Driver
      * @throws UnsupportedDriverActionException
      */
-    public function assertQaIdIsVisibleInDocument($qaId)
+    public function assertQaIdIsVisibleInDocument(string $qaId): void
     {
         $element = $this->assertNodeElementExistsByQaId($qaId);
 
@@ -172,7 +172,7 @@ class QualityAssurance implements Context
      * @throws UnsupportedDriverActionException If driver is not the selenium 2 driver
      * @throws WebDriverException               If cannot get the Web Driver
      */
-    public function assertQaIdIsNotVisibleInDocument($qaId)
+    public function assertQaIdIsNotVisibleInDocument(string $qaId): void
     {
         $element = $this->getNodeElementByQaID($qaId);
 
@@ -194,7 +194,7 @@ class QualityAssurance implements Context
      * @throws ExpectationException if the QA element was not found
      * @throws ExpectationException if the Checkbox with that label was not found
      */
-    public function checkElementWithTextInQaElement($action, $checkbox, $qaId)
+    public function checkElementWithTextInQaElement(string $action, string $checkbox, string $qaId): void
     {
         $checkbox = $this->storeContext->injectStoredValues($checkbox);
 

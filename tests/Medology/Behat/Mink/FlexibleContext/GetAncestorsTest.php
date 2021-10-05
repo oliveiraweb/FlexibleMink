@@ -17,7 +17,7 @@ class GetAncestorsTest extends FlexibleContextTest
 
     private $button;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -37,7 +37,7 @@ class GetAncestorsTest extends FlexibleContextTest
         $this->button = $this->mockNode('button', $this->listItem);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->body = null;
         $this->div = null;
@@ -48,7 +48,7 @@ class GetAncestorsTest extends FlexibleContextTest
         parent::tearDown();
     }
 
-    public function testAllAncestorsAreReturned()
+    public function testAllAncestorsAreReturned(): void
     {
         // When I pass the button to allAncestors()
         $ancestors = $this->invokeMethod($this->flexible_context, 'getAncestors', [$this->button]);
@@ -61,7 +61,7 @@ class GetAncestorsTest extends FlexibleContextTest
         $this->assertSame($this->body, $ancestors[3], "Button's fourth ancestor should be body");
     }
 
-    public function testStopAtIsNotReturned()
+    public function testStopAtIsNotReturned(): void
     {
         // When I pass the button to allAncestors() and request that it stop at "body"
         $ancestors = $this->invokeMethod($this->flexible_context, 'getAncestors', [$this->button, 'body']);
@@ -81,7 +81,7 @@ class GetAncestorsTest extends FlexibleContextTest
      *
      * @return MockObject|NodeElement
      */
-    protected function mockNode($tagName, NodeElement $parent = null)
+    protected function mockNode(string $tagName, NodeElement $parent = null)
     {
         $node = $this->createMock(NodeElement::class);
         $node->method('getTagName')->willReturn($tagName);

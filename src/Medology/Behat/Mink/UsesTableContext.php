@@ -20,7 +20,7 @@ trait UsesTableContext
      * @throws RuntimeException if the current environment is not initialized
      * @BeforeScenario
      */
-    public function gatherTableContext(BeforeScenarioScope $scope)
+    public function gatherTableContext(BeforeScenarioScope $scope): void
     {
         $environment = $scope->getEnvironment();
 

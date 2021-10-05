@@ -20,7 +20,7 @@ trait UsesAlertContext
      * @throws RuntimeException if the current environment is not initialized
      * @BeforeScenario
      */
-    public function gatherAlertContext(BeforeScenarioScope $scope)
+    public function gatherAlertContext(BeforeScenarioScope $scope): void
     {
         $environment = $scope->getEnvironment();
 

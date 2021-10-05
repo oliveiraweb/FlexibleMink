@@ -23,7 +23,7 @@ class ScrollToButtonTest extends FlexibleContextTest
 
     protected $locator = 'button';
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->flexible_context_mocked_methods = [];
         array_push(
@@ -36,7 +36,7 @@ class ScrollToButtonTest extends FlexibleContextTest
         parent::setUp();
     }
 
-    public function testThrowsExceptionWhenButtonIsNotVisibleInPage()
+    public function testThrowsExceptionWhenButtonIsNotVisibleInPage(): void
     {
         $this->flexible_context->method('fixStepArgument')->willReturn($this->locator);
         $this->pageMock->method('findAll')->willReturn([]);
@@ -44,7 +44,7 @@ class ScrollToButtonTest extends FlexibleContextTest
         $this->flexible_context->scrollToButton($this->locator);
     }
 
-    public function testThrowsExceptionWhenButtonIsNotVisibleInContext()
+    public function testThrowsExceptionWhenButtonIsNotVisibleInContext(): void
     {
         $this->flexible_context->method('fixStepArgument')->willReturn($this->locator);
         $this->mockContext();
@@ -54,7 +54,7 @@ class ScrollToButtonTest extends FlexibleContextTest
         $this->flexible_context->scrollToButton('$this->locator', $this->context);
     }
 
-    public function testReturnsFoundButtonInPage()
+    public function testReturnsFoundButtonInPage(): void
     {
         $this->initElements();
         $this->flexible_context->method('fixStepArgument')->willReturn($this->locator);
@@ -64,7 +64,7 @@ class ScrollToButtonTest extends FlexibleContextTest
         $this->assertEquals($elements, $this->element1);
     }
 
-    public function testReturnsFoundButtonInContext()
+    public function testReturnsFoundButtonInContext(): void
     {
         $this->initElements();
         $this->flexible_context->method('fixStepArgument')->willReturn($this->locator);
@@ -76,7 +76,7 @@ class ScrollToButtonTest extends FlexibleContextTest
     }
 
     /** This method Initializes the elements to be used as return values. */
-    protected function initElements()
+    protected function initElements(): void
     {
         $this->element1 = $this->createPartialMock(NodeElement::class, []);
         $this->element2 = $this->createPartialMock(NodeElement::class, []);
@@ -84,7 +84,7 @@ class ScrollToButtonTest extends FlexibleContextTest
     }
 
     /** This method mocks the Context to be passed as an parameter to scrollToButton function. */
-    protected function mockContext()
+    protected function mockContext(): void
     {
         $this->context = $this->getMockForAbstractClass(
             TraversableElement::class,
@@ -102,7 +102,7 @@ class ScrollToButtonTest extends FlexibleContextTest
      *
      * @param string $exceptionMessage The message while the exception is thrown
      */
-    protected function createAndExpectExpectationException($exceptionMessage)
+    protected function createAndExpectExpectationException(string $exceptionMessage): void
     {
         $exception = new ExpectationException($exceptionMessage, $this->sessionMock);
         $this->expectException(get_class($exception));

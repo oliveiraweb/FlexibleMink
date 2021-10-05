@@ -26,7 +26,7 @@ class TableContext implements Context
      *
      * @return array An array containing parsed rows and cells as returned from $this->buildTableFromHtml
      */
-    public function getTableFromName($name)
+    public function getTableFromName(string $name): array
     {
         // find the table node and parse it's contents
         $table = $this->findNamedTable($name);
@@ -48,7 +48,7 @@ class TableContext implements Context
      *
      * @return NodeElement The matching table with name $name
      */
-    public function assertTableExists($name)
+    public function assertTableExists(string $name): NodeElement
     {
         try {
             $table = $this->findNamedTable($name);
@@ -78,7 +78,7 @@ class TableContext implements Context
      *
      * @return true
      */
-    public function assertTableHasRows($name, $num = 1, $fullTable = false)
+    public function assertTableHasRows(string $name, $num = 1, bool $fullTable = false): bool
     {
         if (!is_numeric($num) || $num < 0 || (int) $num != $num) {
             throw new InvalidArgumentException('Number of rows must be an integer greater than 0.');
@@ -115,7 +115,7 @@ class TableContext implements Context
      * @throws InvalidArgumentException If $num is not an integer
      * @throws ExpectationException     If the number of found columns was not $num
      */
-    public function assertTableHasColumns($name, $num = 1)
+    public function assertTableHasColumns(string $name, $num = 1): bool
     {
         if (!is_numeric($num) || $num < 0 || (int) $num != $num) {
             throw new InvalidArgumentException('Number of rows must be an integer greater than 0.');
@@ -147,7 +147,7 @@ class TableContext implements Context
      *
      * @return true
      */
-    public function assertTableColumnTitles(TableNode $attributes, $name)
+    public function assertTableColumnTitles(TableNode $attributes, string $name): bool
     {
         $expectedCols = array_map(function ($ele) {
             return $ele[0];
@@ -193,7 +193,7 @@ class TableContext implements Context
      *
      * @return true
      */
-    public function assertCellValue($name, $val, $rIdx, $cIdx, $piece)
+    public function assertCellValue(string $name, string $val, int $rIdx, int $cIdx, string $piece): bool
     {
         $section = 'body';
 
@@ -225,7 +225,7 @@ class TableContext implements Context
      *
      * @throws ExpectationException if the specified table could not be found
      */
-    public function assertTableWithStructureExists(TableNode $tableNode)
+    public function assertTableWithStructureExists(TableNode $tableNode): void
     {
         $table = array_map(function ($rowData) {
             return array_map([$this->storeContext, 'injectStoredValues'], array_values($rowData));
@@ -240,7 +240,7 @@ class TableContext implements Context
             $domRows = $domTable->findAll('xpath', '/tfoot/tr|thead/tr|tbody/tr');
             if (count($domRows) != count($table)) {
                 // This table doesn't have enough rows to match us.
-                continue 1;
+                continue;
             }
 
             foreach ($table as $rowNum => $row) {
@@ -285,7 +285,7 @@ class TableContext implements Context
      *
      * @throws ExpectationException if the values are not found in the table
      */
-    public function assertTableShouldHaveTheFollowingValues($name, TableNode $tableNode)
+    public function assertTableShouldHaveTheFollowingValues(string $name, TableNode $tableNode): void
     {
         $expectedRow = $tableNode->getRowsHash();
 
@@ -320,7 +320,7 @@ class TableContext implements Context
      *
      * @throws ExpectationException if the values are not found in the table
      */
-    public function assertTableShouldContainTheFollowingValues($name, TableNode $tableNode)
+    public function assertTableShouldContainTheFollowingValues(string $name, TableNode $tableNode): void
     {
         $table = $this->getTableFromName($name);
         $expected = $tableNode->getColumnsHash();
@@ -355,7 +355,7 @@ class TableContext implements Context
      *
      * @return string The value of the cell
      */
-    protected function getCellFromTable($table, $rIdx, $cIdx, $piece = 'body')
+    protected function getCellFromTable(array $table, int $rIdx, int $cIdx, string $piece = 'body'): string
     {
         if (!in_array($piece, ['head', 'body', 'foot'])) {
             throw new InvalidArgumentException('$piece must be one of (head, body, foot)!');
@@ -396,7 +396,7 @@ class TableContext implements Context
      *
      * @return int False when the row was not found or the key where the row was found
      **/
-    protected function getTableRowIndex($expectedRow, $table)
+    protected function getTableRowIndex(array $expectedRow, array $table): int
     {
         foreach ($table as $key => $actualRow) {
             if ($this->rowContains($expectedRow, $actualRow)) {
@@ -415,7 +415,7 @@ class TableContext implements Context
      *
      * @return bool whether the row has the values and all columns expected
      **/
-    protected function rowContains($cols, $row)
+    protected function rowContains(array $cols, array $row): bool
     {
         foreach ($cols as $key => $val) {
             if (!array_key_exists($key, $row) || $row[$key] != $val) {
@@ -437,7 +437,7 @@ class TableContext implements Context
      *
      * @return NodeElement The matched table
      */
-    private function findNamedTable($name)
+    private function findNamedTable(string $name): NodeElement
     {
         $idPiece = "contains(normalize-space(@id), '$name')";
         $namePiece = "contains(normalize-space(@name), '$name')";
@@ -463,7 +463,7 @@ class TableContext implements Context
      *
      * @return NodeElement[] The columns for $table
      */
-    private function findHeadColumns(NodeElement $table)
+    private function findHeadColumns(NodeElement $table): array
     {
         /** @var NodeElement[] $rows */
         $rows = $table->findAll('xpath', '/thead/tr');
@@ -519,7 +519,7 @@ class TableContext implements Context
      *               body => [row][column] Cells parsed from the tbody section of the table
      *               foot => [row][column] Cells parsed from the tfoot section of the table
      */
-    private function buildTableFromHtml($table, $keyName = '')
+    private function buildTableFromHtml(NodeElement $table, string $keyName = ''): array
     {
         $colTitles = array_map(function (NodeElement $ele) {
             return trim($ele->getText());

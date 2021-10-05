@@ -26,7 +26,7 @@ class LinkContext implements Context
      *
      * @Then the canonical tag should point to :destination
      */
-    public function assertCanonicalTagLocation($destination)
+    public function assertCanonicalTagLocation(string $destination): void
     {
         /* @noinspection PhpUnhandledExceptionInspection */
         Spinner::waitFor(function () use ($destination) {

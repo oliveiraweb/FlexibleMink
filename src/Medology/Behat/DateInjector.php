@@ -11,6 +11,7 @@ class DateInjector implements Context
     public const REGEX = "/\(a date\/time of '([^']+)'( formatted as '([^']+)')?\)/";
 
     protected static $format_map = [
+        'a Atom date and time'                          => 'Y-m-d\TH:i:sP',
         'a MySQL date'                                  => 'Y-m-d',
         'a MySQL date and time'                         => 'Y-m-d H:i:s',
         'a US date'                                     => 'm/d/Y',

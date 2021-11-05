@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )"
+set -e
 
-. "${ROOT}"/bin/lib/exitCheck.sh
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )"
 
 echo "Checking .env file..."
 if [ ! -e "$ROOT"/docker/.env ]; then
   echo "No docker/.env file found. Creating from .env.example..."
   cp "$ROOT"/docker/.env.example "$ROOT"/docker/.env
-  exitCheck $?
   echo "NOTE: Please review the docker/.env file and configure any required parameters."
 else
   echo "docker/.env file exists. Skipping create."

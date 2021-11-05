@@ -43,7 +43,7 @@ commands:
             bin/init_project
       - run:
           name: Run style fixer
-          command: bin/ci-style-fixer
+          command: ci-style-fixer
       - store_test_results:
           path: /tmp/artifacts
       - store_artifacts:
@@ -81,9 +81,9 @@ commands:
 executors:
   ubuntu:
     environment:
-      PATH: /opt/circleci/.pyenv/shims:./bin:./node_modules/.bin:./vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      PATH: /opt/circleci/.pyenv/shims:./bin:./vendor/bin:./submodules/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:./node_modules/.bin
     machine:
-      image: ubuntu-1604:202007-01
+      image: ubuntu-2004:202010-01
 
 jobs:
   build:

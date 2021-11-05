@@ -13,9 +13,9 @@ ACCOUNT=appropriate
 REPO=curl
 VERSION=edge
 
-. "$ROOT"/bin/lib/colors.sh
+. get_colors
 . "$ROOT"/bin/lib/env.sh
-. "$ROOT"/bin/lib/tty.sh
+. get_tty
 
 # Checks the status of the app, db and web services
 checkServices() {

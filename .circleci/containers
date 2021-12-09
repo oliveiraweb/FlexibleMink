@@ -2,6 +2,7 @@
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+. submodules/bin/get_docker_network.sh
 . "${ROOT}"/bin/lib/env.sh
 
 "${ROOT}"/bin/init/init_docker_env.sh

@@ -8,13 +8,13 @@ submodules/bin/init/install_composer.sh
 if [[ "${CI:-}" == "true" ]]; then
     echo "Configuring Composer Github OAuth..."
     composer config -g github-oauth.github.com "$GITHUB_OAUTH"
-
-    echo "Initializing git hooks..."
-    init_git_hooks
-
-    echo "Initializing submodules..."
-    git submodule update --init
 fi
+
+echo "Initializing submodules..."
+git submodule update --init
+
+echo "Initializing git hooks..."
+submodules/bin/init/init_git_hooks.sh
 
 echo "Installing Composer dependencies..."
 composer install --no-interaction

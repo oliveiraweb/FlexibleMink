@@ -17,6 +17,5 @@ docker run \
     -v ~/.composer:/home/user/.composer:delegated \
     -v ~/.ssh:/home/user/.ssh:delegated \
     -w /app \
-	--link web:dockermachine.local \
-	--net ${PROJECT_NAME}_default \
+	--net global \
 	chekote/php:7.3.11-behat3.4 php "$@"

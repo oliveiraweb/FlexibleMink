@@ -21,8 +21,29 @@ commands:
           name: Merge master
           command: git fetch origin && git merge origin/master --no-edit
 
+  ##################
+  # GCloud commands
+  ##################
+  gcloud_configure:
+    description: Configure GCloud
+    steps:
+      - run:
+          name: Configure GCloud
+          command: configure_gcloud.sh
+
+executors:
+  ubuntu:
+    environment:
+      PATH: /opt/circleci/.pyenv/shims:./bin:./vendor/bin:./submodules/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:./node_modules/.bin
+    machine:
+      image: ubuntu-2004:202010-01
+    working_directory: /tmp/FlexibleMink
+
+jobs:
   build:
     description: "Build the project."
+    parallelism: 1
+    executor: ubuntu
     steps:
       - pull-merge
       - run:
@@ -31,11 +52,12 @@ commands:
       - run:
           name: Initialize docker .env
           command: bin/init/init_docker_env.sh
+      - gcloud_configure
       - run:
           name: Start containers
           command: |
             .circleci/containers up -d
-            bin/init/wait_for_services.sh
+            submodules/bin/init/wait_for_services.sh
       - run:
           name: Initialize the project
           command: |
@@ -51,22 +73,25 @@ commands:
       - persist_to_workspace:
           root: .
           paths:
-          - .
+            - .
       - save_cache:
           key: composer-{{ checksum "composer.lock" }}
           paths:
-          - ~/.composer/cache
+            - ~/.composer/cache
 
   test:
     description: "Test the project."
+    parallelism: 1
+    executor: ubuntu
     steps:
       - attach_workspace:
           at: .
+      - gcloud_configure
       - run:
           name: Start containers
           command: |
             .circleci/containers up -d
-            bin/init/wait_for_services.sh
+            submodules/bin/init/wait_for_services.sh
       - run:
           name: Unit tests
           command: phpunit --log-junit /tmp/artifacts/phpunit.junit.xml --report-useless-tests --strict-coverage
@@ -77,28 +102,6 @@ commands:
           path: /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
-
-executors:
-  ubuntu:
-    environment:
-      PATH: /opt/circleci/.pyenv/shims:./bin:./vendor/bin:./submodules/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:./node_modules/.bin
-    machine:
-      image: ubuntu-2004:202010-01
-
-jobs:
-  build:
-    working_directory: /tmp/FlexibleMink
-    parallelism: 1
-    executor: ubuntu
-    steps:
-      - build
-
-  test:
-    working_directory: /tmp/FlexibleMink
-    parallelism: 1
-    executor: ubuntu
-    steps:
-      - test
 
 workflows:
   version: 2
